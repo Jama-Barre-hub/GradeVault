@@ -34,7 +34,11 @@ htmlcov/
 .tox/
 
 # ---------- Editors ----------
-.vscode/
+# Share project-wide editor config so every contributor gets the same
+# interpreter and formatters, but keep personal files out.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
