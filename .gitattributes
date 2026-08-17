@@ -1,0 +1,18 @@
+# Normalise line endings so Windows development and Linux deployment agree.
+# Text files are stored with LF in the repository and checked out natively.
+* text=auto eol=lf
+
+# Windows-only scripts must keep CRLF.
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary files must never be converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.sqlite3 binary
