@@ -145,15 +145,31 @@ class Term(TimeStampedModel):
 
     def publish(self, released_by):
         """Release results to students. Recorded, never silent."""
+        from audit.models import AuditLog
+
         self.is_published = True
         self.published_at = timezone.now()
         self.published_by = released_by
         self.save(update_fields=["is_published", "published_at", "published_by"])
 
-    def unpublish(self):
-        """Withdraw results, e.g. when a mark is found to be wrong."""
+        AuditLog.record_publication(
+            term=self, action=AuditLog.Action.TERM_PUBLISHED, actor=released_by
+        )
+
+    def unpublish(self, withdrawn_by=None):
+        """Withdraw results, e.g. when a mark is found to be wrong.
+
+        Withdrawing results is visible to every student at once, so it is
+        logged as deliberately as publishing.
+        """
+        from audit.models import AuditLog
+
         self.is_published = False
         self.save(update_fields=["is_published"])
+
+        AuditLog.record_publication(
+            term=self, action=AuditLog.Action.TERM_UNPUBLISHED, actor=withdrawn_by
+        )
 
 
 class Subject(TimeStampedModel):
@@ -526,14 +542,53 @@ class Score(TimeStampedModel):
         return f"{self.enrollment.student} — {self.assessment.name}: {shown}"
 
     def save(self, *args, **kwargs):
-        """Validate the mark before it reaches the database.
+        """Validate the mark, save it, then record what changed.
 
         clean() is not called by save(), so relying on it alone would let
         code paths that skip forms store 45 out of 40. For a grade this
         is checked on every write, not only when a form is used.
+
+        Auditing happens here rather than in the caller, so a mark cannot
+        be changed by forgetting to write the log entry. The one route
+        that bypasses it is bulk_create, which the demo seeder uses
+        deliberately: seeded marks are fictional and auditing them would
+        bury real entries in thousands of synthetic ones.
         """
         self._assert_marks_within_range()
+
+        is_new = self.pk is None
+        previous = None
+        if not is_new:
+            previous = (
+                Score.objects.filter(pk=self.pk).values_list("marks", flat=True).first()
+            )
+
         super().save(*args, **kwargs)
+        self._record_change(is_new=is_new, previous=previous)
+
+    def _record_change(self, *, is_new, previous):
+        """Append an audit entry when a mark actually changed."""
+        from audit.models import AuditLog
+
+        if previous == self.marks:
+            return  # nothing changed; an unchanged save is not an event
+
+        if self.marks is None:
+            if previous is None:
+                return  # an empty placeholder is not a recorded mark
+            action = AuditLog.Action.SCORE_CLEARED
+        elif previous is None:
+            action = AuditLog.Action.SCORE_RECORDED
+        else:
+            action = AuditLog.Action.SCORE_CHANGED
+
+        AuditLog.record_score(
+            score=self,
+            action=action,
+            actor=self.recorded_by,
+            old_value=previous,
+            new_value=self.marks,
+        )
 
     def clean(self):
         self._assert_marks_within_range()

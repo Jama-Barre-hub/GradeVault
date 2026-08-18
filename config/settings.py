@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # GradeVault
     "accounts",
     "schools",
+    "audit",
 ]
 
 # Must be set before the first migration. Swapping the user model later
