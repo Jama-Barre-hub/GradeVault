@@ -65,6 +65,17 @@ def test_passwords_are_hashed_never_stored_as_text():
 
 
 @pytest.mark.django_db
+def test_a_superuser_is_automatically_an_administrator():
+    """createsuperuser never prompts for role, so it must be set for us."""
+    root = User.objects.create_superuser(username="root", password="dev-only-password")
+
+    assert root.role == User.Role.ADMIN
+    assert root.is_admin
+    assert root.is_superuser
+    assert root.is_staff
+
+
+@pytest.mark.django_db
 def test_str_shows_full_name_and_username_when_available():
     user = User.objects.create_user(
         username="STU-2026-0007",

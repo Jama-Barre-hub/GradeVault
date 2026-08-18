@@ -10,8 +10,22 @@ access control in two places is how the two versions drift apart.
 """
 
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+
+class UserManager(BaseUserManager):
+    """Ensures a superuser is always given the administrator role.
+
+    `createsuperuser` only prompts for USERNAME_FIELD and REQUIRED_FIELDS,
+    so without this a superuser would be created with an empty role and
+    fail every is_admin check.
+    """
+
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("role", self.model.Role.ADMIN)
+        return super().create_superuser(username, email, password, **extra_fields)
 
 
 class User(AbstractUser):
@@ -36,6 +50,8 @@ class User(AbstractUser):
     # Students in primary school may have no email address at all, so this
     # must never be required. It stays optional for every role.
     email = models.EmailField(_("email address"), blank=True)
+
+    objects = UserManager()
 
     class Meta:
         verbose_name = _("user")
