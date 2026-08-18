@@ -1,0 +1,27 @@
+# Development dependencies — testing, linting and debugging tools.
+# These are NOT installed on the production server.
+#
+# Install with:  pip install -r requirements-dev.txt
+# (the line below pulls in the production dependencies too)
+
+-r requirements.txt
+
+# ---------- Testing ----------
+pytest==9.1.1
+pytest-django==4.14.0
+pytest-cov==7.1.0
+
+# ---------- Test data ----------
+# Faker generates realistic but entirely fictional student data.
+# This is how the project keeps its promise never to use real
+# student records: there is a tool for fake data, so there is
+# never a reason to reach for real ones.
+Faker==40.36.0
+model-bakery==1.24.0
+
+# ---------- Code quality ----------
+ruff==0.16.3
+djlint==1.44.2
+
+# ---------- Debugging ----------
+django-debug-toolbar==7.1.1

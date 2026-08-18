@@ -1,0 +1,100 @@
+[project]
+name = "gradevault"
+version = "0.1.0"
+description = "Role-based school results management system for Somali schools"
+requires-python = ">=3.13"
+
+
+# ============================================================
+# Ruff — linter and formatter
+# ============================================================
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
+extend-exclude = [".venv", "staticfiles", "**/migrations/*"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes — undefined names, unused imports
+    "I",    # isort — import ordering
+    "UP",   # pyupgrade — modern Python syntax
+    "B",    # bugbear — likely bugs
+    "DJ",   # flake8-django — Django-specific mistakes
+    "S",    # bandit — security issues
+    "C4",   # comprehension simplifications
+    "RUF",  # Ruff's own rules
+]
+
+ignore = [
+    "S101",   # assert is fine; pytest depends on it
+    "RUF012", # Django class attributes are conventionally mutable
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Django generates migrations; they are not hand-written code.
+"**/migrations/*.py" = ["E501", "I001", "RUF"]
+# settings.py legitimately reads from the environment at import time.
+"config/settings.py" = ["S105"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["config"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+
+# ============================================================
+# djlint — Django template linter and formatter
+# ============================================================
+
+[tool.djlint]
+profile = "django"
+indent = 2
+max_line_length = 120
+blank_line_after_tag = "load,extends,include"
+format_css = true
+format_js = true
+
+
+# ============================================================
+# pytest — test runner
+# ============================================================
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+testpaths = ["tests"]
+
+addopts = [
+    "--strict-markers",   # typo in a marker name fails instead of passing silently
+    "--strict-config",
+    "-ra",                # summarise every non-passing test
+]
+
+markers = [
+    "permissions: tests that prove a role cannot access another role's data",
+]
+
+
+# ============================================================
+# Coverage
+# ============================================================
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    ".venv/*",
+    "manage.py",
+    "config/asgi.py",
+    "config/wsgi.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
