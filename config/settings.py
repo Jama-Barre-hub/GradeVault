@@ -52,7 +52,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # GradeVault
+    "accounts",
 ]
+
+# Must be set before the first migration. Swapping the user model later
+# requires rebuilding the database, so it is declared here from the start.
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -38,6 +38,10 @@ ignore = [
 "**/migrations/*.py" = ["E501", "I001", "RUF"]
 # settings.py legitimately reads from the environment at import time.
 "config/settings.py" = ["S105"]
+# Tests must pass literal passwords to prove hashing and authentication
+# work. The bandit rules stay enabled everywhere else, where a literal
+# credential would be a real finding.
+"tests/**/*.py" = ["S105", "S106", "S107"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["config"]

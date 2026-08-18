@@ -81,32 +81,38 @@ portfolio CRUD app.
 ## 5. Data model (initial design)
 
 ```
-Institution
- └── AcademicYear
-      └── Term                    (Term 1 / 2 / 3, with start + end dates)
+Institution                        Every table below hangs off this, so a
+ └── AcademicYear                  second school can be added without a rewrite
+      └── Term                     (2 per year; carries the published flag)
 
-ClassRoom          (e.g. "Form 4A")     Subject      (e.g. "Mathematics")
-GradingScale       (A/B/C/D/F boundaries, configurable per institution)
+ClassRoom     name is free text: "Class 5", "Form 2A"  (see §10.6)
+Subject       e.g. "Mathematics"
+GradingScale  owned by the institution  (see §10.3)
+ └── GradeBand   letter, min %, max %, remark
 
-User               (custom model, one of: admin / teacher / student)
+User            (custom model, role: admin / teacher / student)
  ├── TeacherProfile
- └── StudentProfile (unique student username + admission number)
+ └── StudentProfile  (unique student username + admission number)
 
-Enrollment          Student  ↔ ClassRoom ↔ AcademicYear
-TeachingAssignment  Teacher  ↔ Subject   ↔ ClassRoom ↔ Term
+Enrollment          Student ↔ ClassRoom ↔ AcademicYear
+TeachingAssignment  Teacher ↔ Subject ↔ ClassRoom ↔ Term
 
-Assessment          A gradeable item (CAT 1, Midterm, Final) with a weight
-Score               Student ↔ Assessment ↔ mark  ← the central record
+Assessment   Term ↔ Subject ↔ ClassRoom, with max_marks (40, 60, …)
+Score        Student ↔ Assessment ↔ marks   ← the central record
 
-TermResult          Computed: per-subject grade, average, class position
-AuditLog            Who changed which score, from what to what, when
+TermResult   Computed: per-subject total, percentage, grade, class position
+AuditLog     Who changed which score, from what to what, when
 ```
 
-Two deliberate choices worth defending in an interview:
+Three deliberate choices worth defending in an interview:
 
 - **`Score` is separate from `TermResult`.** Raw marks are facts entered by a
   human; results are derived values. Keeping them apart means the grading scale
   can change and every historical result can be recomputed correctly.
+- **`Assessment.max_marks` rather than a percentage weight.** Marks are stored
+  exactly as a teacher writes them in a mark book — 32 out of 40. No rounding
+  error is introduced at entry time, and a school can define any number of
+  assessments summing to any total.
 - **`AuditLog` is append-only.** Nothing in the application is permitted to
   delete or amend an audit row.
 
@@ -208,22 +214,79 @@ recruiter can actually use** is worth more than any amount of code.
 
 ---
 
-## 10. Open decisions
+## 10. Decisions
 
-Before M0 begins:
+Resolved 18 August 2026, based on how Somali schools actually operate.
 
-1. **Final name.** `GradeVault` is the working title. Alternatives considered:
-   Marksheet, ResultDesk, Attainly, MeritBook. Domain and trademark availability
-   has **not** yet been verified.
-2. **Assessment structure.** Does a term hold a fixed set of assessments
-   (CAT 1, CAT 2, Final) or should teachers define their own per subject?
-3. **Grading scale.** Percentage-based letter grades, GPA points, or both?
-4. **Class position.** Ranked within a class only, or across the whole year group?
-5. **Publication control.** Should results stay hidden from students until an
-   administrator explicitly publishes the term?
+### 10.1 Academic calendar — two terms
 
-*Question 5 is more consequential than it looks — schools rarely want marks
-visible the instant a teacher types them.*
+A year has **two terms** (also called semesters), not three:
+
+| Term | Runs |
+|---|---|
+| Term 1 | September → 15 January |
+| Term 2 | early February → June |
+
+Dates are stored per term and set by each school, since they shift year to year.
+
+### 10.2 Marks are recorded out of their weight
+
+A term's assessments carry **marks, not percentages**. The default structure is:
+
+| Assessment | Out of |
+|---|---|
+| Mid-term (CAT) | 40 |
+| Final | 60 |
+| **Term total** | **100** |
+
+A student scoring 32/40 and 51/60 has a term total of **83**.
+
+The 40/60 split is a *default*, not a rule — some schools weight the mid-term at
+30. Each assessment therefore stores its own `max_marks`, and the term total is
+whatever they sum to.
+
+This single design also covers schools that want more than two assessments.
+A school may define Homework 10 + Mid-term 30 + Final 60, and nothing else in
+the system needs to change. **Mid-term and final are the defaults, not a
+constraint.**
+
+### 10.3 Grading — percentage to letter grade
+
+Percentage converts to a letter grade using a **grading scale owned by the
+institution**. Somali schools each set their own boundaries, so this is
+configurable data, never hardcoded. GPA points are out of scope for v1 but the
+scale reserves a field for them.
+
+### 10.4 Class position — ranked within the class
+
+Rank is computed **within a class**. That is the figure schools actually use.
+
+Some schools also announce a single top student for the whole school. The
+computation makes this derivable, but no interface for it is built in v1.
+
+### 10.5 Publication — results are hidden until released
+
+A term carries a published flag. Students see nothing until an administrator
+publishes it. Teachers may enter and revise marks freely before that point.
+
+Schools do not want marks visible the instant a teacher types them, and this is
+one field that would otherwise touch every results query if added later.
+
+### 10.6 Class levels are free text
+
+Somali schools name levels differently:
+
+- Primary: **Class 1 … Class 8**
+- Secondary: **Form 1 … Form 4**, or **9 … 12**
+
+There is no single national convention to encode, so a class level is **text
+chosen by the school**. GradeVault stores "Class 5" or "Form 2" without
+interpreting it.
+
+### 10.7 Still open
+
+**The name.** `GradeVault` is in use and the repository is published under it.
+Domain and trademark availability have **not** been verified.
 
 ---
 
