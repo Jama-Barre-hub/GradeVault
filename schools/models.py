@@ -302,6 +302,106 @@ class GradingScale(TimeStampedModel):
         return not self.coverage_gaps()
 
 
+class Enrollment(TimeStampedModel):
+    """Places a student in a class for an academic year.
+
+    A student sits in exactly one class per year. Allowing two would make
+    class rank meaningless, because the same student would compete in two
+    rankings at once.
+    """
+
+    student = models.ForeignKey(
+        "accounts.StudentProfile", on_delete=models.CASCADE, related_name="enrollments"
+    )
+    classroom = models.ForeignKey(
+        ClassRoom, on_delete=models.CASCADE, related_name="enrollments"
+    )
+    roll_number = models.PositiveSmallIntegerField(
+        _("roll number"),
+        null=True,
+        blank=True,
+        help_text=_("The student's number within the class register."),
+    )
+    is_active = models.BooleanField(_("active"), default=True)
+
+    class Meta:
+        verbose_name = _("enrolment")
+        verbose_name_plural = _("enrolments")
+        ordering = ["classroom", "roll_number", "student"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["student", "classroom"], name="unique_student_per_class"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.student} in {self.classroom}"
+
+    def clean(self):
+        """Reject a second active class in the same academic year."""
+        if not self.student_id or not self.classroom_id:
+            return
+
+        clash = (
+            Enrollment.objects.filter(
+                student_id=self.student_id,
+                classroom__academic_year=self.classroom.academic_year,
+                is_active=True,
+            )
+            .exclude(pk=self.pk)
+            .select_related("classroom")
+            .first()
+        )
+
+        if clash and self.is_active:
+            raise ValidationError(
+                _("This student is already enrolled in %(other)s for %(year)s.")
+                % {
+                    "other": clash.classroom.name,
+                    "year": self.classroom.academic_year,
+                }
+            )
+
+
+class TeachingAssignment(TimeStampedModel):
+    """Records that a teacher teaches one subject to one class.
+
+    This is what makes "a teacher may only enter marks for subjects they
+    actually teach" enforceable. Without it, any teacher could mark any
+    subject, which is the central permission failure this project sets
+    out to avoid.
+
+    The class already belongs to an academic year, so the assignment does
+    not repeat it. Several teachers may share a subject in one class,
+    which happens in practice.
+    """
+
+    teacher = models.ForeignKey(
+        "accounts.TeacherProfile", on_delete=models.CASCADE, related_name="assignments"
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name="teaching_assignments"
+    )
+    classroom = models.ForeignKey(
+        ClassRoom, on_delete=models.CASCADE, related_name="teaching_assignments"
+    )
+    is_active = models.BooleanField(_("active"), default=True)
+
+    class Meta:
+        verbose_name = _("teaching assignment")
+        verbose_name_plural = _("teaching assignments")
+        ordering = ["classroom", "subject"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["teacher", "subject", "classroom"],
+                name="unique_teaching_assignment",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.teacher} teaches {self.subject} to {self.classroom.name}"
+
+
 class GradeBand(models.Model):
     """One row of a grading scale, e.g. A = 80–100."""
 

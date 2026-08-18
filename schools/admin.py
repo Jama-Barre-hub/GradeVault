@@ -5,12 +5,30 @@ from django.utils.translation import gettext_lazy as _
 from .models import (
     AcademicYear,
     ClassRoom,
+    Enrollment,
     GradeBand,
     GradingScale,
     Institution,
     Subject,
+    TeachingAssignment,
     Term,
 )
+
+
+@admin.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ("student", "classroom", "roll_number", "is_active")
+    list_filter = ("classroom__academic_year", "classroom", "is_active")
+    search_fields = ("student__user__username", "student__user__last_name")
+    autocomplete_fields = ("student", "classroom")
+
+
+@admin.register(TeachingAssignment)
+class TeachingAssignmentAdmin(admin.ModelAdmin):
+    list_display = ("teacher", "subject", "classroom", "is_active")
+    list_filter = ("classroom__academic_year", "subject", "classroom", "is_active")
+    search_fields = ("teacher__user__last_name", "subject__name")
+    autocomplete_fields = ("teacher", "subject", "classroom")
 
 
 class TermInline(admin.TabularInline):
