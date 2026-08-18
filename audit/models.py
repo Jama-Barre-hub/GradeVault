@@ -49,6 +49,17 @@ class AuditLog(models.Model):
 
     action = models.CharField(_("action"), max_length=32, choices=Action.choices)
 
+    # Without this an administrator would read every school's history.
+    # Recorded on the entry rather than reached through the score, so the
+    # scoping still works after the score is gone.
+    institution = models.ForeignKey(
+        "schools.Institution",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="audit_entries",
+    )
+
     # SET_NULL rather than CASCADE: deleting a member of staff must not
     # erase the record of what they did.
     actor = models.ForeignKey(
@@ -119,6 +130,7 @@ class AuditLog(models.Model):
 
         return cls.objects.create(
             action=action,
+            institution=score.enrollment.classroom.academic_year.institution,
             actor=actor,
             actor_label=cls._describe(actor),
             student_label=f"{student.full_name} ({student.user.username})",
@@ -151,6 +163,7 @@ class AuditLog(models.Model):
         """Write an entry for a term being released or withdrawn."""
         return cls.objects.create(
             action=action,
+            institution=term.academic_year.institution,
             actor=actor,
             actor_label=cls._describe(actor),
             term_label=str(term),

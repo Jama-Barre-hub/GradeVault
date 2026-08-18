@@ -315,6 +315,7 @@ class Command(BaseCommand):
             user = User.objects.create(
                 username=f"demo-tch-{index + 1:02d}",
                 role=User.Role.TEACHER,
+                institution=school,
                 first_name=first,
                 last_name=last,
                 password=self._shared_hash,
@@ -352,6 +353,7 @@ class Command(BaseCommand):
                 user = User.objects.create(
                     username=generate_student_username(2026),
                     role=User.Role.STUDENT,
+                    institution=school,
                     first_name=first,
                     last_name=last,
                     password=self._shared_hash,

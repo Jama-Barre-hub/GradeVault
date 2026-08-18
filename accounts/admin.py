@@ -2,11 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from schools.admin_scoping import InstitutionScopedAdmin
+
 from .models import StudentProfile, TeacherProfile, User
 
 
 @admin.register(StudentProfile)
-class StudentProfileAdmin(admin.ModelAdmin):
+class StudentProfileAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
+    related_scoping = {"user": "institution", "institution": "pk"}
     list_display = (
         "full_name",
         "student_username",
@@ -35,7 +39,9 @@ class StudentProfileAdmin(admin.ModelAdmin):
 
 
 @admin.register(TeacherProfile)
-class TeacherProfileAdmin(admin.ModelAdmin):
+class TeacherProfileAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
+    related_scoping = {"user": "institution", "institution": "pk"}
     list_display = ("full_name", "staff_number", "institution", "is_active")
     list_filter = ("institution", "is_active")
     search_fields = ("user__username", "user__first_name", "user__last_name")
@@ -43,7 +49,7 @@ class TeacherProfileAdmin(admin.ModelAdmin):
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(InstitutionScopedAdmin, BaseUserAdmin):
     """Extends Django's UserAdmin so `role` is visible and editable.
 
     Subclassing rather than replacing keeps Django's password handling —
@@ -51,14 +57,16 @@ class UserAdmin(BaseUserAdmin):
     through the hashing form.
     """
 
+    institution_lookup = "institution"
+
     list_display = ("username", "get_full_name", "role", "is_active", "is_staff")
-    list_filter = ("role", "is_active", "is_staff", "is_superuser")
+    list_filter = ("role", "institution", "is_active", "is_staff", "is_superuser")
     search_fields = ("username", "first_name", "last_name", "email")
 
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name", "email")}),
-        (_("Role"), {"fields": ("role",)}),
+        (_("Role"), {"fields": ("role", "institution")}),
         (
             _("Permissions"),
             {
@@ -79,7 +87,7 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("username", "role", "password1", "password2"),
+                "fields": ("username", "role", "institution", "password1", "password2"),
             },
         ),
     )

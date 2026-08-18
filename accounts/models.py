@@ -51,6 +51,20 @@ class User(AbstractUser):
     # must never be required. It stays optional for every role.
     email = models.EmailField(_("email address"), blank=True)
 
+    # The school this account belongs to. Null means the account is not
+    # tied to one school, which is reserved for the operator running the
+    # service. Anyone else without an institution can see nothing, so a
+    # forgotten assignment fails closed rather than open.
+    institution = models.ForeignKey(
+        "schools.Institution",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="users",
+        verbose_name=_("school"),
+        help_text=_("Leave empty only for system operators."),
+    )
+
     objects = UserManager()
 
     class Meta:

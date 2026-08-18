@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
+from schools.admin_scoping import InstitutionScopedAdmin
+
 from .models import AuditLog
 
 
 @admin.register(AuditLog)
-class AuditLogAdmin(admin.ModelAdmin):
+class AuditLogAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
     """A reader for the audit trail. Deliberately read-only.
 
     Django's admin is the most likely place an administrator would try to

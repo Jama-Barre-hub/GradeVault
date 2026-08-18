@@ -2,6 +2,8 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from schools.admin_scoping import InstitutionScopedAdmin
+
 from .models import (
     AcademicYear,
     Assessment,
@@ -18,7 +20,12 @@ from .models import (
 
 
 @admin.register(Enrollment)
-class EnrollmentAdmin(admin.ModelAdmin):
+class EnrollmentAdmin(InstitutionScopedAdmin):
+    institution_lookup = "classroom__academic_year__institution"
+    related_scoping = {
+        "student": "institution",
+        "classroom": "academic_year__institution",
+    }
     list_display = ("student", "classroom", "roll_number", "is_active")
     list_filter = ("classroom__academic_year", "classroom", "is_active")
     search_fields = ("student__user__username", "student__user__last_name")
@@ -26,7 +33,13 @@ class EnrollmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(TeachingAssignment)
-class TeachingAssignmentAdmin(admin.ModelAdmin):
+class TeachingAssignmentAdmin(InstitutionScopedAdmin):
+    institution_lookup = "classroom__academic_year__institution"
+    related_scoping = {
+        "teacher": "institution",
+        "subject": "institution",
+        "classroom": "academic_year__institution",
+    }
     list_display = ("teacher", "subject", "classroom", "is_active")
     list_filter = ("classroom__academic_year", "subject", "classroom", "is_active")
     search_fields = ("teacher__user__last_name", "subject__name")
@@ -34,7 +47,13 @@ class TeachingAssignmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(Assessment)
-class AssessmentAdmin(admin.ModelAdmin):
+class AssessmentAdmin(InstitutionScopedAdmin):
+    institution_lookup = "classroom__academic_year__institution"
+    related_scoping = {
+        "subject": "institution",
+        "classroom": "academic_year__institution",
+        "term": "academic_year__institution",
+    }
     list_display = (
         "name",
         "subject",
@@ -61,7 +80,12 @@ class AssessmentAdmin(admin.ModelAdmin):
 
 
 @admin.register(Score)
-class ScoreAdmin(admin.ModelAdmin):
+class ScoreAdmin(InstitutionScopedAdmin):
+    institution_lookup = "enrollment__classroom__academic_year__institution"
+    related_scoping = {
+        "enrollment": "classroom__academic_year__institution",
+        "assessment": "classroom__academic_year__institution",
+    }
     list_display = ("student_name", "assessment", "marks", "recorded_by")
     list_filter = ("assessment__term", "assessment__classroom", "assessment__subject")
     search_fields = (
@@ -88,14 +112,19 @@ class TermInline(admin.TabularInline):
 
 
 @admin.register(Institution)
-class InstitutionAdmin(admin.ModelAdmin):
+class InstitutionAdmin(InstitutionScopedAdmin):
+    institution_lookup = "pk"
     list_display = ("name", "short_name", "is_active")
     list_filter = ("is_active",)
     search_fields = ("name", "short_name")
 
 
 @admin.register(AcademicYear)
-class AcademicYearAdmin(admin.ModelAdmin):
+class AcademicYearAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
+    related_scoping = {
+        "institution": "pk",
+    }
     list_display = ("name", "institution", "start_date", "end_date", "is_current")
     list_filter = ("institution", "is_current")
     search_fields = ("name",)
@@ -103,7 +132,11 @@ class AcademicYearAdmin(admin.ModelAdmin):
 
 
 @admin.register(Term)
-class TermAdmin(admin.ModelAdmin):
+class TermAdmin(InstitutionScopedAdmin):
+    institution_lookup = "academic_year__institution"
+    related_scoping = {
+        "academic_year": "institution",
+    }
     list_display = (
         "name",
         "academic_year",
@@ -139,14 +172,23 @@ class TermAdmin(admin.ModelAdmin):
 
 
 @admin.register(Subject)
-class SubjectAdmin(admin.ModelAdmin):
+class SubjectAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
+    related_scoping = {
+        "institution": "pk",
+    }
     list_display = ("name", "code", "institution")
     list_filter = ("institution",)
     search_fields = ("name", "code")
 
 
 @admin.register(ClassRoom)
-class ClassRoomAdmin(admin.ModelAdmin):
+class ClassRoomAdmin(InstitutionScopedAdmin):
+    institution_lookup = "academic_year__institution"
+    related_scoping = {
+        "academic_year": "institution",
+        "class_teacher": "institution",
+    }
     list_display = ("name", "academic_year", "class_teacher")
     list_filter = ("academic_year",)
     search_fields = ("name",)
@@ -159,7 +201,11 @@ class GradeBandInline(admin.TabularInline):
 
 
 @admin.register(GradingScale)
-class GradingScaleAdmin(admin.ModelAdmin):
+class GradingScaleAdmin(InstitutionScopedAdmin):
+    institution_lookup = "institution"
+    related_scoping = {
+        "institution": "pk",
+    }
     list_display = ("name", "institution", "is_default", "coverage")
     list_filter = ("institution", "is_default")
     inlines = [GradeBandInline]
