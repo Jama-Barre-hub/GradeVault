@@ -64,6 +64,8 @@ AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Must sit directly after SecurityMiddleware.
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     # Selects the active language per request. Must sit after SessionMiddleware
     # and before CommonMiddleware.
@@ -98,12 +100,27 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
+# SQLite while developing, PostgreSQL in production. Which one is used
+# is decided by whether DATABASE_URL is set, so the database is
+# configuration rather than a code change.
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+if os.getenv("DATABASE_URL"):
+    import dj_database_url
+
+    DATABASES["default"] = dj_database_url.config(
+        conn_max_age=600,
+        conn_health_checks=True,
+        # Production requires TLS to the database. CI runs Postgres in a
+        # container on a private network, so it sets DATABASE_SSL=False.
+        ssl_require=env_bool("DATABASE_SSL", not DEBUG),
+    )
 
 
 # Password validation
@@ -154,6 +171,27 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # Where `collectstatic` gathers files for the production web server.
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+# WhiteNoise serves static files from the application process, so a small
+# deployment needs no separate web server. Compresses and fingerprints
+# them, which matters on the mobile connections most Somali users have.
+#
+# The manifest backend is used only in production, because it refuses to
+# serve any file that collectstatic has not processed. That strictness is
+# right for a deployment and wrong while developing, where it makes every
+# page raise until collectstatic is run. CI runs collectstatic so the
+# production path is still exercised on every push.
+
+_STATIC_BACKEND = (
+    "django.contrib.staticfiles.storage.StaticFilesStorage"
+    if DEBUG
+    else "whitenoise.storage.CompressedManifestStaticFilesStorage"
+)
+
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": _STATIC_BACKEND},
+}
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -168,8 +206,76 @@ LOGOUT_REDIRECT_URL = "login"
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    "default": {
-        "BACKEND": "django.core.mail.backends.console.EmailBackend",
-    },
-}
+# Nothing in GradeVault sends email yet; password resets are done by an
+# administrator. The configuration exists so that when something does
+# send, it is not silently discarded.
+#
+# Set EMAIL_HOST to enable real delivery. Without it, mail is printed to
+# the console, which is correct while developing and would be wrong in
+# production — hence the check below.
+
+if os.getenv("EMAIL_HOST"):
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "HOST": os.environ["EMAIL_HOST"],
+            "PORT": int(os.getenv("EMAIL_PORT", "587")),
+            "USER": os.getenv("EMAIL_HOST_USER", ""),
+            "PASSWORD": os.getenv("EMAIL_HOST_PASSWORD", ""),
+            "USE_TLS": env_bool("EMAIL_USE_TLS", True),
+        },
+    }
+    DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", os.environ["EMAIL_HOST_USER"])
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.console.EmailBackend",
+        },
+    }
+
+
+# ============================================================
+# Production hardening
+# ============================================================
+#
+# These apply only when DEBUG is off, so local development is unaffected.
+# Tying them to DEBUG rather than a separate flag means there is no way
+# to deploy with them accidentally left off.
+#
+# This system holds educational records belonging to minors, so the
+# defaults are strict rather than convenient.
+
+if not DEBUG:
+    # Refuse plain HTTP. Marks and names must never cross the network in
+    # the clear, and Somali users are often on shared mobile networks.
+    SECURE_SSL_REDIRECT = True
+
+    # Render terminates TLS at its proxy and tells Django via this header.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+    # Tell browsers to refuse plain HTTP for a year, including subdomains.
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Session and CSRF cookies must never travel unencrypted.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # A session cookie readable by JavaScript is a session cookie one
+    # cross-site scripting bug away from being stolen.
+    SESSION_COOKIE_HTTPONLY = True
+
+    # Do not let the browser guess a file's type; a guessed type is how
+    # an uploaded file becomes an executed script.
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # Refuse to be framed, so the login page cannot be overlaid.
+    X_FRAME_OPTIONS = "DENY"
+
+    # Referrer headers must not leak a student's page URL to other sites.
+    SECURE_REFERRER_POLICY = "same-origin"
+
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{host}" for host in ALLOWED_HOSTS if host and "*" not in host
+    ]

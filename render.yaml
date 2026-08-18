@@ -1,0 +1,44 @@
+# Deployment blueprint.
+#
+# Describes the service and its database as a file in the repository, so
+# the deployment is reviewable and reproducible rather than a set of
+# settings someone once clicked into a dashboard.
+
+services:
+  - type: web
+    name: gradevault
+    runtime: python
+    plan: free
+    region: frankfurt          # closest available region to Somalia
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --workers 2 --timeout 60
+    healthCheckPath: /login/
+
+    envVars:
+      # Generated once by the platform and never seen by anyone. This is
+      # why settings.py refuses to start without it rather than falling
+      # back to a default.
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+
+      - key: DJANGO_DEBUG
+        value: "False"
+
+      # Set to the real hostname after the first deploy. Left unsynced so
+      # it must be entered deliberately.
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gradevault-db
+          property: connectionString
+
+      - key: PYTHON_VERSION
+        value: "3.13.13"
+
+databases:
+  - name: gradevault-db
+    plan: free
+    databaseName: gradevault
+    user: gradevault

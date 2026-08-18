@@ -6,8 +6,18 @@ Teachers record marks. Grades, averages and class positions are computed
 automatically. Students sign in with a unique username and see only their own
 results. Every change to a grade is permanently audited.
 
-> **Status:** In development — Milestone M0 (Foundations) complete.
+> **Status:** In development. Data model, computation, web interface and
+> multi-school isolation are complete and tested; not yet publicly deployed.
 > See [PROPOSAL.md](PROPOSAL.md) for the full plan and roadmap.
+
+| Done | |
+|---|---|
+| **Data model** | institutions, years, terms, classes, subjects, grading scales, students, teachers, enrolment, teaching assignments, assessments, marks |
+| **Audit trail** | append-only; every grade change attributable and unremovable |
+| **Computation** | subject totals, percentages, letter grades, term averages, class position |
+| **Web interface** | teacher mark entry, class rankings, student results, sign-in |
+| **Isolation** | each school sees only its own data, enforced and tested |
+| **Tests** | 191, including permission and tenancy tests that must fail to pass |
 
 ---
 
@@ -119,6 +129,60 @@ GradeVault/
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py
 ```
+
+---
+
+## Deployment
+
+The service and its database are described in [render.yaml](render.yaml), so a
+deployment is reviewable in the repository rather than a set of dashboard
+settings someone once clicked.
+
+```
+build:  ./build.sh                → install, collectstatic, migrate
+start:  gunicorn config.wsgi:application
+```
+
+### Configuration
+
+Everything is read from the environment. Nothing is hardcoded.
+
+| Variable | Purpose |
+|---|---|
+| `DJANGO_SECRET_KEY` | Required. The app refuses to start without it |
+| `DJANGO_DEBUG` | Must be `False` in production. Defaults to `False` |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated hostnames |
+| `DATABASE_URL` | PostgreSQL. Falls back to SQLite when unset |
+| `EMAIL_HOST` etc. | Optional. Without it, mail goes to the console |
+
+### What `DEBUG=False` switches on
+
+Production hardening is tied to `DEBUG` rather than a separate flag, so there is
+no way to deploy with it accidentally left off:
+
+HTTPS enforced · HSTS for one year including subdomains · session and CSRF
+cookies restricted to HTTPS · session cookie hidden from JavaScript · framing
+refused · content-type sniffing disabled · referrers kept same-origin · static
+files hashed and compressed.
+
+Sixteen tests load `settings.py` with `DEBUG` off and assert each of these,
+because a security setting that only applies in production is the easiest kind
+to get wrong — nothing in development exercises it.
+
+---
+
+## Continuous integration
+
+Every push runs [the CI workflow](.github/workflows/ci.yml):
+
+lint and format · Django template lint · **check for missing migrations** ·
+the full test suite **against real PostgreSQL** · `collectstatic` with the
+production storage backend · `check --deploy` with warnings treated as failures.
+
+Tests run on PostgreSQL rather than SQLite because the two differ in ways that
+matter — case sensitivity, constraint timing, ordering of nulls — so passing on
+SQLite alone would not prove production is safe. This gives that parity without
+installing a database server on a laptop.
 
 ---
 

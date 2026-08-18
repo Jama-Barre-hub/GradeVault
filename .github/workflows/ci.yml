@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    # Tests run against real PostgreSQL rather than SQLite. The two differ
+    # in ways that matter — case sensitivity, constraint timing, ordering
+    # of nulls — so passing on SQLite alone would not prove production is
+    # safe. This gives that parity without installing a database server
+    # on a developer's laptop.
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: gradevault
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: gradevault_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DJANGO_SECRET_KEY: ci-only-key-not-used-in-production-000000000000
+      DJANGO_DEBUG: "True"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,testserver
+      DATABASE_URL: postgres://gradevault:ci-only-password@localhost:5432/gradevault_test
+      DATABASE_SSL: "False"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+          djlint templates/ --profile django
+
+      - name: Check for missing migrations
+        # A model changed without a migration passes every test and then
+        # breaks the moment it is deployed.
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: Run tests
+        run: pytest -q --cov --cov-report=term-missing
+
+      - name: Collect static files
+        # Exercises the production storage backend. It refuses to serve
+        # anything collectstatic has not processed, so a template
+        # referencing a missing file fails here rather than on the
+        # deployed site.
+        env:
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: gradevault.example.com
+        run: python manage.py collectstatic --noinput
+
+      - name: Production configuration check
+        # Asserts the hardening in settings.py is actually in force when
+        # DEBUG is off, rather than trusting that it is.
+        env:
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: gradevault.example.com
+          EMAIL_HOST: smtp.example.com
+          EMAIL_HOST_USER: noreply@example.com
+        run: python manage.py check --deploy --fail-level WARNING

@@ -10,3 +10,20 @@ python-dotenv==1.2.3
 # Django needs a timezone database. Linux servers usually provide one,
 # Windows does not, so ship it explicitly for consistent behaviour.
 tzdata==2026.3
+
+# ---------- Production serving ----------
+# Only used when DEBUG is off. Harmless locally.
+
+# Runs the application. Django's runserver is for development only and
+# is explicitly not safe to expose.
+gunicorn==23.0.0
+
+# Serves static files from the application process, so no separate web
+# server is needed on a small deployment.
+whitenoise==6.11.0
+
+# Reads DATABASE_URL, so the database is configuration rather than code.
+dj-database-url==3.0.1
+
+# PostgreSQL driver. SQLite is fine while developing; production is not.
+psycopg[binary]==3.2.12
