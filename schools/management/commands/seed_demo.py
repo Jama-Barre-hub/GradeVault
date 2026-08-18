@@ -132,12 +132,22 @@ SUBJECTS = [
 
 CLASS_NAMES = ["Form 1A", "Form 1B", "Form 2A", "Form 2B", "Form 3A", "Form 4A"]
 
+# A twelve-band scale with plus and minus grades. These boundaries are a
+# starting point, not a standard: every school sets its own (§10.3), and
+# changing them means editing rows, never touching code.
 GRADE_BANDS = [
-    ("A", 80, 100, "Excellent"),
-    ("B", 70, 79.99, "Very good"),
-    ("C", 60, 69.99, "Good"),
-    ("D", 50, 59.99, "Pass"),
-    ("F", 0, 49.99, "Fail"),
+    ("A", 90, 100, "Excellent"),
+    ("A-", 85, 89.99, "Excellent"),
+    ("B+", 80, 84.99, "Very good"),
+    ("B", 75, 79.99, "Very good"),
+    ("B-", 70, 74.99, "Good"),
+    ("C+", 65, 69.99, "Good"),
+    ("C", 60, 64.99, "Satisfactory"),
+    ("C-", 55, 59.99, "Satisfactory"),
+    ("D+", 50, 54.99, "Pass"),
+    ("D", 45, 49.99, "Weak pass"),
+    ("D-", 40, 44.99, "Weak pass"),
+    ("F", 0, 39.99, "Fail"),
 ]
 
 # Marks out of these totals, matching how Somali schools record them.

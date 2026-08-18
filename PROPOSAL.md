@@ -136,7 +136,15 @@ Three deliberate choices worth defending in an interview:
 ### Explicitly out of scope for v1
 
 Attendance tracking · fee management · timetabling · messaging between staff and
-parents · mobile applications · multi-school tenancy · offline mode.
+parents · mobile applications · offline mode.
+
+> **Correction, 18 August 2026.** Multi-school tenancy was previously listed
+> here as out of scope. It is not: GradeVault is intended for schools across
+> Somalia, so one deployment must serve many schools with each seeing only its
+> own data. `Institution` is already a key on every table, which was the
+> expensive half. What remains is enforcing it on every query and permission
+> check, which lands in **M4** and is covered by tests that attempt to read
+> another school's records and must fail.
 
 *Each of these is a reasonable Phase 3 addition. Naming them here is deliberate —
 knowing what you are not building is part of the proposal.*
@@ -256,6 +264,21 @@ Percentage converts to a letter grade using a **grading scale owned by the
 institution**. Somali schools each set their own boundaries, so this is
 configurable data, never hardcoded. GPA points are out of scope for v1 but the
 scale reserves a field for them.
+
+Grades use **plus and minus bands**, twelve in total:
+
+| | | | |
+|---|---|---|---|
+| A 90–100 | A- 85–89.99 | B+ 80–84.99 | B 75–79.99 |
+| B- 70–74.99 | C+ 65–69.99 | C 60–64.99 | C- 55–59.99 |
+| D+ 50–54.99 | D 45–49.99 | D- 40–44.99 | F 0–39.99 |
+
+These are the **seeded default, not a standard**. Going from five bands to
+twelve required no code change at all, which is the point of holding the scale
+as data: a school that grades differently edits rows.
+
+*Open: the pass mark is assumed to be 40. This needs confirming against Somali
+practice.*
 
 ### 10.4 Class position — ranked within the class
 

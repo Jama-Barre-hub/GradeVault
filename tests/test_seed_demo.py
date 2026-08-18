@@ -144,6 +144,53 @@ def test_the_grading_scale_covers_every_percentage(seeded):
     assert scale.coverage_gaps() == []
 
 
+def test_the_scale_uses_plus_and_minus_grades(seeded):
+    """Twelve bands, not five. Adding them required no code change,
+    because a grading scale is data owned by the school."""
+    scale = seeded.grading_scales.get(is_default=True)
+    letters = list(
+        scale.bands.order_by("-min_percentage").values_list("letter", flat=True)
+    )
+
+    assert letters == [
+        "A",
+        "A-",
+        "B+",
+        "B",
+        "B-",
+        "C+",
+        "C",
+        "C-",
+        "D+",
+        "D",
+        "D-",
+        "F",
+    ]
+
+
+@pytest.mark.parametrize(
+    ("percentage", "expected"),
+    [
+        (95, "A"),
+        (87, "A-"),
+        (82, "B+"),
+        (77, "B"),
+        (72, "B-"),
+        (67, "C+"),
+        (62, "C"),
+        (57, "C-"),
+        (52, "D+"),
+        (47, "D"),
+        (42, "D-"),
+        (30, "F"),
+    ],
+)
+def test_each_band_returns_its_own_letter(seeded, percentage, expected):
+    scale = seeded.grading_scales.get(is_default=True)
+
+    assert scale.grade_for(Decimal(percentage)).letter == expected
+
+
 def test_seeding_does_not_touch_another_school(db):
     """A school entered by hand must survive a demo rebuild."""
     real = Institution.objects.create(name="Hodan Secondary School", short_name="HSS")
