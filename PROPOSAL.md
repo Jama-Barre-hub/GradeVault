@@ -265,20 +265,22 @@ institution**. Somali schools each set their own boundaries, so this is
 configurable data, never hardcoded. GPA points are out of scope for v1 but the
 scale reserves a field for them.
 
-Grades use **plus and minus bands**, twelve in total:
+Grades use **plus and minus bands** in five-point steps, with a **pass mark
+of 50**:
 
 | | | | |
 |---|---|---|---|
-| A 90–100 | A- 85–89.99 | B+ 80–84.99 | B 75–79.99 |
-| B- 70–74.99 | C+ 65–69.99 | C 60–64.99 | C- 55–59.99 |
-| D+ 50–54.99 | D 45–49.99 | D- 40–44.99 | F 0–39.99 |
+| A 95–100 | A- 90–94.99 | B+ 85–89.99 | B 80–84.99 |
+| B- 75–79.99 | C+ 70–74.99 | C 65–69.99 | C- 60–64.99 |
+| D+ 55–59.99 | D 50–54.99 | **F 0–49.99** | |
+
+Fifty points between the pass mark and 100, divided into five-point bands,
+gives exactly ten pass grades. That is why the ladder stops at D: adding a D-
+would require either uneven bands or a lower pass mark.
 
 These are the **seeded default, not a standard**. Going from five bands to
-twelve required no code change at all, which is the point of holding the scale
+eleven required no code change at all, which is the point of holding the scale
 as data: a school that grades differently edits rows.
-
-*Open: the pass mark is assumed to be 40. This needs confirming against Somali
-practice.*
 
 ### 10.4 Class position — ranked within the class
 

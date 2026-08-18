@@ -145,7 +145,7 @@ def test_the_grading_scale_covers_every_percentage(seeded):
 
 
 def test_the_scale_uses_plus_and_minus_grades(seeded):
-    """Twelve bands, not five. Adding them required no code change,
+    """Ten pass grades plus fail. Adding them required no code change,
     because a grading scale is data owned by the school."""
     scale = seeded.grading_scales.get(is_default=True)
     letters = list(
@@ -163,7 +163,6 @@ def test_the_scale_uses_plus_and_minus_grades(seeded):
         "C-",
         "D+",
         "D",
-        "D-",
         "F",
     ]
 
@@ -171,24 +170,37 @@ def test_the_scale_uses_plus_and_minus_grades(seeded):
 @pytest.mark.parametrize(
     ("percentage", "expected"),
     [
+        (100, "A"),
         (95, "A"),
-        (87, "A-"),
-        (82, "B+"),
-        (77, "B"),
-        (72, "B-"),
-        (67, "C+"),
-        (62, "C"),
-        (57, "C-"),
-        (52, "D+"),
-        (47, "D"),
-        (42, "D-"),
-        (30, "F"),
+        (90, "A-"),
+        (85, "B+"),
+        (80, "B"),
+        (75, "B-"),
+        (70, "C+"),
+        (65, "C"),
+        (60, "C-"),
+        (55, "D+"),
+        (50, "D"),
+        (49, "F"),
+        (0, "F"),
     ],
 )
 def test_each_band_returns_its_own_letter(seeded, percentage, expected):
+    """Every boundary value, since off-by-one at a band edge changes a
+    student's reported grade."""
     scale = seeded.grading_scales.get(is_default=True)
 
     assert scale.grade_for(Decimal(percentage)).letter == expected
+
+
+def test_fifty_passes_and_forty_nine_fails(seeded):
+    """The pass mark is 50. This is the boundary that matters most to a
+    student, so it is asserted directly rather than inferred."""
+    scale = seeded.grading_scales.get(is_default=True)
+
+    assert scale.grade_for(Decimal("50")).letter == "D"
+    assert scale.grade_for(Decimal("49.99")).letter == "F"
+    assert scale.grade_for(Decimal("49")).letter == "F"
 
 
 def test_seeding_does_not_touch_another_school(db):
