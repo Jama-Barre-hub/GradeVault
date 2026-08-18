@@ -4,11 +4,13 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import (
     AcademicYear,
+    Assessment,
     ClassRoom,
     Enrollment,
     GradeBand,
     GradingScale,
     Institution,
+    Score,
     Subject,
     TeachingAssignment,
     Term,
@@ -29,6 +31,54 @@ class TeachingAssignmentAdmin(admin.ModelAdmin):
     list_filter = ("classroom__academic_year", "subject", "classroom", "is_active")
     search_fields = ("teacher__user__last_name", "subject__name")
     autocomplete_fields = ("teacher", "subject", "classroom")
+
+
+@admin.register(Assessment)
+class AssessmentAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "subject",
+        "classroom",
+        "term",
+        "max_marks",
+        "subject_total",
+    )
+    list_filter = ("term", "classroom", "subject")
+    search_fields = ("name", "subject__name")
+    autocomplete_fields = ("subject", "classroom")
+
+    @admin.display(description=_("subject total"))
+    def subject_total(self, obj):
+        """Show the marks available across the whole subject, and flag it
+        when they do not add up to 100."""
+        total = obj.siblings_total
+        if total == 100:
+            return _("%(total)s — complete") % {"total": total}
+        return format_html(
+            '<span style="color:#ba2121;font-weight:bold;">{}</span>',
+            _("%(total)s of 100") % {"total": total},
+        )
+
+
+@admin.register(Score)
+class ScoreAdmin(admin.ModelAdmin):
+    list_display = ("student_name", "assessment", "marks", "recorded_by")
+    list_filter = ("assessment__term", "assessment__classroom", "assessment__subject")
+    search_fields = (
+        "enrollment__student__user__username",
+        "enrollment__student__user__last_name",
+    )
+    autocomplete_fields = ("enrollment", "assessment")
+    readonly_fields = ("recorded_by",)
+
+    @admin.display(description=_("student"))
+    def student_name(self, obj):
+        return obj.enrollment.student.full_name
+
+    def save_model(self, request, obj, form, change):
+        """Record who entered the mark, rather than trusting a form field."""
+        obj.recorded_by = request.user
+        super().save_model(request, obj, form, change)
 
 
 class TermInline(admin.TabularInline):

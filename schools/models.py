@@ -402,6 +402,163 @@ class TeachingAssignment(TimeStampedModel):
         return f"{self.teacher} teaches {self.subject} to {self.classroom.name}"
 
 
+class Assessment(TimeStampedModel):
+    """A gradeable item within a term, such as the mid-term or the final.
+
+    Marks are recorded out of the assessment's own total, exactly as a
+    teacher writes them in a mark book: 32 out of 40, not "80% weighted
+    at 40" (PROPOSAL.md §10.2). Nothing is rounded at entry time.
+
+    The default Somali structure is mid-term out of 40 and final out of
+    60, summing to 100. That is a default, not a rule. A school weighting
+    the mid-term at 30, or adding homework out of 10, defines its own
+    assessments and nothing else changes.
+    """
+
+    term = models.ForeignKey(Term, on_delete=models.CASCADE, related_name="assessments")
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name="assessments"
+    )
+    classroom = models.ForeignKey(
+        ClassRoom, on_delete=models.CASCADE, related_name="assessments"
+    )
+    name = models.CharField(
+        _("name"), max_length=60, help_text=_('e.g. "Mid-term" or "Final"')
+    )
+    max_marks = models.DecimalField(
+        _("out of"),
+        max_digits=6,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+        help_text=_("The total this assessment is marked out of, e.g. 40."),
+    )
+    sequence = models.PositiveSmallIntegerField(
+        _("order"), default=1, help_text=_("Controls the order shown on a report card.")
+    )
+
+    class Meta:
+        verbose_name = _("assessment")
+        verbose_name_plural = _("assessments")
+        ordering = ["term", "classroom", "subject", "sequence"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["term", "subject", "classroom", "name"],
+                name="unique_assessment_per_subject_class_term",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(max_marks__gt=0),
+                name="assessment_max_marks_positive",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"{self.name} ({self.subject}, {self.classroom.name}) "
+            f"out of {self.max_marks}"
+        )
+
+    @staticmethod
+    def total_max_marks(term, subject, classroom) -> Decimal:
+        """The marks available across every assessment for one subject."""
+        result = Assessment.objects.filter(
+            term=term, subject=subject, classroom=classroom
+        ).aggregate(total=models.Sum("max_marks"))
+        return result["total"] or Decimal("0")
+
+    @property
+    def siblings_total(self) -> Decimal:
+        """Total marks available for this subject, class and term."""
+        return self.total_max_marks(self.term, self.subject, self.classroom)
+
+
+class Score(TimeStampedModel):
+    """One student's mark for one assessment. The central record.
+
+    Tied to an Enrollment rather than a student, because a mark only
+    makes sense for a student who is actually in that class. This makes
+    it impossible to record a mark for a student who was never enrolled.
+
+    `marks` may be null: an assessment exists for the whole class before
+    anyone has been marked, and "not yet marked" is a different state
+    from "scored zero". Conflating them would fail a student who was
+    simply absent from the teacher's data entry.
+    """
+
+    enrollment = models.ForeignKey(
+        Enrollment, on_delete=models.CASCADE, related_name="scores"
+    )
+    assessment = models.ForeignKey(
+        Assessment, on_delete=models.CASCADE, related_name="scores"
+    )
+    marks = models.DecimalField(
+        _("marks"),
+        max_digits=6,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        help_text=_("Leave empty if the student has not been marked yet."),
+    )
+    recorded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="scores_recorded",
+    )
+
+    class Meta:
+        verbose_name = _("score")
+        verbose_name_plural = _("scores")
+        ordering = ["assessment", "enrollment"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["enrollment", "assessment"], name="unique_score_per_assessment"
+            ),
+            models.CheckConstraint(
+                condition=models.Q(marks__gte=0) | models.Q(marks__isnull=True),
+                name="score_not_negative",
+            ),
+        ]
+
+    def __str__(self):
+        shown = self.marks if self.marks is not None else "—"
+        return f"{self.enrollment.student} — {self.assessment.name}: {shown}"
+
+    def save(self, *args, **kwargs):
+        """Validate the mark before it reaches the database.
+
+        clean() is not called by save(), so relying on it alone would let
+        code paths that skip forms store 45 out of 40. For a grade this
+        is checked on every write, not only when a form is used.
+        """
+        self._assert_marks_within_range()
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        self._assert_marks_within_range()
+
+    def _assert_marks_within_range(self):
+        if self.marks is None:
+            return
+
+        if self.marks < 0:
+            raise ValidationError({"marks": _("A mark cannot be negative.")})
+
+        limit = self.assessment.max_marks
+        if self.marks > limit:
+            raise ValidationError(
+                {
+                    "marks": _("%(marks)s is more than the %(limit)s available.")
+                    % {"marks": self.marks, "limit": limit}
+                }
+            )
+
+    @property
+    def is_marked(self) -> bool:
+        return self.marks is not None
+
+
 class GradeBand(models.Model):
     """One row of a grading scale, e.g. A = 80–100."""
 
