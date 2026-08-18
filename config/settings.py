@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # GradeVault
     "accounts",
+    "schools",
 ]
 
 # Must be set before the first migration. Swapping the user model later

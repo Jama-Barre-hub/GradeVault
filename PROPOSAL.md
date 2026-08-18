@@ -85,7 +85,7 @@ Institution                        Every table below hangs off this, so a
  └── AcademicYear                  second school can be added without a rewrite
       └── Term                     (2 per year; carries the published flag)
 
-ClassRoom     name is free text: "Class 5", "Form 2A"  (see §10.6)
+ClassRoom     belongs to one AcademicYear; name is free text (see §10.6)
 Subject       e.g. "Mathematics"
 GradingScale  owned by the institution  (see §10.3)
  └── GradeBand   letter, min %, max %, remark
@@ -94,7 +94,7 @@ User            (custom model, role: admin / teacher / student)
  ├── TeacherProfile
  └── StudentProfile  (unique student username + admission number)
 
-Enrollment          Student ↔ ClassRoom ↔ AcademicYear
+Enrollment          Student ↔ ClassRoom
 TeachingAssignment  Teacher ↔ Subject ↔ ClassRoom ↔ Term
 
 Assessment   Term ↔ Subject ↔ ClassRoom, with max_marks (40, 60, …)

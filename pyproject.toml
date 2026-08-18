@@ -33,6 +33,12 @@ ignore = [
     "RUF012", # Django class attributes are conventionally mutable
 ]
 
+# RUF001/RUF002 catch homoglyph attacks, where a lookalike character is
+# disguised as an ASCII one. That rule stays on. En and em dashes are
+# correct typography in user-facing text such as "80–100%", so those two
+# characters are permitted by name rather than disabling the check.
+allowed-confusables = ["–", "—"]
+
 [tool.ruff.lint.per-file-ignores]
 # Django generates migrations; they are not hand-written code.
 "**/migrations/*.py" = ["E501", "I001", "RUF"]
