@@ -263,6 +263,44 @@ class GradingScale(TimeStampedModel):
             min_percentage__lte=percentage, max_percentage__gte=percentage
         ).first()
 
+    def coverage_gaps(self):
+        """Return the percentage ranges this scale fails to cover.
+
+        A gap means a student landing there receives no grade at all, and
+        nothing else in the system would notice. A single mistyped digit
+        — 50.99 where 59.99 was meant — silently strips a grade from
+        every student in that range, so the scale reports its own gaps
+        rather than waiting for a school to discover blank report cards.
+
+        Bands are written inclusively, so "D up to 59.99" and "C from 60"
+        are adjacent rather than separated. Only a shortfall wider than
+        one hundredth counts as a real gap.
+        """
+        step = Decimal("0.01")
+        floor, ceiling = Decimal("0"), Decimal("100")
+
+        bands = list(self.bands.order_by("min_percentage"))
+        if not bands:
+            return [(floor, ceiling)]
+
+        gaps = []
+        covered_to = floor
+
+        for band in bands:
+            if band.min_percentage - covered_to > step:
+                gaps.append((covered_to, band.min_percentage))
+            covered_to = max(covered_to, band.max_percentage)
+
+        if ceiling - covered_to > step:
+            gaps.append((covered_to, ceiling))
+
+        return gaps
+
+    @property
+    def is_complete(self) -> bool:
+        """True when every percentage from 0 to 100 maps to a grade."""
+        return not self.coverage_gaps()
+
 
 class GradeBand(models.Model):
     """One row of a grading scale, e.g. A = 80–100."""

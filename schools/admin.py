@@ -1,4 +1,5 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from .models import (
@@ -91,6 +92,43 @@ class GradeBandInline(admin.TabularInline):
 
 @admin.register(GradingScale)
 class GradingScaleAdmin(admin.ModelAdmin):
-    list_display = ("name", "institution", "is_default")
+    list_display = ("name", "institution", "is_default", "coverage")
     list_filter = ("institution", "is_default")
     inlines = [GradeBandInline]
+
+    @admin.display(description=_("coverage"))
+    def coverage(self, obj):
+        """Warn in the list when a scale would leave students ungraded."""
+        gaps = obj.coverage_gaps()
+        if not gaps:
+            return _("Complete")
+
+        ranges = ", ".join(f"{low}–{high}%" for low, high in gaps)
+        return format_html(
+            '<span style="color:#ba2121;font-weight:bold;">{}</span>',
+            _("No grade for %(ranges)s") % {"ranges": ranges},
+        )
+
+    def response_change(self, request, obj):
+        """Tell the administrator immediately if a saved scale has gaps."""
+        self._warn_about_gaps(request, obj)
+        return super().response_change(request, obj)
+
+    def response_add(self, request, obj, post_url_continue=None):
+        self._warn_about_gaps(request, obj)
+        return super().response_add(request, obj, post_url_continue)
+
+    def _warn_about_gaps(self, request, obj):
+        gaps = obj.coverage_gaps()
+        if not gaps:
+            return
+
+        ranges = ", ".join(f"{low}–{high}%" for low, high in gaps)
+        messages.warning(
+            request,
+            _(
+                "This scale has no grade for %(ranges)s. Students scoring in "
+                "that range will receive a blank grade."
+            )
+            % {"ranges": ranges},
+        )
