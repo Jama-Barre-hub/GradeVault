@@ -23,5 +23,9 @@ model-bakery==1.24.0
 ruff==0.16.3
 djlint==1.44.2
 
+# Runs the checks in .pre-commit-config.yaml before every commit,
+# so broken or unsafe code cannot enter the repository at all.
+pre-commit==4.4.0
+
 # ---------- Debugging ----------
 django-debug-toolbar==7.1.1

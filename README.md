@@ -68,6 +68,26 @@ python manage.py runserver
 
 Open <http://127.0.0.1:8000>.
 
+### If you intend to commit
+
+```bash
+pip install -r requirements-dev.txt
+pre-commit install
+```
+
+`pre-commit install` is what activates the checks in
+`.pre-commit-config.yaml`. Without it, nothing runs on commit and secrets or
+lint errors can reach the repository.
+
+Useful commands:
+
+```bash
+pytest                      # run the tests
+ruff check .                # find problems
+ruff format .               # fix formatting
+pre-commit run --all-files  # run every check manually
+```
+
 ---
 
 ## Project layout

@@ -1,0 +1,67 @@
+# Checks that run automatically before every commit.
+#
+# Install once with:  pre-commit install
+# Run manually with:  pre-commit run --all-files
+#
+# If any hook fails, the commit is refused. That is the point: it is far
+# cheaper to fix a problem here than after it reaches a public repository.
+
+repos:
+  # ---------- General file hygiene ----------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      # Catches SSH and PEM private keys.
+      - id: detect-private-key
+
+  # ---------- Python linting and formatting ----------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.3
+    hooks:
+      - id: ruff-check
+        args: ["--fix"]
+      - id: ruff-format
+
+  # ---------- Django template linting ----------
+  - repo: https://github.com/djlint/djLint
+    rev: v1.44.2
+    hooks:
+      - id: djlint-django
+
+  # ---------- Project-specific secret guards ----------
+  - repo: local
+    hooks:
+      - id: forbid-env-files
+        name: block .env files from ever being committed
+        language: fail
+        entry: >-
+          This file holds real secrets and must never be committed.
+          Only .env.example belongs in the repository.
+        files: '^\.env$|^\.env\.(?!example).*$'
+
+      - id: no-insecure-secret-key
+        name: block hardcoded Django secret keys
+        language: pygrep
+        entry: 'django-insecure-[A-Za-z0-9!@#$%^&*()_+=-]{10}'
+        types: [text]
+
+      - id: no-hardcoded-secret-assignment
+        name: block secrets assigned directly in source
+        language: pygrep
+        entry: '(?i)(SECRET_KEY|API_KEY|AUTH_TOKEN|ACCESS_TOKEN)\s*=\s*["''][A-Za-z0-9/+=_-]{16,}["'']'
+        types: [python]
+
+      - id: no-real-student-data
+        name: remind that only synthetic student data is allowed
+        language: pygrep
+        entry: '(?i)#\s*(real|actual)\s+student\s+data'
+        types: [text]
