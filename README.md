@@ -105,7 +105,8 @@ without exception:
 
 ## Licence
 
-Not yet selected.
+[MIT](LICENSE) — free to use, modify and distribute, provided the copyright
+notice is retained.
 
 ---
 
