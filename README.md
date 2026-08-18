@@ -1,5 +1,10 @@
 # GradeVault
 
+[![CI](https://github.com/Jama-Barre-hub/GradeVault/actions/workflows/ci.yml/badge.svg)](https://github.com/Jama-Barre-hub/GradeVault/actions/workflows/ci.yml)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![Python 3.13](https://img.shields.io/badge/python-3.13-blue.svg)](https://www.python.org/)
+[![Django 6.1](https://img.shields.io/badge/django-6.1-0C4B33.svg)](https://www.djangoproject.com/)
+
 **A role-based school results management system for Somali schools.**
 
 Teachers record marks. Grades, averages and class positions are computed
