@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "My results" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+<h1>{% translate "My results" %}</h1>
+
+<p class="lead">
+  {{ student.full_name }} · {{ classroom.name }} · {{ classroom.academic_year }}
+</p>
+
+{% for report in reports %}
+  <section class="card">
+    <div class="term-head">
+      <h2>{{ report.term.name }}</h2>
+      {% if report.result.average_percentage is not None %}
+        <div class="summary">
+          <div class="stat">
+            <span class="value">{{ report.result.average_percentage }}%</span>
+            <span class="label">{% translate "Average" %}</span>
+          </div>
+          {% if report.grade %}
+            <div class="stat">
+              <span class="value">{{ report.grade.letter }}</span>
+              <span class="label">{% translate "Grade" %}</span>
+            </div>
+          {% endif %}
+          {% if report.position.place %}
+            <div class="stat">
+              <span class="value">{{ report.position.place }}</span>
+              <span class="label">{% blocktranslate with total=report.position.out_of %}of {{ total }} in class{% endblocktranslate %}</span>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{% translate "Subject" %}</th>
+            <th class="num">{% translate "Marks" %}</th>
+            <th class="num">{% translate "Percentage" %}</th>
+            <th class="num">{% translate "Grade" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in report.subjects %}
+            <tr>
+              <td>{{ row.subject.subject_name }}</td>
+              <td class="num">
+                {% if row.subject.has_any_mark %}
+                  {{ row.subject.marks_obtained|floatformat:"-2" }} / {{ row.subject.marks_available|floatformat:"-2" }}
+                {% else %}
+                  <span class="quiet-text">{% translate "not marked" %}</span>
+                {% endif %}
+              </td>
+              <td class="num">
+                {% if row.subject.percentage is not None %}{{ row.subject.percentage }}%{% else %}—{% endif %}
+              </td>
+              <td class="num grade">
+                {% if row.grade %}{{ row.grade.letter }}{% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>{% translate "Total" %}</th>
+            <th class="num">
+              {{ report.result.marks_obtained|floatformat:"-2" }} / {{ report.result.marks_available|floatformat:"-2" }}
+            </th>
+            <th class="num">
+              {% if report.result.average_percentage is not None %}{{ report.result.average_percentage }}%{% else %}—{% endif %}
+            </th>
+            <th class="num grade">{% if report.grade %}{{ report.grade.letter }}{% else %}—{% endif %}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    {% if not report.result.is_complete %}
+      <p class="hint">
+        {% blocktranslate %}Some assessments have not been marked yet. Percentages are worked out from the marks recorded so far.{% endblocktranslate %}
+      </p>
+    {% endif %}
+  </section>
+{% empty %}
+  <div class="card">
+    <h2>{% translate "No results yet" %}</h2>
+    <p>{% blocktranslate %}Your school has not published any results yet. They will appear here once released.{% endblocktranslate %}</p>
+  </div>
+{% endfor %}
+
+{% if unpublished %}
+  <p class="hint">
+    {% blocktranslate count counter=unpublished|length %}One other term has not been published yet.{% plural %}{{ counter }} other terms have not been published yet.{% endblocktranslate %}
+  </p>
+{% endif %}
+{% endblock %}

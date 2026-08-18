@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="card narrow">
+  <h1>{% translate "Not enrolled" %}</h1>
+  <p>{% blocktranslate %}You are not currently enrolled in a class, so there are no results to show. Please speak to your school office.{% endblocktranslate %}</p>
+</div>
+{% endblock %}

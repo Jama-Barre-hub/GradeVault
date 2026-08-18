@@ -1,0 +1,225 @@
+/* GradeVault
+ *
+ * Deliberately small and dependency-free. Most Somali users reach this
+ * on a phone over a mobile connection, so every kilobyte is one they
+ * pay for. No framework, no web fonts, no JavaScript.
+ */
+
+:root {
+  --ink: #14261f;
+  --muted: #5c6b64;
+  --line: #d8e0db;
+  --page: #f6f8f7;
+  --card: #ffffff;
+  --brand: #0f6e56;
+  --brand-dark: #0b503f;
+  --danger: #a32d2d;
+  --danger-bg: #fceaea;
+  --ok: #0f6e56;
+  --ok-bg: #e4f3ed;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ---------- header ---------- */
+
+.site-header {
+  background: var(--brand);
+  color: #fff;
+}
+
+.bar {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 500;
+  font-size: 1.15rem;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.who { display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; }
+.who .name { font-weight: 500; }
+.who .role { opacity: 0.85; }
+.inline { display: inline; margin: 0; }
+
+button.link {
+  background: none;
+  border: 0;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.35rem;
+}
+
+/* ---------- layout ---------- */
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+h1 { font-size: 1.4rem; font-weight: 500; margin: 0 0 0.35rem; }
+h2 { font-size: 1.15rem; font-weight: 500; margin: 0 0 0.5rem; }
+
+.lead { color: var(--muted); margin: 0 0 1.25rem; }
+.hint { color: var(--muted); font-size: 0.88rem; margin: 0.6rem 0 0; }
+.quiet-text { color: var(--muted); font-size: 0.85rem; display: block; }
+.crumbs { margin-bottom: 0.75rem; }
+.crumbs a { color: var(--brand); text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.card.narrow { max-width: 26rem; margin-inline: auto; }
+
+/* ---------- messages ---------- */
+
+.messages { list-style: none; padding: 0; margin: 0 0 1rem; }
+
+.messages li {
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  border: 1px solid transparent;
+}
+
+.messages .success { background: var(--ok-bg); color: var(--ok); border-color: #bfe0d3; }
+.messages .error { background: var(--danger-bg); color: var(--danger); border-color: #f0c5c5; }
+.error { color: var(--danger); }
+
+/* ---------- forms ---------- */
+
+label { display: block; font-weight: 500; margin: 0.9rem 0 0.3rem; }
+
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+input:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+
+button.primary,
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.05rem;
+  border: 1px solid var(--brand);
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button.primary { margin-top: 1.1rem; }
+button.primary:hover, .button:hover { background: var(--brand-dark); }
+
+.button.small { padding: 0.3rem 0.6rem; font-size: 0.85rem; margin: 0 0.2rem 0.2rem 0; }
+.button.quiet { background: #fff; color: var(--brand); }
+.button.quiet:hover { background: var(--ok-bg); }
+
+.form-actions { margin-top: 1.1rem; }
+
+/* ---------- tables ---------- */
+
+.table-wrap {
+  overflow-x: auto;          /* wide mark sheets scroll, the page never does */
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+
+th, td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+thead th { background: #eef3f0; font-weight: 500; }
+tbody tr:last-child td { border-bottom: 0; }
+tfoot th { background: #eef3f0; font-weight: 500; border-top: 2px solid var(--line); }
+
+td.num, th.num { text-align: right; }
+td.roll, th.roll { text-align: right; color: var(--muted); width: 3.5rem; }
+td.grade { font-weight: 500; }
+th .outof { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+td.actions { white-space: normal; }
+
+table.marks input[type="number"] { width: 5.5rem; text-align: right; }
+
+/* ---------- results summary ---------- */
+
+.term-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.summary { display: flex; gap: 1.5rem; }
+.stat { text-align: right; }
+.stat .value { display: block; font-size: 1.35rem; font-weight: 500; }
+.stat .label { display: block; color: var(--muted); font-size: 0.8rem; }
+
+/* ---------- footer ---------- */
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1.25rem 1rem;
+}
+
+.site-footer p { margin: 0; }
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 560px) {
+  .page { padding: 1rem 0.75rem 2.5rem; }
+  h1 { font-size: 1.25rem; }
+  .summary { gap: 1rem; }
+  .stat { text-align: left; }
+  th, td { padding: 0.5rem 0.6rem; }
+}

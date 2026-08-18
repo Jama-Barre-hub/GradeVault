@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ classroom.name }} · {{ term.name }}{% endblock %}
+
+{% block content %}
+<nav class="crumbs">
+  <a href="{% url 'teacher_home' %}">← {% translate "My classes" %}</a>
+</nav>
+
+<h1>{{ classroom.name }} · {{ term.name }}</h1>
+<p class="lead">
+  {% blocktranslate %}Positions are worked out within this class from the marks recorded so far.{% endblocktranslate %}
+</p>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="roll">{% translate "Pos" %}</th>
+        <th>{% translate "Student" %}</th>
+        <th class="num">{% translate "Marks" %}</th>
+        <th class="num">{% translate "Average" %}</th>
+        <th class="num">{% translate "Grade" %}</th>
+        <th class="num">{% translate "Passed" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td class="roll">{{ row.result.position|default:"—" }}</td>
+          <td>{{ row.result.student_name }}</td>
+          <td class="num">
+            {% if row.result.has_any_mark %}
+              {{ row.result.marks_obtained|floatformat:"-2" }} / {{ row.result.marks_available|floatformat:"-2" }}
+            {% else %}
+              <span class="quiet-text">{% translate "not marked" %}</span>
+            {% endif %}
+          </td>
+          <td class="num">
+            {% if row.result.average_percentage is not None %}{{ row.result.average_percentage }}%{% else %}—{% endif %}
+          </td>
+          <td class="num grade">{% if row.grade %}{{ row.grade.letter }}{% else %}—{% endif %}</td>
+          <td class="num">{{ row.passed }} / {{ row.result.subjects|length }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">{% translate "No students are enrolled in this class." %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

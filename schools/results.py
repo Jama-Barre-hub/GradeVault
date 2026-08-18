@@ -86,6 +86,10 @@ class TermResult:
         return self.enrollment.student.full_name
 
     @property
+    def enrollment_id(self) -> int:
+        return self.enrollment.id
+
+    @property
     def marks_obtained(self) -> Decimal:
         return sum((s.marks_obtained for s in self.subjects), Decimal("0"))
 

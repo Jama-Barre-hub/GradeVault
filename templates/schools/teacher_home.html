@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "My classes" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+<h1>{% translate "My classes and subjects" %}</h1>
+
+<p class="lead">
+  {% blocktranslate %}These are the subjects you are assigned to teach. You can enter marks for these only.{% endblocktranslate %}
+</p>
+
+{% if assignments %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% translate "Class" %}</th>
+          <th>{% translate "Subject" %}</th>
+          <th>{% translate "Enter marks" %}</th>
+          <th>{% translate "Class results" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for assignment in assignments %}
+          <tr>
+            <td>{{ assignment.classroom.name }}</td>
+            <td>{{ assignment.subject.name }}</td>
+            <td class="actions">
+              {% for term in terms %}
+                {% if term.academic_year_id == assignment.classroom.academic_year_id %}
+                  <a class="button small"
+                     href="{% url 'mark_sheet' assignment.classroom.id assignment.subject.id term.id %}">
+                    {{ term.name }}
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td class="actions">
+              {% for term in terms %}
+                {% if term.academic_year_id == assignment.classroom.academic_year_id %}
+                  <a class="button small quiet"
+                     href="{% url 'class_ranking' assignment.classroom.id term.id %}">
+                    {{ term.name }}
+                  </a>
+                {% endif %}
+              {% endfor %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="card">
+    <p>{% blocktranslate %}You have not been assigned any subjects yet. Your school administrator sets these.{% endblocktranslate %}</p>
+  </div>
+{% endif %}
+{% endblock %}

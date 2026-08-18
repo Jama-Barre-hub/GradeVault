@@ -1,0 +1,46 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="{% block description %}{% translate "School results for students and teachers." %}{% endblock %}">
+    <title>{% block title %}{% translate "GradeVault" %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="bar">
+        <a class="brand" href="{% url 'dashboard' %}">{% translate "GradeVault" %}</a>
+
+        {% if user.is_authenticated %}
+          <div class="who">
+            <span class="name">{{ user.get_full_name|default:user.username }}</span>
+            <span class="role">{{ user.get_role_display }}</span>
+            <form action="{% url 'logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="link">{% translate "Sign out" %}</button>
+            </form>
+          </div>
+        {% endif %}
+      </div>
+    </header>
+
+    <main class="page">
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+      <p>{% translate "GradeVault" %} · {% translate "School results" %}</p>
+    </footer>
+  </body>
+</html>

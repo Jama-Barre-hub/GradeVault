@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+<div class="card narrow">
+  <h1>{% translate "No access" %}</h1>
+  <p>{% blocktranslate %}This account has no role assigned, so there is nothing to show. Ask your school administrator to set one.{% endblocktranslate %}</p>
+</div>
+{% endblock %}
