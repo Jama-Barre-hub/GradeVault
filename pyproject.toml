@@ -48,6 +48,12 @@ allowed-confusables = ["–", "—"]
 # work. The bandit rules stay enabled everywhere else, where a literal
 # credential would be a real finding.
 "tests/**/*.py" = ["S105", "S106", "S107"]
+# The demo seeder sets a shared password on fictional accounts so the
+# public demo can be signed into. It is a documented default for
+# synthetic data, overridable with --password, and guards no real
+# account. S311 likewise: the random data here is demo content, not
+# anything security-sensitive.
+"schools/management/commands/seed_demo.py" = ["S105", "S106", "S107", "S311"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["config"]

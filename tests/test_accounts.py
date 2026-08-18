@@ -52,8 +52,15 @@ def test_usernames_are_unique():
 
 
 @pytest.mark.django_db
-def test_passwords_are_hashed_never_stored_as_text():
-    """Django must hash the password. This is asserted, not assumed."""
+def test_passwords_are_hashed_never_stored_as_text(settings):
+    """Django must hash the password. This is asserted, not assumed.
+
+    conftest.py swaps in a fast hasher so the suite stays quick. This
+    test opts back in to the real one, because the thing being verified
+    *is* the hashing.
+    """
+    settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.PBKDF2PasswordHasher"]
+
     raw = "a-real-looking-password-123"
     user = User.objects.create_user(
         username="tch-002", password=raw, role=User.Role.TEACHER
@@ -62,6 +69,24 @@ def test_passwords_are_hashed_never_stored_as_text():
     assert user.password != raw
     assert user.password.startswith("pbkdf2_")
     assert user.check_password(raw)
+
+
+def test_production_does_not_weaken_password_hashing():
+    """The fast test hasher must never leak into the real configuration.
+
+    conftest.py patches settings.PASSWORD_HASHERS at runtime, so reading
+    that value here would prove nothing. This inspects config/settings.py
+    itself: GradeVault sets no hasher, and therefore uses Django's
+    audited PBKDF2 default.
+    """
+    from django.conf import global_settings
+
+    import config.settings
+
+    assert not hasattr(config.settings, "PASSWORD_HASHERS")
+    assert global_settings.PASSWORD_HASHERS[0] == (
+        "django.contrib.auth.hashers.PBKDF2PasswordHasher"
+    )
 
 
 @pytest.mark.django_db

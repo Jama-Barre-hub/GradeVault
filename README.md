@@ -88,6 +88,21 @@ ruff format .               # fix formatting
 pre-commit run --all-files  # run every check manually
 ```
 
+### Demo data
+
+```bash
+python manage.py seed_demo --reset
+```
+
+Builds a complete school — 12 teachers, 120 students, 6 classes, 8 subjects,
+mid-term and final assessments, and marks — in a couple of seconds. It prints
+sign-in details when it finishes.
+
+**Every name, admission number and mark it produces is fictional.** No real
+student record is ever used, in development, in tests, or in the public demo.
+The command only touches its own demo institution, so a school entered by hand
+is left alone.
+
 ---
 
 ## Project layout
