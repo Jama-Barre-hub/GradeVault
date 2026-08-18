@@ -15,6 +15,7 @@ import random
 from datetime import date
 from decimal import Decimal
 
+from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
@@ -176,6 +177,22 @@ class Command(BaseCommand):
         password = options["password"]
         per_class = options["students"]
 
+        # Hash the shared demo password once instead of 130-odd times.
+        #
+        # PBKDF2 at 1.5 million iterations takes roughly a second per
+        # call, which is exactly what makes a stolen hash expensive to
+        # crack, and why the setting must never be lowered. But every
+        # demo account deliberately uses the same password, so hashing it
+        # repeatedly buys nothing and turned a two-second command into a
+        # two-minute one.
+        #
+        # Reusing one hash means identical stored values, which would
+        # reveal that these accounts share a password. That is acceptable
+        # here and nowhere else: these are fictional accounts whose
+        # password is printed on screen and published in the README.
+        # Real accounts go through set_password() individually.
+        self._shared_hash = make_password(password)
+
         if options["reset"]:
             self._reset()
 
@@ -193,9 +210,9 @@ class Command(BaseCommand):
         self._create_grading_scale(school)
         subjects = self._create_subjects(school)
         classrooms = self._create_classes(year)
-        teachers = self._create_teachers(school, password, rng)
+        teachers = self._create_teachers(school, rng)
         self._assign_teaching(teachers, subjects, classrooms, rng)
-        enrollments = self._enrol_students(school, classrooms, per_class, password, rng)
+        enrollments = self._enrol_students(school, classrooms, per_class, rng)
         assessments = self._create_assessments(terms, subjects, classrooms)
         marked = self._record_marks(enrollments, assessments, terms, rng)
 
@@ -276,7 +293,7 @@ class Command(BaseCommand):
             for name in CLASS_NAMES
         ]
 
-    def _create_teachers(self, school, password, rng):
+    def _create_teachers(self, school, rng):
         teachers = []
         for index in range(12):
             first, last = self._invent_name(rng)
@@ -285,9 +302,8 @@ class Command(BaseCommand):
                 role=User.Role.TEACHER,
                 first_name=first,
                 last_name=last,
+                password=self._shared_hash,
             )
-            user.set_password(password)
-            user.save(update_fields=["password"])
 
             teachers.append(
                 TeacherProfile.objects.create(
@@ -311,7 +327,7 @@ class Command(BaseCommand):
                     teacher=teacher, subject=subject, classroom=classroom
                 )
 
-    def _enrol_students(self, school, classrooms, per_class, password, rng):
+    def _enrol_students(self, school, classrooms, per_class, rng):
         enrollments = []
         admission = 1
 
@@ -323,9 +339,8 @@ class Command(BaseCommand):
                     role=User.Role.STUDENT,
                     first_name=first,
                     last_name=last,
+                    password=self._shared_hash,
                 )
-                user.set_password(password)
-                user.save(update_fields=["password"])
 
                 student = StudentProfile.objects.create(
                     user=user,

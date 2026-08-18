@@ -114,6 +114,29 @@ def test_no_teacher_covers_the_entire_school(seeded):
         assert teacher.assignments.count() < total_pairs
 
 
+def test_seeded_accounts_can_actually_sign_in(db):
+    """The seeder reuses one password hash for speed. That optimisation is
+    worthless if the resulting accounts cannot log in."""
+    from django.contrib.auth import authenticate
+
+    call_command(
+        "seed_demo", "--students", "2", "--password", "known-demo-pw", stdout=StringIO()
+    )
+
+    assert authenticate(username="demo-tch-01", password="known-demo-pw") is not None
+    assert authenticate(username="STU-2026-0001", password="known-demo-pw") is not None
+
+
+def test_a_wrong_password_is_still_refused(db):
+    from django.contrib.auth import authenticate
+
+    call_command(
+        "seed_demo", "--students", "2", "--password", "known-demo-pw", stdout=StringIO()
+    )
+
+    assert authenticate(username="demo-tch-01", password="not-the-password") is None
+
+
 def test_the_grading_scale_covers_every_percentage(seeded):
     scale = seeded.grading_scales.get(is_default=True)
 
