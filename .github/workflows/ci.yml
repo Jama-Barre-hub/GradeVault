@@ -29,7 +29,9 @@ jobs:
           --health-retries 5
 
     env:
-      DJANGO_SECRET_KEY: ci-only-key-not-used-in-production-000000000000
+      # At least 50 characters: tests/test_settings.py asserts the key
+      # is long enough, matching what Django generates.
+      DJANGO_SECRET_KEY: ci-only-key-never-used-in-production-0000000000000000000000
       DJANGO_DEBUG: "True"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,testserver
       DATABASE_URL: postgres://gradevault:ci-only-password@localhost:5432/gradevault_test
