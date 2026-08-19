@@ -4,12 +4,9 @@ GradeVault is for Somali schools, so the interface has to be available in
 Somali. Every string in the templates and views is already wrapped for
 translation, and the switching machinery is in place.
 
-What is *not* in place is the Somali catalogue itself, and these tests
-say so rather than implying otherwise. Django refuses to select a
-language it has no compiled catalogue for, and it ships none for Somali,
-so `so` is declared but inert until locale/so/LC_MESSAGES/django.mo is
-produced. The test below records that, and is meant to be inverted the
-day the catalogue lands.
+The catalogue now exists, so Somali can be selected. Individual strings
+are still being translated; an untranslated one falls back to English,
+which is the correct behaviour and not a failure.
 """
 
 import pytest
@@ -71,21 +68,39 @@ def test_an_unknown_language_is_refused(client):
     assert response.context["LANGUAGE_CODE"] != "zz"
 
 
-# ---------- the gap, recorded rather than hidden ----------
+# ---------- the catalogue ----------
 
 
-def test_somali_has_no_catalogue_yet():
-    """Django will not select a language it cannot load.
+def test_somali_can_be_selected():
+    """Django refuses any language it cannot load a catalogue for.
 
-    This is why choosing Soomaali currently does nothing. It is a missing
-    translation file, not a broken switcher.
-
-    When locale/so/LC_MESSAGES/django.mo exists, this test will fail —
-    and that failure is the signal to invert it into an assertion that
-    Somali *is* selectable.
+    This asserted the opposite until locale/so/LC_MESSAGES/django.mo was
+    compiled. Keeping the test guards against the catalogue being lost:
+    without it the language button silently stops working, with no error
+    anywhere to explain why.
     """
     assert check_for_language("en") is True
-    assert check_for_language("so") is False, (
-        "A Somali catalogue now exists. Update this test to assert that "
-        "Somali is selectable, and remove the note in README."
+    assert check_for_language("so") is True, (
+        "The Somali catalogue is missing. Run: python manage.py compilemessages -l so"
     )
+
+
+@pytest.mark.django_db
+def test_choosing_somali_takes_effect(client):
+    client.post(reverse("set_language"), {"language": "so", "next": "/login/"})
+
+    response = client.get(reverse("login"))
+
+    assert response.context["LANGUAGE_CODE"] == "so"
+
+
+@pytest.mark.django_db
+def test_an_untranslated_string_falls_back_to_english(client):
+    """Most strings are not translated yet. Falling back is correct: a
+    blank interface would be far worse than an English one."""
+    client.post(reverse("set_language"), {"language": "so", "next": "/login/"})
+
+    body = client.get(reverse("login")).content.decode()
+
+    assert "GradeVault" in body
+    assert body.strip()

@@ -1,0 +1,1109 @@
+# Somali translation for GradeVault.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Untranslated strings fall back to English by design.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: GradeVault\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-08-19 12:22+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: GradeVault contributors\n"
+"Language-Team: Somali\n"
+"Language: so\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\accounts\admin.py:31
+msgid "username"
+msgstr ""
+
+#: .\accounts\admin.py:35
+msgid "current class"
+msgstr ""
+
+#: .\accounts\admin.py:68
+msgid "Personal info"
+msgstr ""
+
+#: .\accounts\admin.py:69
+msgid "Role"
+msgstr ""
+
+#: .\accounts\admin.py:71
+msgid "Permissions"
+msgstr ""
+
+#: .\accounts\admin.py:82
+msgid "Important dates"
+msgstr ""
+
+#: .\accounts\admin.py:95 .\schools\models.py:33 .\schools\models.py:59
+#: .\schools\models.py:108 .\schools\models.py:181 .\schools\models.py:215
+#: .\schools\models.py:253 .\schools\models.py:442
+msgid "name"
+msgstr ""
+
+#: .\accounts\models.py:39
+msgid "Administrator"
+msgstr ""
+
+#: .\accounts\models.py:40
+msgid "Teacher"
+msgstr ""
+
+#: .\accounts\models.py:41 .\templates\schools\class_ranking.html:30
+#: .\templates\schools\dash_admin.html:128
+#: .\templates\schools\mark_sheet.html:34
+#: .\templates\schools\report_card.html:46
+msgid "Student"
+msgstr ""
+
+#: .\accounts\models.py:44
+msgid "role"
+msgstr ""
+
+#: .\accounts\models.py:47
+msgid "Decides what this person may see and do."
+msgstr ""
+
+#: .\accounts\models.py:52
+msgid "email address"
+msgstr ""
+
+#: .\accounts\models.py:64
+msgid "school"
+msgstr ""
+
+#: .\accounts\models.py:65
+msgid "Leave empty only for system operators."
+msgstr ""
+
+#: .\accounts\models.py:71
+msgid "user"
+msgstr ""
+
+#: .\accounts\models.py:72
+msgid "users"
+msgstr ""
+
+#: .\accounts\models.py:140
+msgid "admission number"
+msgstr ""
+
+#: .\accounts\models.py:142
+msgid "The school's own reference for this student."
+msgstr ""
+
+#: .\accounts\models.py:144
+msgid "guardian name"
+msgstr ""
+
+#: .\accounts\models.py:145
+msgid "guardian phone"
+msgstr ""
+
+#: .\accounts\models.py:146 .\accounts\models.py:189 .\schools\models.py:42
+#: .\schools\models.py:341 .\schools\models.py:404
+msgid "active"
+msgstr ""
+
+#: .\accounts\models.py:152 .\audit\models.py:80 .\schools\admin.py:98
+msgid "student"
+msgstr ""
+
+#: .\accounts\models.py:153
+msgid "students"
+msgstr ""
+
+#: .\accounts\models.py:187
+msgid "staff number"
+msgstr ""
+
+#: .\accounts\models.py:188 .\schools\models.py:40
+msgid "phone"
+msgstr ""
+
+#: .\accounts\models.py:195
+msgid "teacher"
+msgstr ""
+
+#: .\accounts\models.py:196
+msgid "teachers"
+msgstr ""
+
+#: .\audit\admin.py:34
+msgid "change"
+msgstr ""
+
+#: .\audit\models.py:44
+msgid "Mark recorded"
+msgstr ""
+
+#: .\audit\models.py:45
+msgid "Mark changed"
+msgstr ""
+
+#: .\audit\models.py:46
+msgid "Mark removed"
+msgstr ""
+
+#: .\audit\models.py:47
+msgid "Results published"
+msgstr ""
+
+#: .\audit\models.py:48
+msgid "Results withdrawn"
+msgstr ""
+
+#: .\audit\models.py:50
+msgid "action"
+msgstr ""
+
+#: .\audit\models.py:73
+msgid "who"
+msgstr ""
+
+#: .\audit\models.py:75
+msgid "Copied at the time, so the entry survives account deletion."
+msgstr ""
+
+#: .\audit\models.py:81 .\schools\models.py:226
+msgid "class"
+msgstr ""
+
+#: .\audit\models.py:82 .\schools\models.py:185
+msgid "subject"
+msgstr ""
+
+#: .\audit\models.py:83 .\schools\models.py:456
+msgid "assessment"
+msgstr ""
+
+#: .\audit\models.py:84 .\schools\models.py:130
+msgid "term"
+msgstr ""
+
+#: .\audit\models.py:86
+msgid "from"
+msgstr ""
+
+#: .\audit\models.py:87
+msgid "to"
+msgstr ""
+
+#: .\audit\models.py:89
+msgid "when"
+msgstr ""
+
+#: .\audit\models.py:94
+msgid "audit entry"
+msgstr ""
+
+#: .\audit\models.py:95
+msgid "audit trail"
+msgstr ""
+
+#: .\audit\models.py:103
+msgid "unknown"
+msgstr ""
+
+#: .\schools\admin.py:69
+msgid "subject total"
+msgstr ""
+
+#: .\schools\admin.py:75
+#, python-format
+msgid "%(total)s — complete"
+msgstr ""
+
+#: .\schools\admin.py:78
+#, python-format
+msgid "%(total)s of 100"
+msgstr ""
+
+#: .\schools\admin.py:157
+msgid "Publish results to students"
+msgstr ""
+
+#: .\schools\admin.py:162
+#, python-format
+msgid "Results published for %d term(s)."
+msgstr ""
+
+#: .\schools\admin.py:165
+msgid "Withdraw results from students"
+msgstr ""
+
+#: .\schools\admin.py:170
+#, python-format
+msgid "Results withdrawn for %d term(s)."
+msgstr ""
+
+#: .\schools\admin.py:213
+msgid "coverage"
+msgstr ""
+
+#: .\schools\admin.py:218
+msgid "Complete"
+msgstr ""
+
+#: .\schools\admin.py:223
+#, python-format
+msgid "No grade for %(ranges)s"
+msgstr ""
+
+#: .\schools\admin.py:244
+#, python-format
+msgid ""
+"This scale has no grade for %(ranges)s. Students scoring in that range will "
+"receive a blank grade."
+msgstr ""
+
+#: .\schools\models.py:23
+msgid "created at"
+msgstr ""
+
+#: .\schools\models.py:24
+msgid "updated at"
+msgstr ""
+
+#: .\schools\models.py:35
+msgid "short name"
+msgstr ""
+
+#: .\schools\models.py:37
+msgid "Used on report cards where space is limited."
+msgstr ""
+
+#: .\schools\models.py:39
+msgid "address"
+msgstr ""
+
+#: .\schools\models.py:41
+msgid "email"
+msgstr ""
+
+#: .\schools\models.py:45
+msgid "institution"
+msgstr ""
+
+#: .\schools\models.py:46
+msgid "institutions"
+msgstr ""
+
+#: .\schools\models.py:59
+msgid "e.g. 2026/2027"
+msgstr ""
+
+#: .\schools\models.py:60 .\schools\models.py:112
+msgid "start date"
+msgstr ""
+
+#: .\schools\models.py:61 .\schools\models.py:113
+msgid "end date"
+msgstr ""
+
+#: .\schools\models.py:63
+msgid "current year"
+msgstr ""
+
+#: .\schools\models.py:65
+msgid "The year new work defaults to. Only one may be current."
+msgstr ""
+
+#: .\schools\models.py:69
+msgid "academic year"
+msgstr ""
+
+#: .\schools\models.py:70
+msgid "academic years"
+msgstr ""
+
+#: .\schools\models.py:91
+msgid "The year must end after it starts."
+msgstr ""
+
+#: .\schools\models.py:108
+msgid "e.g. Term 1"
+msgstr ""
+
+#: .\schools\models.py:110
+msgid "sequence"
+msgstr ""
+
+#: .\schools\models.py:110
+msgid "1 for the first term, 2 for the second."
+msgstr ""
+
+#: .\schools\models.py:116
+msgid "results published"
+msgstr ""
+
+#: .\schools\models.py:118
+msgid "While unpublished, students cannot see any result for this term."
+msgstr ""
+
+#: .\schools\models.py:120
+msgid "published at"
+msgstr ""
+
+#: .\schools\models.py:131
+msgid "terms"
+msgstr ""
+
+#: .\schools\models.py:144
+msgid "The term must end after it starts."
+msgstr ""
+
+#: .\schools\models.py:182
+msgid "code"
+msgstr ""
+
+#: .\schools\models.py:186
+msgid "subjects"
+msgstr ""
+
+#: .\schools\models.py:215
+msgid "e.g. \"Class 5\" or \"Form 2A\""
+msgstr ""
+
+#: .\schools\models.py:227
+msgid "classes"
+msgstr ""
+
+#: .\schools\models.py:254
+msgid "default scale"
+msgstr ""
+
+#: .\schools\models.py:257
+msgid "grading scale"
+msgstr ""
+
+#: .\schools\models.py:258
+msgid "grading scales"
+msgstr ""
+
+#: .\schools\models.py:336
+msgid "roll number"
+msgstr ""
+
+#: .\schools\models.py:339
+msgid "The student's number within the class register."
+msgstr ""
+
+#: .\schools\models.py:344
+msgid "enrolment"
+msgstr ""
+
+#: .\schools\models.py:345
+msgid "enrolments"
+msgstr ""
+
+#: .\schools\models.py:374
+#, python-format
+msgid "This student is already enrolled in %(other)s for %(year)s."
+msgstr ""
+
+#: .\schools\models.py:407
+msgid "teaching assignment"
+msgstr ""
+
+#: .\schools\models.py:408
+msgid "teaching assignments"
+msgstr ""
+
+#: .\schools\models.py:442
+msgid "e.g. \"Mid-term\" or \"Final\""
+msgstr ""
+
+#: .\schools\models.py:445
+msgid "out of"
+msgstr ""
+
+#: .\schools\models.py:449
+msgid "The total this assessment is marked out of, e.g. 40."
+msgstr ""
+
+#: .\schools\models.py:452
+msgid "order"
+msgstr ""
+
+#: .\schools\models.py:452
+msgid "Controls the order shown on a report card."
+msgstr ""
+
+#: .\schools\models.py:457
+msgid "assessments"
+msgstr ""
+
+#: .\schools\models.py:510 .\templates\schools\student_results.html:37
+msgid "marks"
+msgstr ""
+
+#: .\schools\models.py:516
+msgid "Leave empty if the student has not been marked yet."
+msgstr ""
+
+#: .\schools\models.py:527
+msgid "score"
+msgstr ""
+
+#: .\schools\models.py:528
+msgid "scores"
+msgstr ""
+
+#: .\schools\models.py:601
+msgid "A mark cannot be negative."
+msgstr ""
+
+#: .\schools\models.py:607
+#, python-format
+msgid "%(marks)s is more than the %(limit)s available."
+msgstr ""
+
+#: .\schools\models.py:623
+msgid "letter"
+msgstr ""
+
+#: .\schools\models.py:625
+msgid "minimum percentage"
+msgstr ""
+
+#: .\schools\models.py:631
+msgid "maximum percentage"
+msgstr ""
+
+#: .\schools\models.py:637
+msgid "remark"
+msgstr ""
+
+#: .\schools\models.py:637
+msgid "e.g. \"Excellent\""
+msgstr ""
+
+#: .\schools\models.py:640
+msgid "points"
+msgstr ""
+
+#: .\schools\models.py:645
+msgid "Reserved for GPA calculation. Not used in v1."
+msgstr ""
+
+#: .\schools\models.py:649
+msgid "grade band"
+msgstr ""
+
+#: .\schools\models.py:650
+msgid "grade bands"
+msgstr ""
+
+#: .\schools\models.py:676
+msgid "The maximum cannot be below the minimum."
+msgstr ""
+
+#: .\schools\models.py:694
+#, python-format
+msgid "This range overlaps grade %(letter)s (%(low)s–%(high)s%%)."
+msgstr ""
+
+#: .\schools\views.py:96
+#, python-format
+msgid "Saved %(count)d mark(s)."
+msgstr ""
+
+#: .\schools\views.py:186
+#, python-format
+msgid "%(student)s: '%(value)s' is not a number."
+msgstr ""
+
+#: .\schools\views.py:194
+#, python-format
+msgid "%(student)s: %(value)s is outside 0 to %(max)s for %(assessment)s."
+msgstr ""
+
+#: .\templates\accounts\no_role.html:4 .\templates\accounts\no_role.html:9
+msgid "No access"
+msgstr ""
+
+#: .\templates\accounts\no_role.html:4 .\templates\base.html:24
+#: .\templates\base.html:92 .\templates\base_plain.html:16
+#: .\templates\base_plain.html:27 .\templates\registration\login.html:4
+#: .\templates\schools\dash_admin.html:4
+#: .\templates\schools\dash_student.html:4
+#: .\templates\schools\dash_teacher.html:4
+#: .\templates\schools\report_card_unavailable.html:4
+#: .\templates\schools\student_no_class.html:4
+#: .\templates\schools\student_results.html:4
+#: .\templates\schools\teacher_home.html:4
+msgid "GradeVault"
+msgstr ""
+
+#: .\templates\accounts\no_role.html:12
+msgid ""
+"This account has no role assigned, so there is nothing to show. Ask your "
+"school administrator to set one."
+msgstr ""
+
+#: .\templates\accounts\no_role.html:15 .\templates\base.html:73
+msgid "Sign out"
+msgstr ""
+
+#: .\templates\base.html:16
+msgid "Skip to content"
+msgstr ""
+
+#: .\templates\base.html:20
+msgid "Main navigation"
+msgstr ""
+
+#: .\templates\base.html:25 .\templates\base_plain.html:28
+msgid "School results"
+msgstr ""
+
+#: .\templates\base.html:33 .\templates\schools\dash_admin.html:4
+#: .\templates\schools\dash_admin.html:14
+#: .\templates\schools\dash_student.html:4
+#: .\templates\schools\dash_teacher.html:4
+msgid "Overview"
+msgstr ""
+
+#: .\templates\base.html:39 .\templates\schools\report_card.html:10
+#: .\templates\schools\student_no_class.html:4
+#: .\templates\schools\student_no_class.html:5
+#: .\templates\schools\student_no_class.html:9
+#: .\templates\schools\student_results.html:4
+#: .\templates\schools\student_results.html:6
+#: .\templates\schools\student_results.html:10
+msgid "My results"
+msgstr ""
+
+#: .\templates\base.html:44 .\templates\schools\class_ranking.html:7
+#: .\templates\schools\mark_sheet.html:7 .\templates\schools\report_card.html:8
+#: .\templates\schools\teacher_home.html:4
+#: .\templates\schools\teacher_home.html:6
+msgid "My classes"
+msgstr ""
+
+#: .\templates\base.html:47
+msgid "School administration"
+msgstr ""
+
+#: .\templates\base.html:60
+msgid "Breadcrumb"
+msgstr ""
+
+#: .\templates\base.html:61
+msgid "Home"
+msgstr ""
+
+#: .\templates\base.html:93
+msgid "results are shown only to the student they belong to."
+msgstr ""
+
+#: .\templates\base_plain.html:14
+msgid "School results for students and teachers."
+msgstr ""
+
+#: .\templates\registration\login.html:4 .\templates\registration\login.html:9
+#: .\templates\registration\login.html:33
+msgid "Sign in"
+msgstr ""
+
+#: .\templates\registration\login.html:15
+msgid "That username and password do not match an account."
+msgstr ""
+
+#: .\templates\registration\login.html:22
+msgid "Username"
+msgstr ""
+
+#: .\templates\registration\login.html:26
+msgid "Students sign in with their student number, for example STU-2026-0001."
+msgstr ""
+
+#: .\templates\registration\login.html:29
+msgid "Password"
+msgstr ""
+
+#: .\templates\registration\login.html:39
+msgid "Forgotten your password? Ask your school office to reset it."
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:14
+msgid ""
+"Positions are worked out within this class from the marks recorded so far."
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:19
+#: .\templates\schools\teacher_home.html:31
+msgid "Class results"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:21
+#: .\templates\schools\report_card.html:28
+msgid "Print"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:29
+msgid "Pos"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:31
+#: .\templates\schools\report_card.html:56
+#: .\templates\schools\student_results.html:72
+msgid "Marks"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:32
+#: .\templates\schools\dash_student.html:25
+#: .\templates\schools\report_card.html:104
+#: .\templates\schools\student_results.html:29
+msgid "Average"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:33
+#: .\templates\schools\dash_student.html:33
+#: .\templates\schools\report_card.html:58
+#: .\templates\schools\student_results.html:42
+#: .\templates\schools\student_results.html:74
+msgid "Grade"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:34
+msgid "Passed"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:47
+#: .\templates\schools\report_card.html:70
+#: .\templates\schools\student_results.html:87
+msgid "not marked"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:64
+msgid "Card"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:72
+#: .\templates\schools\mark_sheet.html:68
+msgid "No students enrolled"
+msgstr ""
+
+#: .\templates\schools\class_ranking.html:73
+#: .\templates\schools\mark_sheet.html:69
+msgid "Nobody has been enrolled in this class yet."
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:10
+msgid "All schools"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:19
+msgid "You operate this deployment, so these figures cover every school."
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:29
+msgid "No school assigned"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:30
+msgid ""
+"This account is not attached to a school, so there is nothing to show. Ask "
+"whoever set up your account to assign one."
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:37
+msgid "Students"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:41
+msgid "Teachers"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:45
+#: .\templates\schools\dash_teacher.html:16
+msgid "Classes"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:49
+#: .\templates\schools\dash_teacher.html:20
+msgid "Subjects"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:53
+msgid "Awaiting marks"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:62
+#, python-format
+msgid ""
+"One grading scale does not cover every percentage. Students landing in the "
+"gap receive no grade."
+msgid_plural ""
+"%(counter)s grading scales do not cover every percentage. Students landing "
+"in the gaps receive no grade."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\templates\schools\dash_admin.html:79
+msgid "Terms"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:80
+msgid "Students see results only after a term is published"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:86
+msgid "Term"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:87
+msgid "Runs"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:88
+msgid "Results"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:89
+msgid "Published by"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:99
+msgid "Published"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:101
+msgid "Hidden"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:117
+msgid "Recent changes to grades"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:118
+msgid "Every change is recorded and cannot be removed"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:126
+msgid "When"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:127
+msgid "Who"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:129
+#: .\templates\schools\dash_teacher.html:42
+#: .\templates\schools\report_card.html:55
+#: .\templates\schools\student_results.html:71
+#: .\templates\schools\teacher_home.html:28
+msgid "Subject"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:130
+msgid "Change"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:154
+msgid "Nothing recorded yet"
+msgstr ""
+
+#: .\templates\schools\dash_admin.html:155
+msgid "Changes to marks will appear here as teachers enter them."
+msgstr ""
+
+#: .\templates\schools\dash_student.html:8
+#: .\templates\schools\dash_teacher.html:8
+#, python-format
+msgid "Welcome, %(name)s"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:17
+#: .\templates\schools\student_no_class.html:14
+msgid "You are not enrolled in a class"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:18
+msgid ""
+"There is nothing to show until your school places you in a class. Please "
+"speak to the school office."
+msgstr ""
+
+#: .\templates\schools\dash_student.html:39
+#: .\templates\schools\student_results.html:48
+msgid "Position"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:43
+#: .\templates\schools\student_results.html:52
+#, python-format
+msgid "of %(total)s in class"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:49
+#: .\templates\schools\report_card.html:116
+#: .\templates\schools\student_results.html:58
+msgid "Subjects passed"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:52
+#: .\templates\schools\student_results.html:61
+#, python-format
+msgid "of %(total)s subjects"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:59
+#, python-format
+msgid "%(term)s summary"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:60
+msgid "See full results"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:64
+#, python-format
+msgid "You scored %(obtained)s out of %(available)s marks across all subjects."
+msgstr ""
+
+#: .\templates\schools\dash_student.html:68
+msgid "Some assessments are still unmarked, so this may change."
+msgstr ""
+
+#: .\templates\schools\dash_student.html:77
+msgid "No results published yet"
+msgstr ""
+
+#: .\templates\schools\dash_student.html:78
+msgid ""
+"Your teachers may already have entered marks, but results only appear once "
+"your school releases them."
+msgstr ""
+
+#: .\templates\schools\dash_student.html:85
+#, python-format
+msgid "One term has not been published yet."
+msgid_plural "%(counter)s terms have not been published yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\templates\schools\dash_teacher.html:10
+msgid "No current term"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:24
+msgid "Marks outstanding"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:26
+msgid "this term"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:32
+msgid "Marking progress"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:33
+msgid "All my classes"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:41
+#: .\templates\schools\report_card.html:49
+#: .\templates\schools\teacher_home.html:27
+msgid "Class"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:43
+msgid "Marked"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:44
+msgid "Remaining"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:58
+msgid "done"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:64
+#: .\templates\schools\teacher_home.html:30
+msgid "Enter marks"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:74
+msgid "Nothing to mark"
+msgstr ""
+
+#: .\templates\schools\dash_teacher.html:75
+msgid ""
+"You have no subjects assigned for the current term. Your school "
+"administrator sets these."
+msgstr ""
+
+#: .\templates\schools\mark_sheet.html:23
+msgid "Mark sheet"
+msgstr ""
+
+#: .\templates\schools\mark_sheet.html:25
+#, python-format
+msgid "%(counter)s student"
+msgid_plural "%(counter)s students"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\templates\schools\mark_sheet.html:80
+msgid "Save marks"
+msgstr ""
+
+#: .\templates\schools\mark_sheet.html:82
+msgid ""
+"Leave a box empty if the student has not been marked yet. Empty is not the "
+"same as zero."
+msgstr ""
+
+#: .\templates\schools\mark_sheet.html:91
+msgid "No assessments set up"
+msgstr ""
+
+#: .\templates\schools\mark_sheet.html:92
+msgid ""
+"This subject has no assessments for this term yet. Your school administrator "
+"creates them."
+msgstr ""
+
+#: .\templates\schools\report_card.html:4
+#: .\templates\schools\report_card.html:12
+#: .\templates\schools\report_card.html:17
+#: .\templates\schools\report_card.html:40
+#: .\templates\schools\report_card_unavailable.html:4
+#: .\templates\schools\report_card_unavailable.html:5
+#: .\templates\schools\student_results.html:22
+msgid "Report card"
+msgstr ""
+
+#: .\templates\schools\report_card.html:23
+msgid "This term has not been published. The student cannot see this card yet."
+msgstr ""
+
+#: .\templates\schools\report_card.html:47
+msgid "Student number"
+msgstr ""
+
+#: .\templates\schools\report_card.html:48
+msgid "Admission number"
+msgstr ""
+
+#: .\templates\schools\report_card.html:57
+#: .\templates\schools\student_results.html:73
+msgid "Percentage"
+msgstr ""
+
+#: .\templates\schools\report_card.html:59
+#: .\templates\schools\student_results.html:75
+msgid "Remark"
+msgstr ""
+
+#: .\templates\schools\report_card.html:89
+#: .\templates\schools\student_results.html:108
+msgid "Total"
+msgstr ""
+
+#: .\templates\schools\report_card.html:108
+msgid "Overall grade"
+msgstr ""
+
+#: .\templates\schools\report_card.html:112
+msgid "Position in class"
+msgstr ""
+
+#: .\templates\schools\report_card.html:123
+msgid ""
+"Some assessments were not marked. Figures are based on the marks recorded."
+msgstr ""
+
+#: .\templates\schools\report_card.html:128
+msgid "Class teacher"
+msgstr ""
+
+#: .\templates\schools\report_card.html:129
+msgid "Head teacher"
+msgstr ""
+
+#: .\templates\schools\report_card.html:130
+msgid "Parent or guardian"
+msgstr ""
+
+#: .\templates\schools\report_card_unavailable.html:10
+msgid "Not published yet"
+msgstr ""
+
+#: .\templates\schools\report_card_unavailable.html:11
+#, python-format
+msgid ""
+"Your school has not released %(term)s results. The report card will be "
+"available once they do."
+msgstr ""
+
+#: .\templates\schools\student_no_class.html:15
+msgid ""
+"There are no results to show until your school places you in a class. Please "
+"speak to the school office."
+msgstr ""
+
+#: .\templates\schools\student_results.html:134
+msgid ""
+"Some assessments have not been marked yet. Percentages are worked out from "
+"the marks recorded so far."
+msgstr ""
+
+#: .\templates\schools\student_results.html:142
+msgid "No results yet"
+msgstr ""
+
+#: .\templates\schools\student_results.html:143
+msgid ""
+"Your school has not published any results. They will appear here once "
+"released."
+msgstr ""
+
+#: .\templates\schools\student_results.html:150
+#, python-format
+msgid "One other term has not been published yet."
+msgid_plural "%(counter)s other terms have not been published yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\templates\schools\teacher_home.html:10
+msgid "My classes and subjects"
+msgstr ""
+
+#: .\templates\schools\teacher_home.html:11
+msgid "You can enter marks for these subjects only."
+msgstr ""
+
+#: .\templates\schools\teacher_home.html:16
+msgid "Teaching assignments"
+msgstr ""
+
+#: .\templates\schools\teacher_home.html:18
+#, python-format
+msgid "%(counter)s assignment"
+msgid_plural "%(counter)s assignments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\templates\schools\teacher_home.html:29
+msgid "Year"
+msgstr ""
+
+#: .\templates\schools\teacher_home.html:67
+msgid "No subjects assigned yet"
+msgstr ""
+
+#: .\templates\schools\teacher_home.html:68
+msgid "Your school administrator decides which classes and subjects you teach."
+msgstr ""

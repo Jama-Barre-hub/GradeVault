@@ -16,3 +16,6 @@
 *.woff binary
 *.woff2 binary
 *.sqlite3 binary
+
+# Compiled translation catalogues are binary.
+*.mo binary

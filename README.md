@@ -27,7 +27,7 @@ results. Every change to a grade is permanently audited.
 
 | Not done | |
 |---|---|
-| **Somali translation** | machinery in place, wording not written — see [Language](#language) |
+| **Somali wording** | switcher works and the catalogue exists; strings await translation |
 | **Public deployment** | configuration ready, not yet hosted |
 
 ---
@@ -199,31 +199,43 @@ installing a database server on a laptop.
 
 ## Language
 
-The interface is built for two languages, English and Somali. Every string in
-the templates and views is wrapped for translation, the switcher works, and the
-choice is remembered.
+The interface is offered in English and Somali. Every string is wrapped for
+translation, the switcher works, and the choice is remembered in a cookie.
 
-**Somali is not yet usable.** Django refuses to select a language it has no
-compiled catalogue for, and neither Django nor GradeVault ships one for Somali,
-so choosing *Soomaali* currently does nothing. A test records this so the gap is
-visible rather than mysterious.
+**Somali is selectable; most strings are not translated yet.** An untranslated
+string falls back to English, which is deliberate — a half-blank interface would
+be far worse than an English one.
 
-Completing it needs two things:
+### Translating
 
-```bash
-# 1. GNU gettext, which Django uses to extract and compile strings
-winget install --id mlocati.GetText -e     # Windows
+The catalogue lives at `locale/so/LC_MESSAGES/django.po` and holds every
+translatable string in the project. Fill in the `msgstr` lines:
 
-# 2. Extract every translatable string into a catalogue
-python manage.py makemessages -l so
-
-# 3. Translate locale/so/LC_MESSAGES/django.po, then compile it
-python manage.py compilemessages
+```po
+msgid "My results"
+msgstr "Natiijadayda"        # example only — wording to be confirmed
 ```
 
-Step 2 is mechanical. **Step 3 is not, and is not something to guess at** — a
-results system that mistranslates "fail" or "pass" is worse than one left in
-English.
+Then compile and restart:
+
+```bash
+python manage.py compilemessages -l so
+```
+
+After changing any English text in the code, re-extract before translating:
+
+```bash
+python manage.py makemessages -l so --ignore=.venv --ignore=staticfiles
+```
+
+Requires GNU gettext (`winget install --id mlocati.GetText -e` on Windows).
+
+The compiled `.mo` is committed alongside the `.po`, because the deployment
+target is not guaranteed to have gettext available at build time.
+
+> **Wording is not guesswork.** On a report card, mistranslating *pass*, *fail*
+> or *position* is not cosmetic — a parent reads it and believes it. The Somali
+> should be written by a Somali speaker, not inferred.
 
 ---
 
