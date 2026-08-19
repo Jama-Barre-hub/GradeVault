@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Overview" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>
+      {% if operator %}
+        {% translate "All schools" %}
+      {% elif institution %}
+        {{ institution.name }}
+      {% else %}
+        {% translate "Overview" %}
+      {% endif %}
+    </h1>
+    <p>
+      {% if operator %}
+        {% blocktranslate %}You operate this deployment, so these figures cover every school.{% endblocktranslate %}
+      {% elif year %}
+        {{ year }}{% if term %} · {{ term.name }}{% endif %}
+      {% endif %}
+    </p>
+  </div>
+
+  {% if not institution and not operator %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No school assigned" %}</strong>
+        {% blocktranslate %}This account is not attached to a school, so there is nothing to show. Ask whoever set up your account to assign one.{% endblocktranslate %}
+      </div>
+    </section>
+  {% else %}
+
+    <div class="stats">
+      <div class="stat accent">
+        <span class="label">{% translate "Students" %}</span>
+        <span class="value">{{ students }}</span>
+      </div>
+      <div class="stat">
+        <span class="label">{% translate "Teachers" %}</span>
+        <span class="value">{{ teachers }}</span>
+      </div>
+      <div class="stat">
+        <span class="label">{% translate "Classes" %}</span>
+        <span class="value">{{ classes }}</span>
+      </div>
+      <div class="stat">
+        <span class="label">{% translate "Subjects" %}</span>
+        <span class="value">{{ subjects }}</span>
+      </div>
+      <div class="stat">
+        <span class="label">{% translate "Awaiting marks" %}</span>
+        <span class="value">{{ unmarked }}</span>
+      </div>
+    </div>
+
+    {% if incomplete_scales %}
+      <section class="panel">
+        <div class="panel-body">
+          <p class="notice">
+            {% blocktranslate count counter=incomplete_scales|length %}One grading scale does not cover every percentage. Students landing in the gap receive no grade.{% plural %}{{ counter }} grading scales do not cover every percentage. Students landing in the gaps receive no grade.{% endblocktranslate %}
+          </p>
+          <ul>
+            {% for scale in incomplete_scales %}
+              <li>
+                {{ scale.name }} —
+                {% for low, high in scale.coverage_gaps %}{{ low }}–{{ high }}% {% endfor %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+    {% endif %}
+
+    {% if terms %}
+      <section class="panel">
+        <div class="panel-head">
+          <h2>{% translate "Terms" %}</h2>
+          <span class="quiet">{% translate "Students see results only after a term is published" %}</span>
+        </div>
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr>
+                <th>{% translate "Term" %}</th>
+                <th>{% translate "Runs" %}</th>
+                <th>{% translate "Results" %}</th>
+                <th>{% translate "Published by" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in terms %}
+                <tr>
+                  <td>{{ t.name }}</td>
+                  <td class="quiet">{{ t.start_date }} – {{ t.end_date }}</td>
+                  <td>
+                    {% if t.is_published %}
+                      <span class="pill">{% translate "Published" %}</span>
+                    {% else %}
+                      <span class="pill none">{% translate "Hidden" %}</span>
+                    {% endif %}
+                  </td>
+                  <td class="quiet">
+                    {% if t.published_by %}{{ t.published_by.get_full_name|default:t.published_by.username }}{% else %}—{% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    {% endif %}
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Recent changes to grades" %}</h2>
+        <span class="quiet">{% translate "Every change is recorded and cannot be removed" %}</span>
+      </div>
+
+      {% if recent %}
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr>
+                <th>{% translate "When" %}</th>
+                <th>{% translate "Who" %}</th>
+                <th>{% translate "Student" %}</th>
+                <th>{% translate "Subject" %}</th>
+                <th class="num">{% translate "Change" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for entry in recent %}
+                <tr>
+                  <td class="quiet">{{ entry.created_at|date:"j M H:i" }}</td>
+                  <td>{{ entry.actor_label }}</td>
+                  <td>{{ entry.student_label|default:"—" }}</td>
+                  <td>{{ entry.subject_label|default:"—" }}</td>
+                  <td class="num">
+                    {% if entry.old_value or entry.new_value %}
+                      {{ entry.old_value|default:"—" }} → {{ entry.new_value|default:"—" }}
+                    {% else %}
+                      {{ entry.get_action_display }}
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty">
+          <strong>{% translate "Nothing recorded yet" %}</strong>
+          {% blocktranslate %}Changes to marks will appear here as teachers enter them.{% endblocktranslate %}
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+{% endblock %}

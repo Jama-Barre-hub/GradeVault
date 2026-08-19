@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Overview" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% blocktranslate with name=user.first_name|default:user.username %}Welcome, {{ name }}{% endblocktranslate %}</h1>
+    <p>
+      {% if term %}{{ term.name }} · {{ term.academic_year }}{% else %}{% translate "No current term" %}{% endif %}
+    </p>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <span class="label">{% translate "Classes" %}</span>
+      <span class="value">{{ class_count }}</span>
+    </div>
+    <div class="stat">
+      <span class="label">{% translate "Subjects" %}</span>
+      <span class="value">{{ subject_count }}</span>
+    </div>
+    <div class="stat {% if outstanding %}accent{% endif %}">
+      <span class="label">{% translate "Marks outstanding" %}</span>
+      <span class="value">{{ outstanding }}</span>
+      <span class="note">{% translate "this term" %}</span>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Marking progress" %}</h2>
+      <a class="btn light tiny" href="{% url 'teacher_home' %}">{% translate "All my classes" %}</a>
+    </div>
+
+    {% if rows %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Class" %}</th>
+              <th>{% translate "Subject" %}</th>
+              <th class="num">{% translate "Marked" %}</th>
+              <th class="num">{% translate "Remaining" %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>{{ row.assignment.classroom.name }}</td>
+                <td>{{ row.assignment.subject.name }}</td>
+                <td class="num">{{ row.marked }} / {{ row.expected }}</td>
+                <td class="num">
+                  {% if row.missing %}
+                    <span class="pill fail">{{ row.missing }}</span>
+                  {% else %}
+                    <span class="pill">{% translate "done" %}</span>
+                  {% endif %}
+                </td>
+                <td class="num">
+                  <a class="btn tiny"
+                     href="{% url 'mark_sheet' row.assignment.classroom.id row.assignment.subject.id term.id %}">
+                    {% translate "Enter marks" %}
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "Nothing to mark" %}</strong>
+        {% blocktranslate %}You have no subjects assigned for the current term. Your school administrator sets these.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

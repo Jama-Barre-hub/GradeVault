@@ -28,6 +28,11 @@ and one less tap to reach anything.
 
       <nav class="menu">
         {% block nav %}
+          <a href="{% url 'dashboard' %}"
+             class="{% if nav_active == 'home' %}on{% endif %}">
+            {% translate "Overview" %}
+          </a>
+
           {% if user.is_student %}
             <a href="{% url 'student_results' %}"
                class="{% if nav_active == 'results' %}on{% endif %}">

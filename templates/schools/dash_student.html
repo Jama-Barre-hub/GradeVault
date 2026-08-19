@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Overview" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% blocktranslate with name=user.first_name|default:user.username %}Welcome, {{ name }}{% endblocktranslate %}</h1>
+    {% if classroom %}
+      <p>{{ student.user.username }} · {{ classroom.name }} · {{ classroom.academic_year }}</p>
+    {% endif %}
+  </div>
+
+  {% if not classroom %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "You are not enrolled in a class" %}</strong>
+        {% blocktranslate %}There is nothing to show until your school places you in a class. Please speak to the school office.{% endblocktranslate %}
+      </div>
+    </section>
+
+  {% elif latest %}
+    <div class="stats">
+      <div class="stat accent">
+        <span class="label">{% translate "Average" %}</span>
+        <span class="value">
+          {% if latest.result.average_percentage is not None %}{{ latest.result.average_percentage }}%{% else %}—{% endif %}
+        </span>
+        <span class="note">{{ latest.term.name }}</span>
+      </div>
+
+      <div class="stat">
+        <span class="label">{% translate "Grade" %}</span>
+        <span class="value">{% if latest.grade %}{{ latest.grade.letter }}{% else %}—{% endif %}</span>
+        <span class="note">{% if latest.grade %}{{ latest.grade.remark }}{% endif %}</span>
+      </div>
+
+      <div class="stat">
+        <span class="label">{% translate "Position" %}</span>
+        <span class="value">{{ latest.position.place|default:"—" }}</span>
+        <span class="note">
+          {% if latest.position.out_of %}
+            {% blocktranslate with total=latest.position.out_of %}of {{ total }} in class{% endblocktranslate %}
+          {% endif %}
+        </span>
+      </div>
+
+      <div class="stat">
+        <span class="label">{% translate "Subjects passed" %}</span>
+        <span class="value">{{ latest.passed }}</span>
+        <span class="note">
+          {% blocktranslate with total=latest.result.subjects|length %}of {{ total }} subjects{% endblocktranslate %}
+        </span>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% blocktranslate with term=latest.term.name %}{{ term }} summary{% endblocktranslate %}</h2>
+        <a class="btn light tiny" href="{% url 'student_results' %}">{% translate "See full results" %}</a>
+      </div>
+      <div class="panel-body">
+        <p>
+          {% blocktranslate with obtained=latest.result.marks_obtained|floatformat:"-2" available=latest.result.marks_available|floatformat:"-2" %}You scored {{ obtained }} out of {{ available }} marks across all subjects.{% endblocktranslate %}
+        </p>
+        {% if not latest.result.is_complete %}
+          <p class="notice">
+            {% blocktranslate %}Some assessments are still unmarked, so this may change.{% endblocktranslate %}
+          </p>
+        {% endif %}
+      </div>
+    </section>
+
+  {% else %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No results published yet" %}</strong>
+        {% blocktranslate %}Your teachers may already have entered marks, but results only appear once your school releases them.{% endblocktranslate %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if waiting %}
+    <p class="hint">
+      {% blocktranslate count counter=waiting %}One term has not been published yet.{% plural %}{{ counter }} terms have not been published yet.{% endblocktranslate %}
+    </p>
+  {% endif %}
+{% endblock %}

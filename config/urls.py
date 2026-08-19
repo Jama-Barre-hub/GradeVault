@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from accounts.views import dashboard
+from schools.dashboards import dashboard
 from schools.views import (
     class_ranking,
     mark_sheet,
