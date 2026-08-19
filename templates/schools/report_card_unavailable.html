@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Report card" %} · {% translate "GradeVault" %}{% endblock %}
+{% block crumbs %}<span>{% translate "Report card" %}</span>{% endblock %}
+
+{% block content %}
+  <section class="panel">
+    <div class="empty">
+      <strong>{% translate "Not published yet" %}</strong>
+      {% blocktranslate with term=term.name %}Your school has not released {{ term }} results. The report card will be available once they do.{% endblocktranslate %}
+    </div>
+  </section>
+{% endblock %}

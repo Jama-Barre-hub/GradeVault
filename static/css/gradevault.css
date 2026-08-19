@@ -425,6 +425,106 @@ body.plain { display: flex; align-items: center; justify-content: center; paddin
   .person { text-align: left; }
 }
 
+/* ============================ language ============================ */
+
+.lang { display: flex; gap: 2px; margin: 0; }
+
+.lang-option {
+  background: none;
+  border: 1px solid var(--line-firm);
+  padding: .3rem .6rem;
+  font: inherit;
+  font-size: .82rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lang-option:first-child { border-radius: 7px 0 0 7px; }
+.lang-option:last-child { border-radius: 0 7px 7px 0; }
+.lang-option + .lang-option { border-left: 0; }
+.lang-option:hover { background: var(--page); color: var(--ink); }
+
+.lang-option.on {
+  background: var(--teal-wash);
+  border-color: var(--teal);
+  color: var(--teal-dark);
+  font-weight: 500;
+}
+
+body.plain .lang { justify-content: center; margin-top: 1.25rem; }
+
+@media print { .lang { display: none; } }
+
+/* ============================ report card ============================ */
+
+/* Designed for paper first. On screen it looks like the sheet a parent
+   will be handed, so nothing is a surprise when it comes out of the
+   printer. */
+
+.card-actions { margin-bottom: 1rem; }
+
+.report {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
+  padding: 1.6rem;
+}
+
+.report-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: .9rem;
+  border-bottom: 2px solid var(--navy);
+  margin-bottom: 1.1rem;
+}
+
+.report-head .school { font-size: 1.25rem; margin: 0 0 .15rem; }
+.report-head p { margin: 0; }
+
+.report-title { text-align: right; }
+.report-title strong { display: block; font-size: 1.05rem; }
+.report-title span { color: var(--muted); font-size: .88rem; }
+
+.who-for, .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: .75rem 1.25rem;
+  margin: 0 0 1.15rem;
+}
+
+.who-for dt, .summary-grid dt {
+  color: var(--muted);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.who-for dd, .summary-grid dd { margin: .1rem 0 0; font-weight: 500; }
+.summary-grid { margin-top: 1.15rem; }
+.summary-grid dd { font-size: 1.15rem; }
+
+.report-table { border: 1px solid var(--line-firm); }
+.report-table th, .report-table td { border-bottom: 1px solid var(--line); }
+
+.signatures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+  color: var(--muted);
+  font-size: .85rem;
+}
+
+.signatures .rule {
+  display: block;
+  border-top: 1px solid var(--line-firm);
+  margin-bottom: .3rem;
+}
+
 /* ============================ printing ============================ */
 
 @media print {
@@ -442,6 +542,19 @@ body.plain { display: flex; align-items: center; justify-content: center; paddin
 
   .panel-head { background: #fff; }
   .stat { border: 1px solid #999; box-shadow: none; }
+
+  .report {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .report-head { border-bottom: 2px solid #000; }
+  .report-table { border: 1px solid #666; }
+  .signatures { margin-top: 3.5rem; }
+  .signatures .rule { border-top: 1px solid #000; }
+
+  @page { margin: 14mm; }
   thead th { background: #fff; }
   .pill { background: none; color: #000; border: 1px solid #999; }
 

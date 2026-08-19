@@ -20,9 +20,15 @@ results. Every change to a grade is permanently audited.
 | **Data model** | institutions, years, terms, classes, subjects, grading scales, students, teachers, enrolment, teaching assignments, assessments, marks |
 | **Audit trail** | append-only; every grade change attributable and unremovable |
 | **Computation** | subject totals, percentages, letter grades, term averages, class position |
-| **Web interface** | teacher mark entry, class rankings, student results, sign-in |
+| **Web interface** | portal layout, role dashboards, teacher mark entry, class rankings, student results |
+| **Report cards** | printable, per student per term, with signature lines |
 | **Isolation** | each school sees only its own data, enforced and tested |
-| **Tests** | 191, including permission and tenancy tests that must fail to pass |
+| **Tests** | 225, including permission and tenancy tests that pass only when access is refused |
+
+| Not done | |
+|---|---|
+| **Somali translation** | machinery in place, wording not written — see [Language](#language) |
+| **Public deployment** | configuration ready, not yet hosted |
 
 ---
 
@@ -188,6 +194,36 @@ Tests run on PostgreSQL rather than SQLite because the two differ in ways that
 matter — case sensitivity, constraint timing, ordering of nulls — so passing on
 SQLite alone would not prove production is safe. This gives that parity without
 installing a database server on a laptop.
+
+---
+
+## Language
+
+The interface is built for two languages, English and Somali. Every string in
+the templates and views is wrapped for translation, the switcher works, and the
+choice is remembered.
+
+**Somali is not yet usable.** Django refuses to select a language it has no
+compiled catalogue for, and neither Django nor GradeVault ships one for Somali,
+so choosing *Soomaali* currently does nothing. A test records this so the gap is
+visible rather than mysterious.
+
+Completing it needs two things:
+
+```bash
+# 1. GNU gettext, which Django uses to extract and compile strings
+winget install --id mlocati.GetText -e     # Windows
+
+# 2. Extract every translatable string into a catalogue
+python manage.py makemessages -l so
+
+# 3. Translate locale/so/LC_MESSAGES/django.po, then compile it
+python manage.py compilemessages
+```
+
+Step 2 is mechanical. **Step 3 is not, and is not something to guess at** — a
+results system that mistranslates "fail" or "pass" is worse than one left in
+English.
 
 ---
 

@@ -32,6 +32,7 @@
             <th class="num">{% translate "Average" %}</th>
             <th class="num">{% translate "Grade" %}</th>
             <th class="num">{% translate "Passed" %}</th>
+            <th class="num no-print"></th>
           </tr>
         </thead>
         <tbody>
@@ -57,10 +58,16 @@
                 {% endif %}
               </td>
               <td class="num">{{ row.passed }} / {{ row.result.subjects|length }}</td>
+              <td class="num no-print">
+                <a class="btn light tiny"
+                   href="{% url 'class_report_card' classroom.id term.id row.result.enrollment_id %}">
+                  {% translate "Card" %}
+                </a>
+              </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="6">
+              <td colspan="7">
                 <div class="empty">
                   <strong>{% translate "No students enrolled" %}</strong>
                   {% blocktranslate %}Nobody has been enrolled in this class yet.{% endblocktranslate %}

@@ -18,9 +18,9 @@
     <section class="panel">
       <div class="panel-head">
         <h2>{{ report.term.name }} · {{ report.term.academic_year }}</h2>
-        <button type="button" class="btn light tiny no-print" onclick="window.print()">
-          {% translate "Print" %}
-        </button>
+        <a class="btn light tiny no-print" href="{% url 'my_report_card' report.term.id %}">
+          {% translate "Report card" %}
+        </a>
       </div>
 
       <div class="panel-body">

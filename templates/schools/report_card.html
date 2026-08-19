@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Report card" %} · {{ student.full_name }}{% endblock %}
+
+{% block crumbs %}
+  {% if staff_view %}
+    <span><a href="{% url 'teacher_home' %}">{% translate "My classes" %}</a></span>
+  {% else %}
+    <span><a href="{% url 'student_results' %}">{% translate "My results" %}</a></span>
+  {% endif %}
+  <span>{% translate "Report card" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head no-print">
+    <h1>{% translate "Report card" %}</h1>
+    <p>{{ student.full_name }} · {{ term.name }}</p>
+  </div>
+
+  {% if not released %}
+    <p class="notice no-print">
+      {% blocktranslate %}This term has not been published. The student cannot see this card yet.{% endblocktranslate %}
+    </p>
+  {% endif %}
+
+  <div class="card-actions no-print">
+    <button type="button" class="btn" onclick="window.print()">{% translate "Print" %}</button>
+  </div>
+
+  <article class="report">
+
+    <header class="report-head">
+      <div>
+        <h2 class="school">{{ institution.name }}</h2>
+        {% if institution.address %}<p class="quiet">{{ institution.address }}</p>{% endif %}
+        {% if institution.phone %}<p class="quiet">{{ institution.phone }}</p>{% endif %}
+      </div>
+      <div class="report-title">
+        <strong>{% translate "Report card" %}</strong>
+        <span>{{ term.name }} · {{ term.academic_year }}</span>
+      </div>
+    </header>
+
+    <dl class="who-for">
+      <div><dt>{% translate "Student" %}</dt><dd>{{ student.full_name }}</dd></div>
+      <div><dt>{% translate "Student number" %}</dt><dd>{{ student.user.username }}</dd></div>
+      <div><dt>{% translate "Admission number" %}</dt><dd>{{ student.admission_number }}</dd></div>
+      <div><dt>{% translate "Class" %}</dt><dd>{{ classroom.name }}</dd></div>
+    </dl>
+
+    <table class="report-table">
+      <thead>
+        <tr>
+          <th>{% translate "Subject" %}</th>
+          <th class="num">{% translate "Marks" %}</th>
+          <th class="num">{% translate "Percentage" %}</th>
+          <th class="num">{% translate "Grade" %}</th>
+          <th>{% translate "Remark" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td>{{ row.subject.subject_name }}</td>
+            <td class="num">
+              {% if row.subject.has_any_mark %}
+                {{ row.subject.marks_obtained|floatformat:"-2" }} / {{ row.subject.marks_available|floatformat:"-2" }}
+              {% else %}
+                <span class="quiet">{% translate "not marked" %}</span>
+              {% endif %}
+            </td>
+            <td class="num">
+              {% if row.subject.percentage is not None %}{{ row.subject.percentage }}%{% else %}—{% endif %}
+            </td>
+            <td class="num">
+              {% if row.grade %}
+                <span class="pill {% if row.grade.letter == 'F' %}fail{% endif %}">{{ row.grade.letter }}</span>
+              {% else %}
+                <span class="pill none">—</span>
+              {% endif %}
+            </td>
+            <td class="wrap quiet">{% if row.grade %}{{ row.grade.remark }}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>{% translate "Total" %}</th>
+          <th class="num">
+            {{ result.marks_obtained|floatformat:"-2" }} / {{ result.marks_available|floatformat:"-2" }}
+          </th>
+          <th class="num">
+            {% if result.average_percentage is not None %}{{ result.average_percentage }}%{% else %}—{% endif %}
+          </th>
+          <th class="num">{% if grade %}<span class="pill">{{ grade.letter }}</span>{% endif %}</th>
+          <th></th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <dl class="summary-grid">
+      <div>
+        <dt>{% translate "Average" %}</dt>
+        <dd>{% if result.average_percentage is not None %}{{ result.average_percentage }}%{% else %}—{% endif %}</dd>
+      </div>
+      <div>
+        <dt>{% translate "Overall grade" %}</dt>
+        <dd>{% if grade %}{{ grade.letter }}{% else %}—{% endif %}</dd>
+      </div>
+      <div>
+        <dt>{% translate "Position in class" %}</dt>
+        <dd>{% if place %}{{ place }} / {{ out_of }}{% else %}—{% endif %}</dd>
+      </div>
+      <div>
+        <dt>{% translate "Subjects passed" %}</dt>
+        <dd>{{ passed }} / {{ rows|length }}</dd>
+      </div>
+    </dl>
+
+    {% if not result.is_complete %}
+      <p class="quiet">
+        {% blocktranslate %}Some assessments were not marked. Figures are based on the marks recorded.{% endblocktranslate %}
+      </p>
+    {% endif %}
+
+    <footer class="signatures">
+      <div><span class="rule"></span>{% translate "Class teacher" %}</div>
+      <div><span class="rule"></span>{% translate "Head teacher" %}</div>
+      <div><span class="rule"></span>{% translate "Parent or guardian" %}</div>
+    </footer>
+
+  </article>
+{% endblock %}
