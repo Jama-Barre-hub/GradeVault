@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="GradeVault">
+  <title>GradeVault</title>
+  <!-- A shield: records held safely. Inside, three rising bars for
+       results improving over terms. Drawn as plain shapes so it stays
+       sharp at any size and costs almost nothing to download. -->
+  <path d="M24 3 42 9v15c0 10-7.6 18.2-18 21C13.6 42.2 6 34 6 24V9z"
+        fill="#0f766e"/>
+  <path d="M24 7.2 37.8 11.8V24c0 8-6 14.8-13.8 17.2V7.2z"
+        fill="#0b5c55" opacity=".55"/>
+  <rect x="15" y="25" width="4.6" height="8"  rx="1.2" fill="#ffffff" opacity=".95"/>
+  <rect x="21.7" y="20.5" width="4.6" height="12.5" rx="1.2" fill="#ffffff" opacity=".95"/>
+  <rect x="28.4" y="16" width="4.6" height="17" rx="1.2" fill="#ffffff" opacity=".95"/>
+</svg>

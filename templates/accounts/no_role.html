@@ -1,8 +1,19 @@
-{% extends "base.html" %}
+{% extends "base_plain.html" %}
 {% load i18n %}
+
+{% block title %}{% translate "No access" %} · {% translate "GradeVault" %}{% endblock %}
+
 {% block content %}
-<div class="card narrow">
-  <h1>{% translate "No access" %}</h1>
-  <p>{% blocktranslate %}This account has no role assigned, so there is nothing to show. Ask your school administrator to set one.{% endblocktranslate %}</p>
+<div class="panel">
+  <div class="panel-head">
+    <h2>{% translate "No access" %}</h2>
+  </div>
+  <div class="panel-body">
+    <p>{% blocktranslate %}This account has no role assigned, so there is nothing to show. Ask your school administrator to set one.{% endblocktranslate %}</p>
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn wide">{% translate "Sign out" %}</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

@@ -19,7 +19,7 @@ def dashboard(request):
     if user.is_student:
         return redirect("student_results")
     if user.is_admin:
-        return redirect("/admin/")
+        return redirect("admin:index")
 
     # A signed-in account with no usable role. Better to say so than to
     # show an empty page that looks broken.

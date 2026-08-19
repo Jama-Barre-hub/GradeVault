@@ -3,70 +3,94 @@
 
 {% block title %}{{ subject.name }} · {{ classroom.name }}{% endblock %}
 
+{% block crumbs %}
+  <span><a href="{% url 'teacher_home' %}">{% translate "My classes" %}</a></span>
+  <span>{{ classroom.name }} · {{ subject.name }}</span>
+{% endblock %}
+
 {% block content %}
-<nav class="crumbs">
-  <a href="{% url 'teacher_home' %}">← {% translate "My classes" %}</a>
-</nav>
-
-<h1>{{ subject.name }} · {{ classroom.name }}</h1>
-<p class="lead">{{ term.name }} · {{ term.academic_year }}</p>
-
-{% if assessments %}
-  <form method="post">
-    {% csrf_token %}
-
-    <div class="table-wrap">
-      <table class="marks">
-        <thead>
-          <tr>
-            <th class="roll">#</th>
-            <th>{% translate "Student" %}</th>
-            {% for assessment in assessments %}
-              <th class="num">
-                {{ assessment.name }}
-                <span class="outof">/ {{ assessment.max_marks|floatformat:"-2" }}</span>
-              </th>
-            {% endfor %}
-          </tr>
-        </thead>
-        <tbody>
-          {% for row in rows %}
-            <tr>
-              <td class="roll">{{ row.enrollment.roll_number|default:"—" }}</td>
-              <td>
-                {{ row.enrollment.student.full_name }}
-                <span class="quiet-text">{{ row.enrollment.student.user.username }}</span>
-              </td>
-              {% for cell in row.cells %}
-                <td class="num">
-                  <input type="number"
-                         name="{{ cell.field }}"
-                         value="{{ cell.value }}"
-                         min="0"
-                         max="{{ cell.assessment.max_marks|floatformat:'-2' }}"
-                         step="0.01"
-                         inputmode="decimal"
-                         aria-label="{{ row.enrollment.student.full_name }} — {{ cell.assessment.name }}">
-                </td>
-              {% endfor %}
-            </tr>
-          {% empty %}
-            <tr><td colspan="9">{% translate "No students are enrolled in this class." %}</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-
-    <div class="form-actions">
-      <button type="submit" class="primary">{% translate "Save marks" %}</button>
-      <p class="hint">
-        {% blocktranslate %}Leave a box empty if the student has not been marked yet. Empty is not the same as zero.{% endblocktranslate %}
-      </p>
-    </div>
-  </form>
-{% else %}
-  <div class="card">
-    <p>{% blocktranslate %}No assessments have been set up for this subject this term. Your school administrator creates these.{% endblocktranslate %}</p>
+  <div class="page-head">
+    <h1>{{ subject.name }} · {{ classroom.name }}</h1>
+    <p>{{ term.name }} · {{ term.academic_year }}</p>
   </div>
-{% endif %}
+
+  {% if assessments %}
+    <form method="post">
+      {% csrf_token %}
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>{% translate "Mark sheet" %}</h2>
+          <span class="quiet">
+            {% blocktranslate count counter=rows|length %}{{ counter }} student{% plural %}{{ counter }} students{% endblocktranslate %}
+          </span>
+        </div>
+
+        <div class="scroller">
+          <table class="marks">
+            <thead>
+              <tr>
+                <th class="rank">#</th>
+                <th>{% translate "Student" %}</th>
+                {% for assessment in assessments %}
+                  <th class="num">
+                    {{ assessment.name }}
+                    <span class="quiet">/ {{ assessment.max_marks|floatformat:"-2" }}</span>
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in rows %}
+                <tr>
+                  <td class="rank">{{ row.enrollment.roll_number|default:"—" }}</td>
+                  <td>
+                    {{ row.enrollment.student.full_name }}
+                    <span class="quiet">{{ row.enrollment.student.user.username }}</span>
+                  </td>
+                  {% for cell in row.cells %}
+                    <td class="num">
+                      <input type="number"
+                             name="{{ cell.field }}"
+                             value="{{ cell.value }}"
+                             min="0"
+                             max="{{ cell.assessment.max_marks|floatformat:'-2' }}"
+                             step="0.01"
+                             inputmode="decimal"
+                             aria-label="{{ row.enrollment.student.full_name }} — {{ cell.assessment.name }}">
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6">
+                    <div class="empty">
+                      <strong>{% translate "No students enrolled" %}</strong>
+                      {% blocktranslate %}Nobody has been enrolled in this class yet.{% endblocktranslate %}
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% if rows %}
+          <div class="form-foot">
+            <button type="submit" class="btn">{% translate "Save marks" %}</button>
+            <span class="quiet">
+              {% blocktranslate %}Leave a box empty if the student has not been marked yet. Empty is not the same as zero.{% endblocktranslate %}
+            </span>
+          </div>
+        {% endif %}
+      </section>
+    </form>
+  {% else %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No assessments set up" %}</strong>
+        {% blocktranslate %}This subject has no assessments for this term yet. Your school administrator creates them.{% endblocktranslate %}
+      </div>
+    </section>
+  {% endif %}
 {% endblock %}

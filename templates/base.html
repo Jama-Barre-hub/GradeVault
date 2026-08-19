@@ -1,46 +1,92 @@
-{% load i18n static %}<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'en' }}">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description"
-          content="{% block description %}{% translate "School results for students and teachers." %}{% endblock %}">
-    <title>{% block title %}{% translate "GradeVault" %}{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
-  </head>
+{% extends "base_plain.html" %}
+{% load i18n static %}
 
-  <body>
-    <header class="site-header">
-      <div class="bar">
-        <a class="brand" href="{% url 'dashboard' %}">{% translate "GradeVault" %}</a>
+{% comment %}
+The signed-in shell: navigation down the side, breadcrumbs and account
+across the top, page content in the middle.
 
-        {% if user.is_authenticated %}
-          <div class="who">
-            <span class="name">{{ user.get_full_name|default:user.username }}</span>
-            <span class="role">{{ user.get_role_display }}</span>
-            <form action="{% url 'logout' %}" method="post" class="inline">
-              {% csrf_token %}
-              <button type="submit" class="link">{% translate "Sign out" %}</button>
-            </form>
-          </div>
-        {% endif %}
-      </div>
-    </header>
+On a phone the sidebar becomes a scrolling strip under the header rather
+than a drawer behind a button. No JavaScript, nothing to fail to open,
+and one less tap to reach anything.
+{% endcomment %}
 
-    <main class="page">
-      {% if messages %}
-        <ul class="messages">
-          {% for message in messages %}
-            <li class="{{ message.tags }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
+{% block body_class %}app{% endblock %}
+
+{% block body %}
+  <a class="skip" href="#main">{% translate "Skip to content" %}</a>
+
+  <div class="shell">
+
+    <aside class="sidebar" aria-label="{% translate 'Main navigation' %}">
+      <a class="mark" href="{% url 'dashboard' %}">
+        <img src="{% static 'img/logo.svg' %}" alt="" width="30" height="30">
+        <span class="mark-text">
+          <strong>{% translate "GradeVault" %}</strong>
+          <small>{% translate "School results" %}</small>
+        </span>
+      </a>
+
+      <nav class="menu">
+        {% block nav %}
+          {% if user.is_student %}
+            <a href="{% url 'student_results' %}"
+               class="{% if nav_active == 'results' %}on{% endif %}">
+              {% translate "My results" %}
+            </a>
+          {% elif user.is_teacher %}
+            <a href="{% url 'teacher_home' %}"
+               class="{% if nav_active == 'classes' %}on{% endif %}">
+              {% translate "My classes" %}
+            </a>
+          {% elif user.is_admin %}
+            <a href="{% url 'admin:index' %}">{% translate "School administration" %}</a>
+          {% endif %}
+        {% endblock %}
+      </nav>
+
+      {% if user.institution %}
+        <p class="school-name">{{ user.institution.name }}</p>
       {% endif %}
+    </aside>
 
-      {% block content %}{% endblock %}
-    </main>
+    <div class="frame">
 
-    <footer class="site-footer">
-      <p>{% translate "GradeVault" %} · {% translate "School results" %}</p>
-    </footer>
-  </body>
-</html>
+      <header class="topbar">
+        <nav class="crumbs" aria-label="{% translate 'Breadcrumb' %}">
+          <a href="{% url 'dashboard' %}">{% translate "Home" %}</a>
+          {% block crumbs %}{% endblock %}
+        </nav>
+
+        <div class="account">
+          <span class="person">
+            <span class="person-name">{{ user.get_full_name|default:user.username }}</span>
+            <span class="person-role">{{ user.get_role_display }}</span>
+          </span>
+          <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="ghost">{% translate "Sign out" %}</button>
+          </form>
+        </div>
+      </header>
+
+      <main class="content" id="main">
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="foot">
+        <p>
+          {% translate "GradeVault" %} —
+          {% blocktranslate %}results are shown only to the student they belong to.{% endblocktranslate %}
+        </p>
+      </footer>
+    </div>
+  </div>
+{% endblock %}

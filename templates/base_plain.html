@@ -1,0 +1,36 @@
+{% load i18n static %}<!DOCTYPE html>
+{% comment %}
+The page skeleton, shared by everything.
+
+Signed-out pages (sign in, no access) use it directly and render a single
+centred panel. base.html extends it to add the navigation shell, so the
+head and body markup exist in one place rather than two that drift apart.
+{% endcomment %}
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="{% block description %}{% translate "School results for students and teachers." %}{% endblock %}">
+    <meta name="theme-color" content="#12263f">
+    <title>{% block title %}{% translate "GradeVault" %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
+  </head>
+
+  <body class="{% block body_class %}plain{% endblock %}">
+    {% block body %}
+      <main class="entry" id="main">
+        <div class="entry-mark">
+          <img src="{% static 'img/logo.svg' %}" alt="" width="42" height="42">
+          <span>
+            <strong>{% translate "GradeVault" %}</strong>
+            <small>{% translate "School results" %}</small>
+          </span>
+        </div>
+
+        {% block content %}{% endblock %}
+      </main>
+    {% endblock %}
+  </body>
+</html>

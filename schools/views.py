@@ -52,7 +52,12 @@ def teacher_home(request):
     return render(
         request,
         "schools/teacher_home.html",
-        {"teacher": teacher, "assignments": assignments, "terms": terms},
+        {
+            "teacher": teacher,
+            "assignments": assignments,
+            "terms": terms,
+            "nav_active": "classes",
+        },
     )
 
 
@@ -133,6 +138,7 @@ def mark_sheet(request, classroom_id, subject_id, term_id):
             "term": term,
             "assessments": assessments,
             "rows": rows,
+            "nav_active": "classes",
             "total_available": sum(a.max_marks for a in assessments) or 0,
         },
     )
@@ -234,6 +240,7 @@ def class_ranking(request, classroom_id, term_id):
             "classroom": classroom,
             "term": term,
             "scale": scale,
+            "nav_active": "classes",
             "rows": [
                 {
                     "result": r,
@@ -278,8 +285,10 @@ def student_results(request):
                 "term": term,
                 "result": result,
                 "grade": result.grade(scale),
+                "passed": result.subjects_passed(scale),
                 "subjects": [
-                    {"subject": s, "grade": s.grade(scale)} for s in result.subjects
+                    {"subject": subject, "grade": subject.grade(scale)}
+                    for subject in result.subjects
                 ],
                 "position": _position_of(classroom, term, enrollment),
             }
@@ -298,6 +307,7 @@ def student_results(request):
             "classroom": classroom,
             "reports": reports,
             "unpublished": unpublished,
+            "nav_active": "results",
         },
     )
 

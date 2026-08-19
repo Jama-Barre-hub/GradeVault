@@ -1,28 +1,41 @@
-{% extends "base.html" %}
+{% extends "base_plain.html" %}
 {% load i18n %}
 
 {% block title %}{% translate "Sign in" %} · {% translate "GradeVault" %}{% endblock %}
 
 {% block content %}
-<div class="card narrow">
-  <h1>{% translate "Sign in" %}</h1>
+<div class="panel">
+  <div class="panel-head">
+    <h2>{% translate "Sign in" %}</h2>
+  </div>
 
-  {% if form.errors %}
-    <p class="error">{% translate "That username and password do not match an account." %}</p>
-  {% endif %}
+  <div class="panel-body">
+    {% if form.errors %}
+      <ul class="messages">
+        <li class="error">{% translate "That username and password do not match an account." %}</li>
+      </ul>
+    {% endif %}
 
-  <form method="post">
-    {% csrf_token %}
+    <form method="post">
+      {% csrf_token %}
 
-    <label for="id_username">{% translate "Username" %}</label>
-    <input id="id_username" name="username" type="text" autocomplete="username"
-           autocapitalize="none" required autofocus>
-    <p class="hint">{% translate "Students sign in with their student number, for example STU-2026-0001." %}</p>
+      <label for="id_username">{% translate "Username" %}</label>
+      <input id="id_username" name="username" type="text" autocomplete="username"
+             autocapitalize="none" spellcheck="false" required autofocus>
+      <p class="hint">
+        {% translate "Students sign in with their student number, for example STU-2026-0001." %}
+      </p>
 
-    <label for="id_password">{% translate "Password" %}</label>
-    <input id="id_password" name="password" type="password" autocomplete="current-password" required>
+      <label for="id_password">{% translate "Password" %}</label>
+      <input id="id_password" name="password" type="password"
+             autocomplete="current-password" required>
 
-    <button type="submit" class="primary">{% translate "Sign in" %}</button>
-  </form>
+      <button type="submit" class="btn wide">{% translate "Sign in" %}</button>
+    </form>
+  </div>
 </div>
+
+<p class="quiet centred">
+  {% blocktranslate %}Forgotten your password? Ask your school office to reset it.{% endblocktranslate %}
+</p>
 {% endblock %}

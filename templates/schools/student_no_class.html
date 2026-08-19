@@ -1,8 +1,18 @@
 {% extends "base.html" %}
 {% load i18n %}
+
+{% block title %}{% translate "My results" %} · {% translate "GradeVault" %}{% endblock %}
+{% block crumbs %}<span>{% translate "My results" %}</span>{% endblock %}
+
 {% block content %}
-<div class="card narrow">
-  <h1>{% translate "Not enrolled" %}</h1>
-  <p>{% blocktranslate %}You are not currently enrolled in a class, so there are no results to show. Please speak to your school office.{% endblocktranslate %}</p>
-</div>
+  <div class="page-head">
+    <h1>{% translate "My results" %}</h1>
+  </div>
+
+  <section class="panel">
+    <div class="empty">
+      <strong>{% translate "You are not enrolled in a class" %}</strong>
+      {% blocktranslate %}There are no results to show until your school places you in a class. Please speak to the school office.{% endblocktranslate %}
+    </div>
+  </section>
 {% endblock %}
