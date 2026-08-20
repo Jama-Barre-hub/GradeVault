@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GradeVault\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 12:22+0800\n"
+"POT-Creation-Date: 2026-08-20 18:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: GradeVault contributors\n"
 "Language-Team: Somali\n"
@@ -209,6 +209,30 @@ msgstr ""
 
 #: .\audit\models.py:103
 msgid "unknown"
+msgstr ""
+
+#: .\config\urls.py:15
+msgid "GradeVault administration"
+msgstr ""
+
+#: .\config\urls.py:16 .\templates\400.html:4 .\templates\403.html:4
+#: .\templates\404.html:4 .\templates\accounts\no_role.html:4
+#: .\templates\base.html:24 .\templates\base.html:92
+#: .\templates\base_plain.html:16 .\templates\base_plain.html:27
+#: .\templates\landing.html:28 .\templates\landing.html:238
+#: .\templates\lockout.html:4 .\templates\registration\login.html:4
+#: .\templates\schools\dash_admin.html:4
+#: .\templates\schools\dash_student.html:4
+#: .\templates\schools\dash_teacher.html:4
+#: .\templates\schools\report_card_unavailable.html:4
+#: .\templates\schools\student_no_class.html:4
+#: .\templates\schools\student_results.html:4
+#: .\templates\schools\teacher_home.html:4
+msgid "GradeVault"
+msgstr ""
+
+#: .\config\urls.py:17
+msgid "School records"
 msgstr ""
 
 #: .\schools\admin.py:69
@@ -525,21 +549,45 @@ msgstr ""
 msgid "%(student)s: %(value)s is outside 0 to %(max)s for %(assessment)s."
 msgstr ""
 
-#: .\templates\accounts\no_role.html:4 .\templates\accounts\no_role.html:9
-msgid "No access"
+#: .\templates\400.html:4 .\templates\400.html:9
+msgid "Bad request"
 msgstr ""
 
-#: .\templates\accounts\no_role.html:4 .\templates\base.html:24
-#: .\templates\base.html:92 .\templates\base_plain.html:16
-#: .\templates\base_plain.html:27 .\templates\registration\login.html:4
-#: .\templates\schools\dash_admin.html:4
-#: .\templates\schools\dash_student.html:4
-#: .\templates\schools\dash_teacher.html:4
-#: .\templates\schools\report_card_unavailable.html:4
-#: .\templates\schools\student_no_class.html:4
-#: .\templates\schools\student_results.html:4
-#: .\templates\schools\teacher_home.html:4
-msgid "GradeVault"
+#: .\templates\400.html:13
+msgid ""
+"That request could not be understood. If you were filling in a form, reload "
+"the page and try once more."
+msgstr ""
+
+#: .\templates\400.html:15 .\templates\403.html:18 .\templates\404.html:13
+msgid "Back to my pages"
+msgstr ""
+
+#: .\templates\403.html:4 .\templates\403.html:9
+msgid "Not allowed"
+msgstr ""
+
+#: .\templates\403.html:13
+msgid ""
+"You do not have permission to view this page. If you believe you should, ask "
+"your school administrator."
+msgstr ""
+
+#: .\templates\403.html:16
+msgid ""
+"This is not an error. GradeVault only shows each person what belongs to them."
+msgstr ""
+
+#: .\templates\404.html:4 .\templates\404.html:9
+msgid "Not found"
+msgstr ""
+
+#: .\templates\404.html:12
+msgid "That page does not exist, or it is not part of your school."
+msgstr ""
+
+#: .\templates\accounts\no_role.html:4 .\templates\accounts\no_role.html:9
+msgid "No access"
 msgstr ""
 
 #: .\templates\accounts\no_role.html:12
@@ -608,9 +656,325 @@ msgstr ""
 msgid "School results for students and teachers."
 msgstr ""
 
-#: .\templates\registration\login.html:4 .\templates\registration\login.html:9
-#: .\templates\registration\login.html:33
+#: .\templates\landing.html:14
+msgid ""
+"School results software for Somali primary and secondary schools. Teachers "
+"record marks; grades, averages and class positions are worked out "
+"automatically."
+msgstr ""
+
+#: .\templates\landing.html:17
+msgid "GradeVault — school results for Somali schools"
+msgstr ""
+
+#: .\templates\landing.html:31
+msgid "Sections"
+msgstr ""
+
+#: .\templates\landing.html:32 .\templates\landing.html:113
+msgid "What it does"
+msgstr ""
+
+#: .\templates\landing.html:33 .\templates\landing.html:166
+msgid "How it works"
+msgstr ""
+
+#: .\templates\landing.html:34
+msgid "Keeping records safe"
+msgstr ""
+
+#: .\templates\landing.html:39 .\templates\landing.html:57
+#: .\templates\landing.html:230 .\templates\registration\login.html:4
+#: .\templates\registration\login.html:9 .\templates\registration\login.html:33
 msgid "Sign in"
+msgstr ""
+
+#: .\templates\landing.html:50
+msgid "For primary and secondary schools in Somalia"
+msgstr ""
+
+#: .\templates\landing.html:52
+msgid "Results your school can prove"
+msgstr ""
+
+#: .\templates\landing.html:54
+msgid ""
+"Teachers record marks. Grades, averages and class positions are worked out "
+"for you. Students sign in and see only their own results, and every change "
+"to a grade is recorded permanently."
+msgstr ""
+
+#: .\templates\landing.html:58
+msgid "See how it works"
+msgstr ""
+
+#: .\templates\landing.html:61
+msgid "Works on a phone, on a slow connection, with no app to install."
+msgstr ""
+
+#: .\templates\landing.html:70
+msgid "Term 1 results"
+msgstr ""
+
+#: .\templates\landing.html:72 .\templates\schools\class_ranking.html:32
+#: .\templates\schools\dash_student.html:25
+#: .\templates\schools\report_card.html:104
+#: .\templates\schools\student_results.html:29
+msgid "Average"
+msgstr ""
+
+#: .\templates\landing.html:73 .\templates\schools\class_ranking.html:33
+#: .\templates\schools\dash_student.html:33
+#: .\templates\schools\report_card.html:58
+#: .\templates\schools\student_results.html:42
+#: .\templates\schools\student_results.html:74
+msgid "Grade"
+msgstr ""
+
+#: .\templates\landing.html:74
+msgid "of 20"
+msgstr ""
+
+#: .\templates\landing.html:77
+msgid "Mathematics"
+msgstr ""
+
+#: .\templates\landing.html:78
+msgid "English"
+msgstr ""
+
+#: .\templates\landing.html:79
+msgid "Biology"
+msgstr ""
+
+#: .\templates\landing.html:80
+msgid "Somali"
+msgstr ""
+
+#: .\templates\landing.html:83
+msgid "Example only. Not a real student."
+msgstr ""
+
+#: .\templates\landing.html:94
+msgid "terms a year, September to June, as Somali schools run"
+msgstr ""
+
+#: .\templates\landing.html:98
+msgid "grades from A to F, with boundaries each school sets itself"
+msgstr ""
+
+#: .\templates\landing.html:102
+msgid "marks can be changed without a permanent record of who changed them"
+msgstr ""
+
+#: .\templates\landing.html:106
+msgid "automated tests, run on every change to the software"
+msgstr ""
+
+#: .\templates\landing.html:115
+msgid ""
+"Replaces the paper register and the spreadsheet on one teacher's laptop."
+msgstr ""
+
+#: .\templates\landing.html:120
+msgid "Marks become results on their own"
+msgstr ""
+
+#: .\templates\landing.html:122
+msgid ""
+"A teacher types 32 out of 40 and 51 out of 60. GradeVault works out the "
+"total, the percentage, the letter grade, the term average and the position "
+"in class. Nobody adds up a column by hand, so nobody makes an arithmetic "
+"mistake that changes a child's standing."
+msgstr ""
+
+#: .\templates\landing.html:127
+msgid "Every change is recorded"
+msgstr ""
+
+#: .\templates\landing.html:129
+msgid ""
+"When a mark changes, GradeVault records who changed it, when, and what it "
+"was before. Nothing can edit or delete that record — not a teacher, not a "
+"head teacher, not the person running the system. A school can prove a grade "
+"is the one its teacher entered."
+msgstr ""
+
+#: .\templates\landing.html:134
+msgid "Results appear when the school says so"
+msgstr ""
+
+#: .\templates\landing.html:136
+msgid ""
+"Teachers enter and correct marks freely. Students see nothing until an "
+"administrator publishes the term. No child learns their result the moment a "
+"teacher happens to save a page."
+msgstr ""
+
+#: .\templates\landing.html:141
+msgid "Each school is separate"
+msgstr ""
+
+#: .\templates\landing.html:143
+msgid ""
+"Many schools can use one installation, and none of them can see another's "
+"students, marks or staff. This is checked by tests that deliberately try to "
+"reach another school's records and must fail."
+msgstr ""
+
+#: .\templates\landing.html:148
+msgid "Report cards that print"
+msgstr ""
+
+#: .\templates\landing.html:150
+msgid ""
+"One student, one term, on one page: subjects, marks, grades, position, and "
+"space for the class teacher, head teacher and parent to sign. It prints as a "
+"document, not as a web page with menus down the side."
+msgstr ""
+
+#: .\templates\landing.html:155
+msgid "Built for the connection you have"
+msgstr ""
+
+#: .\templates\landing.html:157
+msgid ""
+"Pages are small and plain, with no app to download and nothing that needs a "
+"fast connection. A parent on a phone in Mogadishu sees the same thing as a "
+"head teacher at a desk."
+msgstr ""
+
+#: .\templates\landing.html:171
+msgid "The school sets itself up"
+msgstr ""
+
+#: .\templates\landing.html:173
+msgid ""
+"An administrator enters the year, its two terms, the classes, the subjects "
+"and the school's own grading scale. Class names are whatever the school uses "
+"— Class 5, Form 2, or anything else."
+msgstr ""
+
+#: .\templates\landing.html:178
+msgid "Teachers record marks"
+msgstr ""
+
+#: .\templates\landing.html:180
+msgid ""
+"Each teacher sees only the classes and subjects they were given, and fills "
+"in a mark sheet for them. A mark higher than the paper is out of is refused "
+"before it can be saved."
+msgstr ""
+
+#: .\templates\landing.html:185
+msgid "The school publishes the term"
+msgstr ""
+
+#: .\templates\landing.html:187
+msgid ""
+"When the results are ready, an administrator releases them. Students sign in "
+"with their own student number and see their subjects, grades, average and "
+"position, and can print a report card."
+msgstr ""
+
+#: .\templates\landing.html:196
+msgid "Keeping children's records safe"
+msgstr ""
+
+#: .\templates\landing.html:198
+msgid ""
+"These are records about children, so the plain answers matter more than the "
+"promises."
+msgstr ""
+
+#: .\templates\landing.html:202
+msgid "Can a teacher see another class's marks?"
+msgstr ""
+
+#: .\templates\landing.html:203
+msgid ""
+"No. A teacher reaches only the subjects and classes they were assigned, and "
+"this is refused whether they open the page or send the form directly."
+msgstr ""
+
+#: .\templates\landing.html:205
+msgid "Can a student see a classmate's results?"
+msgstr ""
+
+#: .\templates\landing.html:206
+msgid ""
+"No. A student's own page carries no way to name another student, so there is "
+"nothing to change in order to try."
+msgstr ""
+
+#: .\templates\landing.html:208
+msgid "Can a grade be changed quietly?"
+msgstr ""
+
+#: .\templates\landing.html:209
+msgid ""
+"No. Every change writes a record that nothing in the system is able to edit "
+"or remove."
+msgstr ""
+
+#: .\templates\landing.html:211
+msgid "Are passwords readable by staff?"
+msgstr ""
+
+#: .\templates\landing.html:212
+msgid ""
+"No. Passwords are stored scrambled in a way that cannot be reversed. An "
+"administrator can set a new one; nobody can read the old one."
+msgstr ""
+
+#: .\templates\landing.html:214
+msgid "Can someone guess a student's password?"
+msgstr ""
+
+#: .\templates\landing.html:215
+msgid ""
+"Repeated wrong attempts pause sign-in for that account and device. One "
+"student being locked out never locks out their classmates, even on a shared "
+"school connection."
+msgstr ""
+
+#: .\templates\landing.html:219
+msgid ""
+"One thing said plainly: GradeVault has not yet been examined by security "
+"specialists from outside the project. Before any school entrusts it with "
+"real records, it should be."
+msgstr ""
+
+#: .\templates\landing.html:226
+msgid "Ready to look inside?"
+msgstr ""
+
+#: .\templates\landing.html:228
+msgid "Sign in with the account your school gave you."
+msgstr ""
+
+#: .\templates\landing.html:239
+msgid "school results for Somali schools"
+msgstr ""
+
+#: .\templates\landing.html:242
+msgid "Open source under the MIT licence. Built by Jama Barre."
+msgstr ""
+
+#: .\templates\lockout.html:4 .\templates\lockout.html:9
+msgid "Too many attempts"
+msgstr ""
+
+#: .\templates\lockout.html:13
+msgid ""
+"Sign-in has been paused for this account after several wrong passwords. "
+"Please wait twenty minutes and try again."
+msgstr ""
+
+#: .\templates\lockout.html:16
+msgid ""
+"This protects your results from someone guessing your password. If you have "
+"forgotten it, ask your school office to reset it."
 msgstr ""
 
 #: .\templates\registration\login.html:15
@@ -656,21 +1020,6 @@ msgstr ""
 #: .\templates\schools\report_card.html:56
 #: .\templates\schools\student_results.html:72
 msgid "Marks"
-msgstr ""
-
-#: .\templates\schools\class_ranking.html:32
-#: .\templates\schools\dash_student.html:25
-#: .\templates\schools\report_card.html:104
-#: .\templates\schools\student_results.html:29
-msgid "Average"
-msgstr ""
-
-#: .\templates\schools\class_ranking.html:33
-#: .\templates\schools\dash_student.html:33
-#: .\templates\schools\report_card.html:58
-#: .\templates\schools\student_results.html:42
-#: .\templates\schools\student_results.html:74
-msgid "Grade"
 msgstr ""
 
 #: .\templates\schools\class_ranking.html:34

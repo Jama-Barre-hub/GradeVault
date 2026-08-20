@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -302,12 +303,22 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-AXES_FAILURE_LIMIT = 5
+AXES_FAILURE_LIMIT = 10
 
-# Locks clear themselves after an hour. A permanent lock would mean every
-# forgotten password becomes work for the school office, and offices in
-# small schools are one person.
-AXES_COOLOFF_TIME = 1
+# Ten attempts, then twenty minutes.
+#
+# Five was too strict for a school: students mistype, keyboards on shared
+# machines are unfamiliar, and a child who has simply forgotten whether
+# their password has a capital letter should not be shut out for an hour.
+#
+# Ten still stops guessing dead. A password worth having has far more
+# than ten possibilities, so an attacker gains nothing from the extra
+# five, while an honest student gets room to think.
+#
+# Twenty minutes is long enough to make automated guessing pointless and
+# short enough that a student can wait out a lockout during one lesson
+# rather than losing the day.
+AXES_COOLOFF_TIME = timedelta(minutes=20)
 
 # Lock the *combination* of address and username, not either alone.
 #

@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.utils.translation import gettext_lazy as _
 
-from schools.dashboards import dashboard
+from schools.dashboards import dashboard, home
 from schools.report_cards import class_report_card, my_report_card
 from schools.views import (
     class_ranking,
@@ -17,7 +17,8 @@ admin.site.site_title = _("GradeVault")
 admin.site.index_title = _("School records")
 
 urlpatterns = [
-    path("", dashboard, name="dashboard"),
+    path("", home, name="home"),
+    path("home/", dashboard, name="dashboard"),
     path(
         "login/",
         auth_views.LoginView.as_view(template_name="registration/login.html"),

@@ -1,0 +1,247 @@
+{% load i18n static %}<!DOCTYPE html>
+{% comment %}
+The public page, for someone who has not signed in.
+
+Every figure on this page is a fact about what the software does. There
+are no adoption numbers and no testimonials, because GradeVault has no
+users yet and inventing them would cost exactly the trust the page
+exists to earn.
+{% endcomment %}
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% translate "School results software for Somali primary and secondary schools. Teachers record marks; grades, averages and class positions are worked out automatically." as page_description %}
+    <meta name="description" content="{{ page_description }}">
+    <meta name="theme-color" content="#12263f">
+    <title>{% translate "GradeVault — school results for Somali schools" %}</title>
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
+  </head>
+
+  <body class="marketing">
+
+    <header class="top">
+      <div class="wrap top-inner">
+        <a class="wordmark" href="{% url 'home' %}">
+          <img src="{% static 'img/logo.svg' %}" alt="" width="30" height="30">
+          <span>{% translate "GradeVault" %}</span>
+        </a>
+
+        <nav class="top-links" aria-label="{% translate 'Sections' %}">
+          <a href="#what">{% translate "What it does" %}</a>
+          <a href="#how">{% translate "How it works" %}</a>
+          <a href="#trust">{% translate "Keeping records safe" %}</a>
+        </nav>
+
+        <div class="top-actions">
+          {% include "_language.html" %}
+          <a class="btn" href="{% url 'login' %}">{% translate "Sign in" %}</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+
+      <section class="hero">
+        <div class="wrap hero-inner">
+          <div class="hero-words">
+            <p class="eyebrow">
+              {% translate "For primary and secondary schools in Somalia" %}
+            </p>
+            <h1>{% translate "Results your school can prove" %}</h1>
+            <p class="lede">
+              {% blocktranslate %}Teachers record marks. Grades, averages and class positions are worked out for you. Students sign in and see only their own results, and every change to a grade is recorded permanently.{% endblocktranslate %}
+            </p>
+            <div class="hero-actions">
+              <a class="btn big" href="{% url 'login' %}">{% translate "Sign in" %}</a>
+              <a class="btn big light" href="#how">{% translate "See how it works" %}</a>
+            </div>
+            <p class="quiet">
+              {% blocktranslate %}Works on a phone, on a slow connection, with no app to install.{% endblocktranslate %}
+            </p>
+          </div>
+
+          <div class="hero-card" aria-hidden="true">
+            <div class="fake-head">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="fake-body">
+              <p class="fake-title">{% translate "Term 1 results" %}</p>
+              <div class="fake-stats">
+                <div><strong>87.05%</strong><span>{% translate "Average" %}</span></div>
+                <div><strong>B+</strong><span>{% translate "Grade" %}</span></div>
+                <div><strong>4</strong><span>{% translate "of 20" %}</span></div>
+              </div>
+              <table class="fake-table">
+                <tr><td>{% translate "Mathematics" %}</td><td>92%</td><td><span class="pill">A-</span></td></tr>
+                <tr><td>{% translate "English" %}</td><td>100%</td><td><span class="pill">A</span></td></tr>
+                <tr><td>{% translate "Biology" %}</td><td>94%</td><td><span class="pill">A-</span></td></tr>
+                <tr><td>{% translate "Somali" %}</td><td>89%</td><td><span class="pill">B+</span></td></tr>
+              </table>
+              <p class="fake-note">
+                {% translate "Example only. Not a real student." %}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="facts">
+        <div class="wrap facts-grid">
+          <div>
+            <strong>2</strong>
+            <span>{% translate "terms a year, September to June, as Somali schools run" %}</span>
+          </div>
+          <div>
+            <strong>11</strong>
+            <span>{% translate "grades from A to F, with boundaries each school sets itself" %}</span>
+          </div>
+          <div>
+            <strong>0</strong>
+            <span>{% translate "marks can be changed without a permanent record of who changed them" %}</span>
+          </div>
+          <div>
+            <strong>236</strong>
+            <span>{% translate "automated tests, run on every change to the software" %}</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="what" class="band">
+        <div class="wrap">
+          <h2 class="section-title">{% translate "What it does" %}</h2>
+          <p class="section-lede">
+            {% blocktranslate %}Replaces the paper register and the spreadsheet on one teacher's laptop.{% endblocktranslate %}
+          </p>
+
+          <div class="cards">
+            <article class="feature">
+              <h3>{% translate "Marks become results on their own" %}</h3>
+              <p>
+                {% blocktranslate %}A teacher types 32 out of 40 and 51 out of 60. GradeVault works out the total, the percentage, the letter grade, the term average and the position in class. Nobody adds up a column by hand, so nobody makes an arithmetic mistake that changes a child's standing.{% endblocktranslate %}
+              </p>
+            </article>
+
+            <article class="feature">
+              <h3>{% translate "Every change is recorded" %}</h3>
+              <p>
+                {% blocktranslate %}When a mark changes, GradeVault records who changed it, when, and what it was before. Nothing can edit or delete that record — not a teacher, not a head teacher, not the person running the system. A school can prove a grade is the one its teacher entered.{% endblocktranslate %}
+              </p>
+            </article>
+
+            <article class="feature">
+              <h3>{% translate "Results appear when the school says so" %}</h3>
+              <p>
+                {% blocktranslate %}Teachers enter and correct marks freely. Students see nothing until an administrator publishes the term. No child learns their result the moment a teacher happens to save a page.{% endblocktranslate %}
+              </p>
+            </article>
+
+            <article class="feature">
+              <h3>{% translate "Each school is separate" %}</h3>
+              <p>
+                {% blocktranslate %}Many schools can use one installation, and none of them can see another's students, marks or staff. This is checked by tests that deliberately try to reach another school's records and must fail.{% endblocktranslate %}
+              </p>
+            </article>
+
+            <article class="feature">
+              <h3>{% translate "Report cards that print" %}</h3>
+              <p>
+                {% blocktranslate %}One student, one term, on one page: subjects, marks, grades, position, and space for the class teacher, head teacher and parent to sign. It prints as a document, not as a web page with menus down the side.{% endblocktranslate %}
+              </p>
+            </article>
+
+            <article class="feature">
+              <h3>{% translate "Built for the connection you have" %}</h3>
+              <p>
+                {% blocktranslate %}Pages are small and plain, with no app to download and nothing that needs a fast connection. A parent on a phone in Mogadishu sees the same thing as a head teacher at a desk.{% endblocktranslate %}
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" class="band alt">
+        <div class="wrap">
+          <h2 class="section-title">{% translate "How it works" %}</h2>
+
+          <ol class="steps">
+            <li>
+              <span class="step-no">1</span>
+              <h3>{% translate "The school sets itself up" %}</h3>
+              <p>
+                {% blocktranslate %}An administrator enters the year, its two terms, the classes, the subjects and the school's own grading scale. Class names are whatever the school uses — Class 5, Form 2, or anything else.{% endblocktranslate %}
+              </p>
+            </li>
+            <li>
+              <span class="step-no">2</span>
+              <h3>{% translate "Teachers record marks" %}</h3>
+              <p>
+                {% blocktranslate %}Each teacher sees only the classes and subjects they were given, and fills in a mark sheet for them. A mark higher than the paper is out of is refused before it can be saved.{% endblocktranslate %}
+              </p>
+            </li>
+            <li>
+              <span class="step-no">3</span>
+              <h3>{% translate "The school publishes the term" %}</h3>
+              <p>
+                {% blocktranslate %}When the results are ready, an administrator releases them. Students sign in with their own student number and see their subjects, grades, average and position, and can print a report card.{% endblocktranslate %}
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section id="trust" class="band">
+        <div class="wrap">
+          <h2 class="section-title">{% translate "Keeping children's records safe" %}</h2>
+          <p class="section-lede">
+            {% blocktranslate %}These are records about children, so the plain answers matter more than the promises.{% endblocktranslate %}
+          </p>
+
+          <dl class="answers">
+            <dt>{% translate "Can a teacher see another class's marks?" %}</dt>
+            <dd>{% blocktranslate %}No. A teacher reaches only the subjects and classes they were assigned, and this is refused whether they open the page or send the form directly.{% endblocktranslate %}</dd>
+
+            <dt>{% translate "Can a student see a classmate's results?" %}</dt>
+            <dd>{% blocktranslate %}No. A student's own page carries no way to name another student, so there is nothing to change in order to try.{% endblocktranslate %}</dd>
+
+            <dt>{% translate "Can a grade be changed quietly?" %}</dt>
+            <dd>{% blocktranslate %}No. Every change writes a record that nothing in the system is able to edit or remove.{% endblocktranslate %}</dd>
+
+            <dt>{% translate "Are passwords readable by staff?" %}</dt>
+            <dd>{% blocktranslate %}No. Passwords are stored scrambled in a way that cannot be reversed. An administrator can set a new one; nobody can read the old one.{% endblocktranslate %}</dd>
+
+            <dt>{% translate "Can someone guess a student's password?" %}</dt>
+            <dd>{% blocktranslate %}Repeated wrong attempts pause sign-in for that account and device. One student being locked out never locks out their classmates, even on a shared school connection.{% endblocktranslate %}</dd>
+          </dl>
+
+          <p class="honest">
+            {% blocktranslate %}One thing said plainly: GradeVault has not yet been examined by security specialists from outside the project. Before any school entrusts it with real records, it should be.{% endblocktranslate %}
+          </p>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="wrap closing-inner">
+          <h2>{% translate "Ready to look inside?" %}</h2>
+          <p>
+            {% blocktranslate %}Sign in with the account your school gave you.{% endblocktranslate %}
+          </p>
+          <a class="btn big" href="{% url 'login' %}">{% translate "Sign in" %}</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ground">
+      <div class="wrap ground-inner">
+        <p>
+          <strong>{% translate "GradeVault" %}</strong> —
+          {% translate "school results for Somali schools" %}
+        </p>
+        <p class="quiet">
+          {% blocktranslate %}Open source under the MIT licence. Built by Jama Barre.{% endblocktranslate %}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

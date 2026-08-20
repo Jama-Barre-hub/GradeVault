@@ -19,7 +19,7 @@ from accounts.models import User
 
 PASSWORD = "correct-horse-battery"
 WRONG = "not-the-password"
-LIMIT = 5
+LIMIT = 10
 
 
 @pytest.fixture(autouse=True)

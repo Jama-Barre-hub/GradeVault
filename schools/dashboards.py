@@ -8,7 +8,7 @@ branching happens here, in Python, where it can be tested.
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from accounts.models import StudentProfile, TeacherProfile
@@ -45,6 +45,19 @@ def current_term(academic_year):
 
     started = [t for t in terms if t.start_date <= today]
     return started[-1] if started else terms[0]
+
+
+def home(request):
+    """The front door.
+
+    A visitor who is not signed in gets the public page explaining what
+    GradeVault is. Anyone signed in is sent straight to their own area,
+    because a marketing page is of no use to a teacher who has marks to
+    enter.
+    """
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    return render(request, "landing.html")
 
 
 @login_required
