@@ -25,3 +25,18 @@ def _fast_password_hashing(settings):
     tests/test_settings.py asserts the production configuration directly.
     """
     settings.PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
+
+
+@pytest.fixture(autouse=True)
+def _sign_in_limits_off(settings):
+    """Turn the failed-sign-in limiter off for most tests.
+
+    django-axes wraps authentication and requires a request object, which
+    Django's test client does not pass to client.login(). Leaving it on
+    would make every test that signs somebody in fail for a reason that
+    has nothing to do with what it is testing.
+
+    tests/test_login_limits.py turns it back on, so the limiter itself is
+    still exercised — just not by every unrelated test.
+    """
+    settings.AXES_ENABLED = False

@@ -1,0 +1,16 @@
+{% extends "base_plain.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Not found" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>{% translate "Not found" %}</h2>
+  </div>
+  <div class="panel-body">
+    <p>{% blocktranslate %}That page does not exist, or it is not part of your school.{% endblocktranslate %}</p>
+    <a class="btn wide" href="/">{% translate "Back to my pages" %}</a>
+  </div>
+</div>
+{% endblock %}

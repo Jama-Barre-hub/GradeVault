@@ -1,0 +1,36 @@
+{% load i18n static %}<!DOCTYPE html>
+{% comment %}
+Rendered when something has gone wrong on the server.
+
+Deliberately standalone: it must not extend a base template or read
+anything from the database, because whatever failed may be exactly what
+a base template needs. An error page that itself errors leaves the user
+with nothing at all.
+{% endcomment %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="GradeVault could not complete that request.">
+    <title>Something went wrong · GradeVault</title>
+    <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
+  </head>
+  <body class="plain">
+    <main class="entry">
+      <div class="panel">
+        <div class="panel-head"><h2>Something went wrong</h2></div>
+        <div class="panel-body">
+          <p>
+            GradeVault could not complete that request. Nothing you were
+            working on has been lost or changed.
+          </p>
+          <p class="quiet">
+            If it keeps happening, tell your school administrator what you
+            were doing when it appeared.
+          </p>
+          <a class="btn wide" href="/">Back to my pages</a>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

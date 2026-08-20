@@ -1,0 +1,18 @@
+{% extends "base_plain.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Bad request" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>{% translate "Bad request" %}</h2>
+  </div>
+  <div class="panel-body">
+    <p>
+      {% blocktranslate %}That request could not be understood. If you were filling in a form, reload the page and try once more.{% endblocktranslate %}
+    </p>
+    <a class="btn wide" href="/">{% translate "Back to my pages" %}</a>
+  </div>
+</div>
+{% endblock %}

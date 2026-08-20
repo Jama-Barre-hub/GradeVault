@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
 
 from schools.dashboards import dashboard
 from schools.report_cards import class_report_card, my_report_card
@@ -10,6 +11,10 @@ from schools.views import (
     student_results,
     teacher_home,
 )
+
+admin.site.site_header = _("GradeVault administration")
+admin.site.site_title = _("GradeVault")
+admin.site.index_title = _("School records")
 
 urlpatterns = [
     path("", dashboard, name="dashboard"),

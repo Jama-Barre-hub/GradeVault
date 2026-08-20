@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Locks an account out after repeated failed sign-ins.
+    "axes",
     # GradeVault
     "accounts",
     "schools",
@@ -75,6 +77,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Must be last: it wraps authentication to count failed attempts.
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -280,3 +284,107 @@ if not DEBUG:
     CSRF_TRUSTED_ORIGINS = [
         f"https://{host}" for host in ALLOWED_HOSTS if host and "*" not in host
     ]
+
+
+# ============================================================
+# Sign-in attempt limits
+# ============================================================
+#
+# Without this, an attacker may guess a student's password without limit.
+# Student usernames are predictable by design — STU-2026-0001 upwards —
+# so guessing which accounts exist is trivial and only the password
+# stands in the way.
+
+AUTHENTICATION_BACKENDS = [
+    # Must come first, so a locked-out attempt is refused before the
+    # password is even checked.
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+AXES_FAILURE_LIMIT = 5
+
+# Locks clear themselves after an hour. A permanent lock would mean every
+# forgotten password becomes work for the school office, and offices in
+# small schools are one person.
+AXES_COOLOFF_TIME = 1
+
+# Lock the *combination* of address and username, not either alone.
+#
+# Locking by address would punish a whole school: Somali schools and
+# internet cafés commonly share one public address, so one attacker
+# would lock out every student behind it.
+#
+# Locking by username alone would let anyone lock a named student out
+# deliberately by guessing wrong five times.
+#
+# The pair is narrow enough to stop guessing without becoming a weapon.
+AXES_LOCKOUT_PARAMETERS = [["ip_address", "username"]]
+
+# A successful sign-in clears the count, so yesterday's typos do not
+# accumulate into tomorrow's lockout.
+AXES_RESET_ON_SUCCESS = True
+
+AXES_LOCKOUT_TEMPLATE = "lockout.html"
+
+# Record the username tried, so an administrator can see which accounts
+# are being probed. Never records what password was attempted.
+AXES_VERBOSE = True
+
+
+# ============================================================
+# Logging
+# ============================================================
+#
+# Without this, a production failure leaves nothing behind: the user sees
+# an error page and the operator has no idea what happened. Logs go to
+# standard output, which is where a hosted platform collects them.
+#
+# Two rules apply because this system holds children's records:
+#
+#   - request bodies are never logged, so a mistyped password or a mark
+#     cannot end up in a log file
+#   - failed sign-ins are logged loudly, because a run of them against
+#     one account is the first sign of someone probing it
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "plain": {
+            "format": "{levelname} {asctime} {name} {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "plain",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        # Server errors, including the traceback behind a 500 page.
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        # Repeated failures against one account belong in the log.
+        "axes": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        # Every SQL statement at DEBUG would include marks and names.
+        # Left at WARNING deliberately.
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}

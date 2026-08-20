@@ -1,0 +1,21 @@
+{% extends "base_plain.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Not allowed" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h2>{% translate "Not allowed" %}</h2>
+  </div>
+  <div class="panel-body">
+    <p>
+      {% blocktranslate %}You do not have permission to view this page. If you believe you should, ask your school administrator.{% endblocktranslate %}
+    </p>
+    <p class="quiet">
+      {% blocktranslate %}This is not an error. GradeVault only shows each person what belongs to them.{% endblocktranslate %}
+    </p>
+    <a class="btn wide" href="/">{% translate "Back to my pages" %}</a>
+  </div>
+</div>
+{% endblock %}
