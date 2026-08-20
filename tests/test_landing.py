@@ -97,3 +97,27 @@ def test_the_public_page_states_who_it_is_for(client):
     body = client.get(reverse("home")).content.decode()
 
     assert "Somalia" in body
+
+
+@pytest.mark.django_db
+def test_the_public_page_shows_no_language_control(client):
+    """The Soomaali option was withdrawn because it changed nothing
+    visible. A control that appears broken on the page arguing this
+    software can be trusted costs more than the feature was worth."""
+    body = client.get(reverse("home")).content.decode()
+
+    assert "Soomaali" not in body
+    assert "lang-option" not in body
+
+
+@pytest.mark.django_db
+def test_the_feature_icons_need_no_extra_download(client):
+    """Icons are inline SVG, not an icon font. Six small shapes cost far
+    less than a font file over a Somali mobile connection, and they draw
+    before anything else has loaded."""
+    body = client.get(reverse("home")).content.decode()
+
+    assert body.count("feature-icon") == 6
+    assert "<svg" in body
+    assert "font-awesome" not in body.lower()
+    assert "fonts.googleapis" not in body.lower()

@@ -2,10 +2,13 @@
 {% comment %}
 The public page, for someone who has not signed in.
 
-Every figure on this page is a fact about what the software does. There
-are no adoption numbers and no testimonials, because GradeVault has no
-users yet and inventing them would cost exactly the trust the page
-exists to earn.
+Every figure on it is a fact about what the software does. There are no
+adoption numbers and no testimonials, because no school uses GradeVault
+yet, and a head teacher who later discovered those were invented would
+be right to walk away.
+
+Icons are inline SVG rather than an icon font: six small shapes cost far
+less than a font file, and they draw before anything else has loaded.
 {% endcomment %}
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
   <head>
@@ -13,7 +16,7 @@ exists to earn.
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% translate "School results software for Somali primary and secondary schools. Teachers record marks; grades, averages and class positions are worked out automatically." as page_description %}
     <meta name="description" content="{{ page_description }}">
-    <meta name="theme-color" content="#12263f">
+    <meta name="theme-color" content="#134e4a">
     <title>{% translate "GradeVault — school results for Somali schools" %}</title>
     <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
     <link rel="stylesheet" href="{% static 'css/gradevault.css' %}">
@@ -24,8 +27,8 @@ exists to earn.
     <header class="top">
       <div class="wrap top-inner">
         <a class="wordmark" href="{% url 'home' %}">
-          <img src="{% static 'img/logo.svg' %}" alt="" width="30" height="30">
-          <span>{% translate "GradeVault" %}</span>
+          <img src="{% static 'img/logo.svg' %}" alt="" width="34" height="34">
+          <span>Grade<i>Vault</i></span>
         </a>
 
         <nav class="top-links" aria-label="{% translate 'Sections' %}">
@@ -35,7 +38,7 @@ exists to earn.
         </nav>
 
         <div class="top-actions">
-          <a class="btn" href="{% url 'login' %}">{% translate "Sign in" %}</a>
+          <a class="btn outline" href="{% url 'login' %}">{% translate "Sign in" %}</a>
         </div>
       </div>
     </header>
@@ -44,116 +47,165 @@ exists to earn.
 
       <section class="hero">
         <div class="wrap hero-inner">
-          <div class="hero-words">
-            <p class="eyebrow">
-              {% translate "For primary and secondary schools in Somalia" %}
-            </p>
+          <div>
+            <p class="eyebrow">{% translate "For primary and secondary schools in Somalia" %}</p>
             <h1>{% translate "Results your school can prove" %}</h1>
             <p class="lede">
               {% blocktranslate %}Teachers record marks. Grades, averages and class positions are worked out for you. Students sign in and see only their own results, and every change to a grade is recorded permanently.{% endblocktranslate %}
             </p>
+
             <div class="hero-actions">
-              <a class="btn big" href="{% url 'login' %}">{% translate "Sign in" %}</a>
+              <a class="btn big solid" href="{% url 'login' %}">{% translate "Sign in" %}</a>
               <a class="btn big light" href="#how">{% translate "See how it works" %}</a>
             </div>
-            <p class="quiet">
-              {% blocktranslate %}Works on a phone, on a slow connection, with no app to install.{% endblocktranslate %}
+
+            <p class="hero-note">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="7" y="2" width="10" height="20" rx="2"></rect>
+                <path d="M11 18.5h2"></path>
+              </svg>
+              {% translate "Works on a phone, on a slow connection, with no app to install." %}
             </p>
           </div>
 
-          <div class="hero-card" aria-hidden="true">
-            <div class="fake-head">
-              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-            </div>
-            <div class="fake-body">
-              <p class="fake-title">{% translate "Term 1 results" %}</p>
-              <div class="fake-stats">
-                <div><strong>87.05%</strong><span>{% translate "Average" %}</span></div>
-                <div><strong>B+</strong><span>{% translate "Grade" %}</span></div>
-                <div><strong>4</strong><span>{% translate "of 20" %}</span></div>
-              </div>
-              <table class="fake-table">
-                <tr><td>{% translate "Mathematics" %}</td><td>92%</td><td><span class="pill">A-</span></td></tr>
-                <tr><td>{% translate "English" %}</td><td>100%</td><td><span class="pill">A</span></td></tr>
-                <tr><td>{% translate "Biology" %}</td><td>94%</td><td><span class="pill">A-</span></td></tr>
-                <tr><td>{% translate "Somali" %}</td><td>89%</td><td><span class="pill">B+</span></td></tr>
-              </table>
-              <p class="fake-note">
-                {% translate "Example only. Not a real student." %}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+          <div class="sample" aria-hidden="true">
+            <p class="sample-title">{% translate "Term 1 results" %}</p>
 
-      <section class="facts">
-        <div class="wrap facts-grid">
-          <div>
-            <strong>2</strong>
-            <span>{% translate "terms a year, September to June, as Somali schools run" %}</span>
-          </div>
-          <div>
-            <strong>11</strong>
-            <span>{% translate "grades from A to F, with boundaries each school sets itself" %}</span>
-          </div>
-          <div>
-            <strong>0</strong>
-            <span>{% translate "marks can be changed without a permanent record of who changed them" %}</span>
-          </div>
-          <div>
-            <strong>236</strong>
-            <span>{% translate "automated tests, run on every change to the software" %}</span>
+            <div class="sample-stats">
+              <div class="sample-stat">
+                <b>87.05%</b><span>{% translate "Average" %}</span>
+              </div>
+              <div class="sample-stat">
+                <b>B+</b><span>{% translate "Grade" %}</span>
+              </div>
+              <div class="sample-stat">
+                <b>4 <small>{% translate "of 20" %}</small></b><span>{% translate "Position" %}</span>
+              </div>
+            </div>
+
+            <table class="sample-table">
+              <thead>
+                <tr>
+                  <th>{% translate "Subject" %}</th>
+                  <th>{% translate "Mark" %}</th>
+                  <th>{% translate "Grade" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{% translate "Mathematics" %}</td>
+                  <td>92%</td>
+                  <td><span class="pill">A-</span></td>
+                </tr>
+                <tr>
+                  <td>{% translate "English" %}</td>
+                  <td>100%</td>
+                  <td><span class="pill">A</span></td>
+                </tr>
+                <tr>
+                  <td>{% translate "Biology" %}</td>
+                  <td>94%</td>
+                  <td><span class="pill">A-</span></td>
+                </tr>
+                <tr>
+                  <td>{% translate "Somali" %}</td>
+                  <td>89%</td>
+                  <td><span class="pill">B+</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p class="sample-note">{% translate "Example only. Not a real student." %}</p>
           </div>
         </div>
       </section>
 
       <section id="what" class="band">
         <div class="wrap">
-          <h2 class="section-title">{% translate "What it does" %}</h2>
+          <h2 class="section-title">{% translate "Everything your school needs for trusted results" %}</h2>
           <p class="section-lede">
             {% blocktranslate %}Replaces the paper register and the spreadsheet on one teacher's laptop.{% endblocktranslate %}
           </p>
 
           <div class="cards">
             <article class="feature">
-              <h3>{% translate "Marks become results on their own" %}</h3>
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <rect x="4" y="2" width="16" height="20" rx="2.5"></rect>
+                  <path d="M8 6h8M8 11h2m3 0h3M8 15h2m3 0h3M8 19h8"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Automatic calculations" %}</h3>
               <p>
-                {% blocktranslate %}A teacher types 32 out of 40 and 51 out of 60. GradeVault works out the total, the percentage, the letter grade, the term average and the position in class. Nobody adds up a column by hand, so nobody makes an arithmetic mistake that changes a child's standing.{% endblocktranslate %}
+                {% blocktranslate %}A teacher types 32 out of 40 and 51 out of 60. The total, percentage, letter grade, term average and class position follow on their own, so nobody adds up a column by hand and nobody makes the arithmetic mistake that changes a child's standing.{% endblocktranslate %}
               </p>
             </article>
 
             <article class="feature">
-              <h3>{% translate "Every change is recorded" %}</h3>
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <circle cx="10" cy="8" r="3.6"></circle>
+                  <path d="M3.5 20c0-3.4 2.9-6 6.5-6h1"></path>
+                  <rect x="14.5" y="14" width="7" height="6" rx="1.4"></rect>
+                  <path d="M16.3 14v-1.6a1.7 1.7 0 0 1 3.4 0V14"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Private student access" %}</h3>
               <p>
-                {% blocktranslate %}When a mark changes, GradeVault records who changed it, when, and what it was before. Nothing can edit or delete that record — not a teacher, not a head teacher, not the person running the system. A school can prove a grade is the one its teacher entered.{% endblocktranslate %}
+                {% blocktranslate %}A student signs in with their own student number and sees their results only. Their page carries no way to name another student, so there is nothing to change in order to try.{% endblocktranslate %}
               </p>
             </article>
 
             <article class="feature">
-              <h3>{% translate "Results appear when the school says so" %}</h3>
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M12 2.6 20 5.4v6.1c0 4.9-3.3 8.9-8 10-4.7-1.1-8-5.1-8-10V5.4z"></path>
+                  <path d="m8.6 11.8 2.4 2.4 4.4-4.6"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Permanent grade history" %}</h3>
               <p>
-                {% blocktranslate %}Teachers enter and correct marks freely. Students see nothing until an administrator publishes the term. No child learns their result the moment a teacher happens to save a page.{% endblocktranslate %}
+                {% blocktranslate %}Every change records who made it, when, and what the mark was before. Nothing in the system can edit or delete that record: not a teacher, not a head teacher, not whoever runs the server.{% endblocktranslate %}
               </p>
             </article>
 
             <article class="feature">
-              <h3>{% translate "Each school is separate" %}</h3>
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M12 2.6 20 5.4v6.1c0 4.9-3.3 8.9-8 10-4.7-1.1-8-5.1-8-10V5.4z"></path>
+                  <rect x="9" y="11" width="6" height="5" rx="1.2"></rect>
+                  <path d="M10.5 11V9.7a1.5 1.5 0 0 1 3 0V11"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Results released on your say-so" %}</h3>
               <p>
-                {% blocktranslate %}Many schools can use one installation, and none of them can see another's students, marks or staff. This is checked by tests that deliberately try to reach another school's records and must fail.{% endblocktranslate %}
+                {% blocktranslate %}Teachers enter and correct marks freely. Students see nothing until an administrator publishes the term, so no child learns their result the moment a teacher happens to save a page.{% endblocktranslate %}
               </p>
             </article>
 
             <article class="feature">
-              <h3>{% translate "Report cards that print" %}</h3>
+              <div class="feature-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <rect x="6" y="2" width="12" height="20" rx="2.5"></rect>
+                  <path d="M10.5 18.5h3"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Mobile friendly" %}</h3>
               <p>
-                {% blocktranslate %}One student, one term, on one page: subjects, marks, grades, position, and space for the class teacher, head teacher and parent to sign. It prints as a document, not as a web page with menus down the side.{% endblocktranslate %}
+                {% blocktranslate %}Pages are small and plain, with nothing to download and nothing that needs a fast connection. A parent on a phone sees the same thing as a head teacher at a desk.{% endblocktranslate %}
               </p>
             </article>
 
             <article class="feature">
-              <h3>{% translate "Built for the connection you have" %}</h3>
+              <div class="feature-icon amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <path d="M3 21h18M5 21V10l7-4.6 7 4.6v11"></path>
+                  <path d="M10 21v-4.5h4V21M12 2.5v2.9"></path>
+                </svg>
+              </div>
+              <h3>{% translate "Built for Somali schools" %}</h3>
               <p>
-                {% blocktranslate %}Pages are small and plain, with no app to download and nothing that needs a fast connection. A parent on a phone in Mogadishu sees the same thing as a head teacher at a desk.{% endblocktranslate %}
+                {% blocktranslate %}Two terms from September to June. Class names your school actually uses, whether that is Class 5 or Form 2. A grading scale with boundaries each school sets for itself.{% endblocktranslate %}
               </p>
             </article>
           </div>
@@ -163,27 +215,30 @@ exists to earn.
       <section id="how" class="band alt">
         <div class="wrap">
           <h2 class="section-title">{% translate "How it works" %}</h2>
+          <p class="section-lede">
+            {% blocktranslate %}Three steps, from an empty system to a report card in a parent's hand.{% endblocktranslate %}
+          </p>
 
           <ol class="steps">
             <li>
               <span class="step-no">1</span>
               <h3>{% translate "The school sets itself up" %}</h3>
               <p>
-                {% blocktranslate %}An administrator enters the year, its two terms, the classes, the subjects and the school's own grading scale. Class names are whatever the school uses — Class 5, Form 2, or anything else.{% endblocktranslate %}
+                {% blocktranslate %}An administrator enters the year, its two terms, the classes, the subjects and the school's own grading scale.{% endblocktranslate %}
               </p>
             </li>
             <li>
               <span class="step-no">2</span>
               <h3>{% translate "Teachers record marks" %}</h3>
               <p>
-                {% blocktranslate %}Each teacher sees only the classes and subjects they were given, and fills in a mark sheet for them. A mark higher than the paper is out of is refused before it can be saved.{% endblocktranslate %}
+                {% blocktranslate %}Each teacher sees only the classes and subjects they were given, and fills in a mark sheet. A mark higher than the paper is out of is refused before it can be saved.{% endblocktranslate %}
               </p>
             </li>
             <li>
               <span class="step-no">3</span>
               <h3>{% translate "The school publishes the term" %}</h3>
               <p>
-                {% blocktranslate %}When the results are ready, an administrator releases them. Students sign in with their own student number and see their subjects, grades, average and position, and can print a report card.{% endblocktranslate %}
+                {% blocktranslate %}Results appear for students, who can read their subjects, grades, average and position, and print a report card to take home.{% endblocktranslate %}
               </p>
             </li>
           </ol>
@@ -199,19 +254,29 @@ exists to earn.
 
           <dl class="answers">
             <dt>{% translate "Can a teacher see another class's marks?" %}</dt>
-            <dd>{% blocktranslate %}No. A teacher reaches only the subjects and classes they were assigned, and this is refused whether they open the page or send the form directly.{% endblocktranslate %}</dd>
+            <dd>
+              {% blocktranslate %}No. A teacher reaches only the subjects and classes they were assigned, and this is refused whether they open the page or send the form directly.{% endblocktranslate %}
+            </dd>
 
             <dt>{% translate "Can a student see a classmate's results?" %}</dt>
-            <dd>{% blocktranslate %}No. A student's own page carries no way to name another student, so there is nothing to change in order to try.{% endblocktranslate %}</dd>
+            <dd>
+              {% blocktranslate %}No. A student's own page carries no way to name another student, so there is nothing to change in order to try.{% endblocktranslate %}
+            </dd>
 
             <dt>{% translate "Can a grade be changed quietly?" %}</dt>
-            <dd>{% blocktranslate %}No. Every change writes a record that nothing in the system is able to edit or remove.{% endblocktranslate %}</dd>
+            <dd>
+              {% blocktranslate %}No. Every change writes a record that nothing in the system is able to edit or remove.{% endblocktranslate %}
+            </dd>
 
             <dt>{% translate "Are passwords readable by staff?" %}</dt>
-            <dd>{% blocktranslate %}No. Passwords are stored scrambled in a way that cannot be reversed. An administrator can set a new one; nobody can read the old one.{% endblocktranslate %}</dd>
+            <dd>
+              {% blocktranslate %}No. Passwords are stored scrambled in a way that cannot be reversed. An administrator can set a new one; nobody can read the old one.{% endblocktranslate %}
+            </dd>
 
             <dt>{% translate "Can someone guess a student's password?" %}</dt>
-            <dd>{% blocktranslate %}Repeated wrong attempts pause sign-in for that account and device. One student being locked out never locks out their classmates, even on a shared school connection.{% endblocktranslate %}</dd>
+            <dd>
+              {% blocktranslate %}Ten wrong attempts pause sign-in for that account on that device for twenty minutes. One student being paused never affects their classmates, even on a shared school connection.{% endblocktranslate %}
+            </dd>
           </dl>
 
           <p class="honest">
@@ -221,25 +286,20 @@ exists to earn.
       </section>
 
       <section class="closing">
-        <div class="wrap closing-inner">
+        <div class="wrap">
           <h2>{% translate "Ready to look inside?" %}</h2>
-          <p>
-            {% blocktranslate %}Sign in with the account your school gave you.{% endblocktranslate %}
-          </p>
+          <p>{% translate "Sign in with the account your school gave you." %}</p>
           <a class="btn big" href="{% url 'login' %}">{% translate "Sign in" %}</a>
         </div>
       </section>
     </main>
 
     <footer class="ground">
-      <div class="wrap ground-inner">
+      <div class="wrap">
         <p>
-          <strong>{% translate "GradeVault" %}</strong> —
-          {% translate "school results for Somali schools" %}
+          <strong>{% translate "GradeVault" %}</strong> — {% translate "school results for Somali schools" %}
         </p>
-        <p class="quiet">
-          {% blocktranslate %}Open source under the MIT licence. Built by Jama Barre.{% endblocktranslate %}
-        </p>
+        <p class="quiet">{% translate "Open source under the MIT licence. Built by Jama Barre." %}</p>
       </div>
     </footer>
   </body>
