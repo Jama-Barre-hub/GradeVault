@@ -147,13 +147,18 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en"
 
-# Languages GradeVault will be offered in. Somali translations are added in a
-# later milestone, but declaring them now means every template written from
-# here on uses translation tags rather than needing a retrofit.
-LANGUAGES = [
-    ("en", "English"),
-    ("so", "Soomaali"),
-]
+# English only.
+#
+# A Somali option was offered and withdrawn: the switcher worked, but
+# almost nothing was translated, so choosing it changed nothing visible.
+# On a page arguing that this software can be trusted with children's
+# records, a control that appears broken costs more than the feature was
+# worth.
+#
+# The translation tags throughout the templates are deliberately kept.
+# They cost nothing, and they mean Somali can return as finished work
+# rather than as a button that half works.
+LANGUAGES = [("en", "English")]
 
 LOCALE_PATHS = [BASE_DIR / "locale"]
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import include, path
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from schools.dashboards import dashboard, home
@@ -45,6 +45,5 @@ urlpatterns = [
     # Students
     path("results/", student_results, name="student_results"),
     path("results/<int:term_id>/card/", my_report_card, name="my_report_card"),
-    path("i18n/", include("django.conf.urls.i18n")),
     path("admin/", admin.site.urls),
 ]

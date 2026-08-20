@@ -425,36 +425,6 @@ body.plain { display: flex; align-items: center; justify-content: center; paddin
   .person { text-align: left; }
 }
 
-/* ============================ language ============================ */
-
-.lang { display: flex; gap: 2px; margin: 0; }
-
-.lang-option {
-  background: none;
-  border: 1px solid var(--line-firm);
-  padding: .3rem .6rem;
-  font: inherit;
-  font-size: .82rem;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.lang-option:first-child { border-radius: 7px 0 0 7px; }
-.lang-option:last-child { border-radius: 0 7px 7px 0; }
-.lang-option + .lang-option { border-left: 0; }
-.lang-option:hover { background: var(--page); color: var(--ink); }
-
-.lang-option.on {
-  background: var(--teal-wash);
-  border-color: var(--teal);
-  color: var(--teal-dark);
-  font-weight: 500;
-}
-
-body.plain .lang { justify-content: center; margin-top: 1.25rem; }
-
-@media print { .lang { display: none; } }
-
 /* ============================ report card ============================ */
 
 /* Designed for paper first. On screen it looks like the sheet a parent

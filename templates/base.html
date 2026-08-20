@@ -63,7 +63,6 @@ and one less tap to reach anything.
         </nav>
 
         <div class="account">
-          {% include "_language.html" %}
           <span class="person">
             <span class="person-name">{{ user.get_full_name|default:user.username }}</span>
             <span class="person-role">{{ user.get_role_display }}</span>

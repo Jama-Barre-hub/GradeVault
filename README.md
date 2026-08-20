@@ -22,13 +22,16 @@ results. Every change to a grade is permanently audited.
 | **Computation** | subject totals, percentages, letter grades, term averages, class position |
 | **Web interface** | portal layout, role dashboards, teacher mark entry, class rankings, student results |
 | **Report cards** | printable, per student per term, with signature lines |
+| **Public page** | explains the software to a visitor who has no account |
+| **Sign-in limits** | ten failed attempts pause an account for twenty minutes |
 | **Isolation** | each school sees only its own data, enforced and tested |
-| **Tests** | 225, including permission and tenancy tests that pass only when access is refused |
+| **Tests** | 238, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
-| **Somali wording** | switcher works and the catalogue exists; strings await translation |
+| **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
 | **Public deployment** | configuration ready, not yet hosted |
+| **Independent security review** | every test here was written by the author |
 
 ---
 
@@ -199,43 +202,19 @@ installing a database server on a laptop.
 
 ## Language
 
-The interface is offered in English and Somali. Every string is wrapped for
-translation, the switcher works, and the choice is remembered in a cookie.
+The interface is **English only**.
 
-**Somali is selectable; most strings are not translated yet.** An untranslated
-string falls back to English, which is deliberate — a half-blank interface would
-be far worse than an English one.
+A Somali option was built and withdrawn. The switcher worked and remembered
+the choice, but almost none of the strings had been translated, so selecting
+*Soomaali* changed nothing a user could see. On a page whose argument is that
+this software can be trusted with children's records, a control that appears
+broken costs more than the feature was worth.
 
-### Translating
-
-The catalogue lives at `locale/so/LC_MESSAGES/django.po` and holds every
-translatable string in the project. Fill in the `msgstr` lines:
-
-```po
-msgid "My results"
-msgstr "Natiijadayda"        # example only — wording to be confirmed
-```
-
-Then compile and restart:
-
-```bash
-python manage.py compilemessages -l so
-```
-
-After changing any English text in the code, re-extract before translating:
-
-```bash
-python manage.py makemessages -l so --ignore=.venv --ignore=staticfiles
-```
-
-Requires GNU gettext (`winget install --id mlocati.GetText -e` on Windows).
-
-The compiled `.mo` is committed alongside the `.po`, because the deployment
-target is not guaranteed to have gettext available at build time.
-
-> **Wording is not guesswork.** On a report card, mistranslating *pass*, *fail*
-> or *position* is not cosmetic — a parent reads it and believes it. The Somali
-> should be written by a Somali speaker, not inferred.
+The translation tags throughout the templates are deliberately kept, so Somali
+can return later as finished work rather than as a button that half works.
+Tests in `tests/test_interface_language.py` hold the current decision in place
+and are meant to be deleted, not worked around, on the day a complete
+translation exists.
 
 ---
 

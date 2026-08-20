@@ -28,10 +28,14 @@ def test_timezone_is_somalia():
     assert settings.USE_TZ is True
 
 
-def test_somali_is_an_available_language():
-    codes = [code for code, _name in settings.LANGUAGES]
-    assert "so" in codes
-    assert "en" in codes
+def test_the_interface_is_english_only():
+    """Somali was offered and withdrawn.
+
+    The switcher worked but nothing was translated, so choosing it
+    changed nothing visible. See tests/test_interface_language.py for the
+    full reasoning; this asserts the settings agree with it.
+    """
+    assert [code for code, _name in settings.LANGUAGES] == ["en"]
 
 
 def test_locale_middleware_is_enabled():

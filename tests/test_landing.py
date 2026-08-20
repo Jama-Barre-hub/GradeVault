@@ -91,9 +91,9 @@ def test_the_public_page_offers_a_way_to_sign_in(client):
 
 
 @pytest.mark.django_db
-def test_the_public_page_can_be_read_in_either_language(client):
-    """Somali parents are part of the audience for this page."""
+def test_the_public_page_states_who_it_is_for(client):
+    """The audience is Somali schools, and the page should say so rather
+    than leaving a visitor to guess whether it applies to them."""
     body = client.get(reverse("home")).content.decode()
 
-    assert "Soomaali" in body
-    assert "English" in body
+    assert "Somalia" in body
