@@ -169,3 +169,47 @@ def test_mail_is_not_silently_discarded_in_production():
     backend = configured.MAILERS["default"]["BACKEND"]
 
     assert backend == "django.core.mail.backends.smtp.EmailBackend"
+
+
+# ---------- hosting platform ----------
+
+
+def test_the_render_hostname_is_trusted_automatically():
+    """Otherwise the first deploy returns 400 to every request until
+    someone remembers to copy the hostname into a dashboard field.
+
+    Render sets this variable itself, so it cannot be forged by a
+    visitor the way a Host header can.
+    """
+    configured = load_settings(RENDER_EXTERNAL_HOSTNAME="gradevault.onrender.com")
+
+    assert "gradevault.onrender.com" in configured.ALLOWED_HOSTS
+
+
+def test_the_render_hostname_is_not_duplicated():
+    """It may also be listed by hand once a custom domain is added."""
+    configured = load_settings(
+        DJANGO_ALLOWED_HOSTS="gradevault.onrender.com",
+        RENDER_EXTERNAL_HOSTNAME="gradevault.onrender.com",
+    )
+
+    assert configured.ALLOWED_HOSTS.count("gradevault.onrender.com") == 1
+
+
+def test_no_render_hostname_leaves_allowed_hosts_alone():
+    assert load_settings().ALLOWED_HOSTS == ["gradevault.example.com"]
+
+
+# ---------- demo mode ----------
+
+
+def test_demo_mode_is_off_unless_asked_for():
+    """A real school must be able to record marks. The demo guard is
+    opt-in for that reason, and defaults off even in production."""
+    assert load_settings().DEMO_MODE is False
+
+
+def test_demo_mode_is_on_only_for_an_explicit_true():
+    assert load_settings(DEMO_MODE="True").DEMO_MODE is True
+    assert load_settings(DEMO_MODE="False").DEMO_MODE is False
+    assert load_settings(DEMO_MODE="").DEMO_MODE is False

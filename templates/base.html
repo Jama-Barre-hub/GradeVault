@@ -56,6 +56,13 @@ and one less tap to reach anything.
 
     <div class="frame">
 
+      {% if demo_mode %}
+        <p class="demo-strip">
+          {% translate "Public demo" %} —
+          {% blocktranslate %}every name and mark here is fictional, and nothing you change is saved.{% endblocktranslate %}
+        </p>
+      {% endif %}
+
       <header class="topbar">
         <nav class="crumbs" aria-label="{% translate 'Breadcrumb' %}">
           <a href="{% url 'dashboard' %}">{% translate "Home" %}</a>

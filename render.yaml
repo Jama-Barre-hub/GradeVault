@@ -12,7 +12,12 @@ services:
     region: frankfurt          # closest available region to Somalia
     buildCommand: ./build.sh
     startCommand: gunicorn config.wsgi:application --workers 2 --timeout 60
-    healthCheckPath: /login/
+
+    # Asks only whether the process is up and can reach its database.
+    # Pointing this at /login/ made the health of the service depend on
+    # sessions, the sign-in limiter and template rendering, so a broken
+    # template would have taken the site down for an unrelated reason.
+    healthCheckPath: /healthz
 
     envVars:
       # Generated once by the platform and never seen by anyone. This is
@@ -24,10 +29,16 @@ services:
       - key: DJANGO_DEBUG
         value: "False"
 
-      # Set to the real hostname after the first deploy. Left unsynced so
-      # it must be entered deliberately.
+      # Optional. Django already trusts RENDER_EXTERNAL_HOSTNAME, which
+      # the platform sets, so the first deploy serves without anyone
+      # entering anything. Set this only when a custom domain is added.
       - key: DJANGO_ALLOWED_HOSTS
         sync: false
+
+      # This deployment is the public demo: seeded with fictional data
+      # and refusing every write. See accounts/demo.py.
+      - key: DEMO_MODE
+        value: "True"
 
       - key: DATABASE_URL
         fromDatabase:

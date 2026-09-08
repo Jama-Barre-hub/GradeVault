@@ -59,6 +59,32 @@ less than a font file, and they draw before anything else has loaded.
               <a class="btn big light" href="#how">{% translate "See how it works" %}</a>
             </div>
 
+            {% if demo_mode %}
+              <div class="demo-keys">
+                <p class="demo-keys-title">{% translate "Try it — no account needed" %}</p>
+
+                <table>
+                  <caption class="visually-hidden">{% translate "Demo sign-in details" %}</caption>
+                  <tbody>
+                    {% for label, username in demo_accounts %}
+                      <tr>
+                        <th scope="row">{{ label }}</th>
+                        <td><code>{{ username }}</code></td>
+                      </tr>
+                    {% endfor %}
+                    <tr>
+                      <th scope="row">{% translate "Password" %}</th>
+                      <td><code>{{ demo_password }}</code></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <p class="demo-keys-note">
+                  {% blocktranslate %}Sign in as the teacher and open a mark sheet, then as the student to see the grade. Every name and mark is fictional, and nothing you change is saved.{% endblocktranslate %}
+                </p>
+              </div>
+            {% endif %}
+
             <p class="hero-note">
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                 <rect x="7" y="2" width="10" height="20" rx="2"></rect>

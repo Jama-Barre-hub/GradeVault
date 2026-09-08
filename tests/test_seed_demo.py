@@ -10,7 +10,12 @@ from io import StringIO
 import pytest
 from django.core.management import call_command
 
-from accounts.models import StudentProfile, TeacherProfile
+from accounts.demo import (
+    DEMO_ADMIN_USERNAME,
+    DEMO_STUDENT_USERNAME,
+    DEMO_TEACHER_USERNAME,
+)
+from accounts.models import StudentProfile, TeacherProfile, User
 from schools.management.commands.seed_demo import DEMO_SCHOOL_NAME
 from schools.models import (
     Assessment,
@@ -77,6 +82,60 @@ def test_results_start_unpublished(seeded):
     assert not any(term.is_published for term in terms)
 
 
+def test_publish_releases_the_first_term_only(db):
+    """The public demo needs a student who can see results.
+
+    Term 2 must stay unpublished: it is deliberately part-marked, and
+    releasing it would show students blank subjects and an average
+    computed from half the work — the very thing the flag prevents.
+    """
+    call_command("seed_demo", "--students", "2", "--publish", stdout=StringIO())
+    school = Institution.objects.get(name=DEMO_SCHOOL_NAME)
+
+    terms = Term.objects.filter(academic_year__institution=school).order_by("sequence")
+
+    assert terms[0].is_published
+    assert not terms[1].is_published
+
+
+def test_the_administrator_is_not_a_superuser(seeded):
+    """A superuser has no institution and is shown the cross-school
+    operator view. A demo visitor must see one school — their own."""
+    admin_user = User.objects.get(username=DEMO_ADMIN_USERNAME)
+
+    assert admin_user.is_admin
+    assert not admin_user.is_superuser
+    assert admin_user.institution == seeded
+    # Needed to reach the Django admin, which is still where school
+    # setup happens.
+    assert admin_user.is_staff
+
+
+def test_the_administrator_can_only_view_never_change(seeded):
+    """Read-only by permission, not merely because DEMO_MODE is on.
+
+    A safety property that holds only because of a separate setting is
+    one deploy away from not holding.
+    """
+    admin_user = User.objects.get(username=DEMO_ADMIN_USERNAME)
+    codenames = admin_user.get_all_permissions()
+
+    assert codenames, "the administrator should reach the admin at all"
+    assert all(name.split(".")[1].startswith("view_") for name in codenames), (
+        f"non-view permission granted: {sorted(codenames)}"
+    )
+
+
+def test_reset_rebuilds_cleanly_a_second_time(db):
+    """--reset must remove the fixed usernames as well as the generated
+    ones, or the second run collides on a duplicate username."""
+    call_command("seed_demo", "--students", "2", stdout=StringIO())
+    call_command("seed_demo", "--students", "2", "--reset", stdout=StringIO())
+
+    assert Institution.objects.filter(name=DEMO_SCHOOL_NAME).count() == 1
+    assert User.objects.filter(username=DEMO_TEACHER_USERNAME).count() == 1
+
+
 def test_some_marks_are_deliberately_missing(seeded):
     """A half-marked term is the normal state of a real system."""
     classes = ClassRoom.objects.filter(academic_year__institution=seeded)
@@ -123,8 +182,18 @@ def test_seeded_accounts_can_actually_sign_in(db):
         "seed_demo", "--students", "2", "--password", "known-demo-pw", stdout=StringIO()
     )
 
-    assert authenticate(username="demo-tch-01", password="known-demo-pw") is not None
-    assert authenticate(username="STU-2026-0001", password="known-demo-pw") is not None
+    for username in (
+        DEMO_ADMIN_USERNAME,
+        DEMO_TEACHER_USERNAME,
+        DEMO_STUDENT_USERNAME,
+    ):
+        assert authenticate(username=username, password="known-demo-pw") is not None, (
+            f"{username} is published in the README and must be able to sign in"
+        )
+
+    # A generated account, to prove the shared hash works for the whole
+    # school and not only the three published sign-ins.
+    assert authenticate(username="demo-tch-02", password="known-demo-pw") is not None
 
 
 def test_a_wrong_password_is_still_refused(db):
@@ -134,7 +203,10 @@ def test_a_wrong_password_is_still_refused(db):
         "seed_demo", "--students", "2", "--password", "known-demo-pw", stdout=StringIO()
     )
 
-    assert authenticate(username="demo-tch-01", password="not-the-password") is None
+    assert (
+        authenticate(username=DEMO_TEACHER_USERNAME, password="not-the-password")
+        is None
+    )
 
 
 def test_the_grading_scale_covers_every_percentage(seeded):

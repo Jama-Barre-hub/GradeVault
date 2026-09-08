@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from config.health import healthz
 from schools.dashboards import dashboard, home
 from schools.report_cards import class_report_card, my_report_card
 from schools.views import (
@@ -45,5 +46,7 @@ urlpatterns = [
     # Students
     path("results/", student_results, name="student_results"),
     path("results/<int:term_id>/card/", my_report_card, name="my_report_card"),
+    # Polled by the hosting platform, not by a person.
+    path("healthz", healthz, name="healthz"),
     path("admin/", admin.site.urls),
 ]
