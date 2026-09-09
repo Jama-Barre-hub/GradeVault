@@ -941,3 +941,12 @@ body.marketing { background: #fff; }
 @media print {
   .demo-strip { display: none !important; }
 }
+
+/* ---- small utilities ---- */
+
+/* A secondary line under a value in a table cell: who published a term,
+ * how many marks are missing. Needs to break onto its own line inside a
+ * cell that already contains inline content. */
+.block { display: block; margin-top: .15rem; }
+
+.warn-text { color: var(--warn); }

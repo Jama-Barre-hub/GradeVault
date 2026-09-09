@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Publishing" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}<span>{% translate "Publishing" %}</span>{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Publishing results" %}</h1>
+    <p>
+      {% blocktranslate %}Students see nothing until you publish. Publishing a term makes every mark in it visible to every student in it, and withdrawing takes them all back.{% endblocktranslate %}
+    </p>
+  </div>
+
+  {% if not institution %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No school assigned" %}</strong>
+        {% blocktranslate %}This account is not attached to a school, so there are no results to publish.{% endblocktranslate %}
+      </div>
+    </section>
+  {% elif not rows %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No terms yet" %}</strong>
+        {% blocktranslate %}Set up an academic year and its terms before publishing anything.{% endblocktranslate %}
+      </div>
+    </section>
+  {% else %}
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Terms" %}</h2>
+        <span class="quiet">{% translate "Every change here is recorded against your name" %}</span>
+      </div>
+
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Term" %}</th>
+              <th>{% translate "Runs" %}</th>
+              <th>{% translate "Marking" %}</th>
+              <th>{% translate "Results" %}</th>
+              <th class="num">{% translate "Action" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in rows %}
+              <tr>
+                <td>
+                  <strong>{{ row.term.name }}</strong>
+                  <span class="quiet block">{{ row.term.academic_year.name }}</span>
+                </td>
+
+                <td class="quiet">{{ row.term.start_date }} – {{ row.term.end_date }}</td>
+
+                <td>
+                  {% if row.progress.expected %}
+                    {{ row.progress.percent }}%
+                    <span class="quiet block">
+                      {% blocktranslate with marked=row.progress.marked expected=row.progress.expected %}{{ marked }} of {{ expected }} marks{% endblocktranslate %}
+                    </span>
+                  {% else %}
+                    <span class="quiet">{% translate "Nothing to mark" %}</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if row.term.is_published %}
+                    <span class="pill">{% translate "Published" %}</span>
+                    {% if row.term.published_by %}
+                      <span class="quiet block">
+                        {% blocktranslate with who=row.term.published_by.get_full_name|default:row.term.published_by.username %}by {{ who }}{% endblocktranslate %}
+                      </span>
+                    {% endif %}
+                  {% else %}
+                    <span class="pill none">{% translate "Hidden" %}</span>
+                  {% endif %}
+                </td>
+
+                <td class="num">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="term" value="{{ row.term.id }}">
+
+                    {% if row.term.is_published %}
+                      <button type="submit"
+                              name="action"
+                              value="withdraw"
+                              class="ghost">{% translate "Withdraw" %}</button>
+                    {% else %}
+                      <button type="submit" name="action" value="publish" class="btn">
+                        {% translate "Publish" %}
+                      </button>
+                      {% if row.progress.missing %}
+                        <span class="quiet block warn-text">
+                          {% blocktranslate count missing=row.progress.missing %}{{ missing }} mark still missing{% plural %}{{ missing }} marks still missing{% endblocktranslate %}
+                        </span>
+                      {% endif %}
+                    {% endif %}
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="quiet">
+      {% blocktranslate %}A term can be withdrawn again if a mark turns out to be wrong. Both publishing and withdrawing are written to the audit trail and cannot be removed from it.{% endblocktranslate %}
+    </p>
+  {% endif %}
+{% endblock %}

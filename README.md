@@ -48,11 +48,12 @@ like. Every name and mark is fictional.
 | **Sign-in limits** | ten failed attempts pause an account for twenty minutes |
 | **Isolation** | each school sees only its own data, enforced and tested |
 | **Public demo** | read-only deployment with a sign-in for each role |
-| **Tests** | 262, including permission and tenancy tests that pass only when access is refused |
+| **Publishing** | administrators release or withdraw a term's results from the portal, with marking progress shown and both directions audited |
+| **Tests** | 280, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
-| **Administrator interface** | school setup still happens in the Django admin rather than the portal |
+| **Administrator setup screens** | years, terms, classes, subjects, accounts and enrolment are still set up in the Django admin rather than the portal |
 | **PDF report cards** | printable in the browser; no download yet |
 | **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
 | **Independent security review** | every test here was written by the author |
@@ -72,7 +73,7 @@ of who changed a mark. GradeVault addresses all four.
 
 | Role | Can do |
 |---|---|
-| **Administrator** | Set up academic years, terms, classes, subjects and grading scales; manage accounts; publish results |
+| **Administrator** | Set up academic years, terms, classes, subjects and grading scales; manage accounts; publish and withdraw results |
 | **Teacher** | Enter and amend marks for their assigned subjects and classes only |
 | **Student** | View their own results, history and report card — nothing else |
 
@@ -176,12 +177,13 @@ GradeVault/
 │   ├── models.py      Institutions, years, terms, classes, subjects, scales, marks
 │   ├── results.py     Totals, percentages, letter grades, class positions
 │   ├── views.py       Mark entry, class rankings, student results
+│   ├── publishing.py  Releasing and withdrawing a term's results
 │   ├── report_cards.py
 │   └── admin_scoping.py   Keeps one school out of another's records
 ├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
 ├── static/            CSS and images — no framework, no web fonts, no build step
-├── tests/             262 tests
+├── tests/             280 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py

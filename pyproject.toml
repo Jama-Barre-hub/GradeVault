@@ -56,7 +56,10 @@ allowed-confusables = ["–", "—"]
 "schools/management/commands/seed_demo.py" = ["S105", "S106", "S107", "S311"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["config"]
+# `factories` is tests/factories.py, imported by name because tests/ is a
+# plain directory rather than a package. Naming it here keeps it grouped
+# with the project's own imports instead of among third-party ones.
+known-first-party = ["config", "factories"]
 
 [tool.ruff.format]
 quote-style = "double"
