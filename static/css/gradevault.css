@@ -291,7 +291,8 @@ label { display: block; font-weight: 500; font-size: .9rem; margin: .9rem 0 .3re
 
 input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"],
+input[type="date"] {
   width: 100%;
   padding: .55rem .7rem;
   border: 1px solid var(--line-firm);
@@ -950,3 +951,38 @@ body.marketing { background: #fff; }
 .block { display: block; margin-top: .15rem; }
 
 .warn-text { color: var(--warn); }
+
+/* ============================ school setup ============================ */
+
+/* A form field and, when it is wrong, the reason why — kept next to the
+ * field rather than collected at the top, because an error a school has
+ * to scroll to match up with an input is an error they will mis-fix. */
+
+.field { max-width: 26rem; }
+.field label { margin-top: 0; }
+.field + .field { margin-top: 1rem; }
+
+.field-error {
+  margin: .35rem 0 0;
+  color: var(--danger);
+  font-size: .85rem;
+}
+
+.has-error input { border-color: var(--danger); }
+.has-error input:focus { border-color: var(--danger); }
+
+/* A checkbox is not a text box and must not stretch across the form. */
+.field input[type="checkbox"] { width: auto; margin-right: .4rem; }
+
+/* ---- the readiness list ---- */
+
+.todo { margin: 0; padding-left: 1.2rem; }
+.todo li { margin-bottom: .9rem; }
+.todo li:last-child { margin-bottom: 0; }
+.todo strong { display: block; }
+.todo a { color: var(--teal-dark); font-size: .88rem; }
+
+.setup-links { margin: 0; padding: 0; list-style: none; }
+.setup-links li { margin-bottom: .9rem; }
+.setup-links li:last-child { margin-bottom: 0; }
+.setup-links a { font-weight: 500; }

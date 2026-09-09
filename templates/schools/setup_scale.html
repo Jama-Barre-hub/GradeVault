@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ scale.name }} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <a href="{% url 'setup_scales' %}">{% translate "Grading" %}</a>
+  <span>{{ scale.name }}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{{ scale.name }}</h1>
+    <p>{% blocktranslate %}Each band covers a range of percentages. Ranges are inclusive at both ends, so a band ending at 59.99 sits directly below one starting at 60.{% endblocktranslate %}</p>
+  </div>
+
+  {% if gaps %}
+    <section class="panel">
+      <div class="empty">
+        <strong class="warn-text">{% translate "This scale has a gap" %}</strong>
+        {% blocktranslate %}A student whose percentage falls in a gap receives no grade at all, and nothing else in the system would notice.{% endblocktranslate %}
+        <ul>
+          {% for low, high in gaps %}
+            <li>{% blocktranslate %}Nothing covers {{ low }}% to {{ high }}%{% endblocktranslate %}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Bands" %}</h2>
+      <span class="quiet">{% translate "Highest first" %}</span>
+    </div>
+
+    {% if bands %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Grade" %}</th>
+              <th>{% translate "Range" %}</th>
+              <th>{% translate "Remark" %}</th>
+              <th class="num"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for band in bands %}
+              <tr>
+                <td><strong>{{ band.letter }}</strong></td>
+                <td class="quiet">{{ band.min_percentage }} – {{ band.max_percentage }}%</td>
+                <td class="quiet">{{ band.remark|default:"—" }}</td>
+                <td class="num">
+                  <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="remove">
+                    <input type="hidden" name="band" value="{{ band.id }}">
+                    <button type="submit" class="ghost">{% translate "Remove" %}</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No bands yet" %}</strong>
+        {% blocktranslate %}Add one band per letter grade your school awards.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a band" %}</h2>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add band" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

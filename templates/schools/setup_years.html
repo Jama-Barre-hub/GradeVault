@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Years and terms" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <span>{% translate "Years" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Years and terms" %}</h1>
+    <p>{% blocktranslate %}A Somali school year runs September to June and holds two terms. Everything else — classes, marks, results — belongs to one of them.{% endblocktranslate %}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Academic years" %}</h2>
+    </div>
+
+    {% if years %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Year" %}</th>
+              <th>{% translate "Runs" %}</th>
+              <th>{% translate "Terms" %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for year in years %}
+              <tr>
+                <td>
+                  <strong>{{ year.name }}</strong>
+                  {% if year.is_current %}<span class="pill">{% translate "Current" %}</span>{% endif %}
+                </td>
+                <td class="quiet">{{ year.start_date }} – {{ year.end_date }}</td>
+                <td>
+                  {% with count=year.terms.count %}
+                    {% if count %}
+                      {% blocktranslate count n=count %}{{ n }} term{% plural %}{{ n }} terms{% endblocktranslate %}
+                    {% else %}
+                      <span class="warn-text">{% translate "None yet" %}</span>
+                    {% endif %}
+                  {% endwith %}
+                </td>
+                <td class="num">
+                  <a href="{% url 'setup_terms' year.id %}">{% translate "Terms" %}</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No years yet" %}</strong>
+        {% blocktranslate %}Add the year your school is working in to get started.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a year" %}</h2>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add year" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

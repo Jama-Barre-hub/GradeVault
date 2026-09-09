@@ -49,11 +49,12 @@ like. Every name and mark is fictional.
 | **Isolation** | each school sees only its own data, enforced and tested |
 | **Public demo** | read-only deployment with a sign-in for each role |
 | **Publishing** | administrators release or withdraw a term's results from the portal, with marking progress shown and both directions audited |
-| **Tests** | 280, including permission and tenancy tests that pass only when access is refused |
+| **School setup** | years, terms, classes, subjects and grading scales in the portal, with a readiness check that catches a scale with a gap or a class nobody teaches |
+| **Tests** | 316, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
-| **Administrator setup screens** | years, terms, classes, subjects, accounts and enrolment are still set up in the Django admin rather than the portal |
+| **Accounts and enrolment** | creating teacher and student accounts, and enrolling students, are still done in the Django admin |
 | **PDF report cards** | printable in the browser; no download yet |
 | **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
 | **Independent security review** | every test here was written by the author |
@@ -178,12 +179,14 @@ GradeVault/
 │   ├── results.py     Totals, percentages, letter grades, class positions
 │   ├── views.py       Mark entry, class rankings, student results
 │   ├── publishing.py  Releasing and withdrawing a term's results
+│   ├── setup.py       Years, terms, classes, subjects, grading scales
+│   ├── setup_forms.py Validation, in language a head teacher can act on
 │   ├── report_cards.py
 │   └── admin_scoping.py   Keeps one school out of another's records
 ├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
 ├── static/            CSS and images — no framework, no web fonts, no build step
-├── tests/             280 tests
+├── tests/             316 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "School setup" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}<span>{% translate "Setup" %}</span>{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "School setup" %}</h1>
+    <p>
+      {% if state.year %}
+        {% blocktranslate with year=state.year.name %}Working in {{ year }}.{% endblocktranslate %}
+      {% else %}
+        {% translate "Nothing is set up yet." %}
+      {% endif %}
+    </p>
+  </div>
+
+  {% if state.ready %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "Ready to record marks" %}</strong>
+        {% blocktranslate %}Your year, terms, classes, subjects and grading scale are all in place, and every class has a teacher.{% endblocktranslate %}
+      </div>
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Before marks can be recorded" %}</h2>
+        <span class="quiet">
+          {% blocktranslate count n=state.problems|length %}{{ n }} thing to finish{% plural %}{{ n }} things to finish{% endblocktranslate %}
+        </span>
+      </div>
+
+      <div class="panel-body">
+        <ol class="todo">
+          {% for problem in state.problems %}
+            <li>
+              <strong>{{ problem.what }}</strong>
+              <span class="quiet block">{{ problem.why }}</span>
+              {% if problem.where %}
+                <a href="{% url problem.where %}">{% translate "Fix this" %}</a>
+              {% else %}
+                <a href="{% url 'admin:schools_teachingassignment_changelist' %}">
+                  {% translate "Assign a teacher" %}
+                </a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+  {% endif %}
+
+  <div class="stats">
+    <div class="stat accent">
+      <span class="label">{% translate "Academic years" %}</span>
+      <span class="value">{{ counts.years }}</span>
+    </div>
+    <div class="stat">
+      <span class="label">{% translate "Terms this year" %}</span>
+      <span class="value">{{ counts.terms }}</span>
+    </div>
+    <div class="stat">
+      <span class="label">{% translate "Classes" %}</span>
+      <span class="value">{{ counts.classes }}</span>
+    </div>
+    <div class="stat">
+      <span class="label">{% translate "Subjects" %}</span>
+      <span class="value">{{ counts.subjects }}</span>
+    </div>
+    <div class="stat">
+      <span class="label">{% translate "Grading scales" %}</span>
+      <span class="value">{{ counts.scales }}</span>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Set up" %}</h2>
+    </div>
+    <div class="panel-body">
+      <ul class="setup-links">
+        <li>
+          <a href="{% url 'setup_years' %}">{% translate "Years and terms" %}</a>
+          <span class="quiet block">{% translate "When the school year runs, and the terms inside it" %}</span>
+        </li>
+        <li>
+          <a href="{% url 'setup_classes' %}">{% translate "Classes" %}</a>
+          <span class="quiet block">{% translate "The class groups students are enrolled into and ranked within" %}</span>
+        </li>
+        <li>
+          <a href="{% url 'setup_subjects' %}">{% translate "Subjects" %}</a>
+          <span class="quiet block">{% translate "What your school teaches" %}</span>
+        </li>
+        <li>
+          <a href="{% url 'setup_scales' %}">{% translate "Grading scales" %}</a>
+          <span class="quiet block">{% translate "How a percentage becomes a letter grade" %}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+{% endblock %}

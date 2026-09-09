@@ -44,6 +44,10 @@ and one less tap to reach anything.
               {% translate "My classes" %}
             </a>
           {% elif user.is_admin %}
+            <a href="{% url 'setup_overview' %}"
+               class="{% if nav_active == 'setup' %}on{% endif %}">
+              {% translate "Setup" %}
+            </a>
             <a href="{% url 'term_publication' %}"
                class="{% if nav_active == 'publishing' %}on{% endif %}">
               {% translate "Publishing" %}

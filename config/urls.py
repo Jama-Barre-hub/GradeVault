@@ -7,6 +7,15 @@ from config.health import healthz
 from schools.dashboards import dashboard, home
 from schools.publishing import term_publication
 from schools.report_cards import class_report_card, my_report_card
+from schools.setup import (
+    setup_classes,
+    setup_overview,
+    setup_scale,
+    setup_scales,
+    setup_subjects,
+    setup_terms,
+    setup_years,
+)
 from schools.views import (
     class_ranking,
     mark_sheet,
@@ -47,6 +56,13 @@ urlpatterns = [
     # Administrators
     # Under manage/ rather than admin/, which belongs to the Django admin.
     path("manage/results/", term_publication, name="term_publication"),
+    path("manage/setup/", setup_overview, name="setup_overview"),
+    path("manage/setup/years/", setup_years, name="setup_years"),
+    path("manage/setup/years/<int:year_id>/", setup_terms, name="setup_terms"),
+    path("manage/setup/classes/", setup_classes, name="setup_classes"),
+    path("manage/setup/subjects/", setup_subjects, name="setup_subjects"),
+    path("manage/setup/grading/", setup_scales, name="setup_scales"),
+    path("manage/setup/grading/<int:scale_id>/", setup_scale, name="setup_scale"),
     # Students
     path("results/", student_results, name="student_results"),
     path("results/<int:term_id>/card/", my_report_card, name="my_report_card"),

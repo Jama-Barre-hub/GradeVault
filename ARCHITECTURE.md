@@ -21,7 +21,7 @@ query is allowed to leave the signed-in user's own school.
 | App | Owns | Key files |
 |---|---|---|
 | `accounts` | Who someone is and what they may do | `models.py`, `permissions.py`, `demo.py` |
-| `schools` | The academic domain and every page | `models.py`, `results.py`, `views.py`, `publishing.py` |
+| `schools` | The academic domain and every page | `models.py`, `results.py`, `views.py`, `publishing.py`, `setup.py` |
 | `audit` | The permanent record of grade changes | `models.py` |
 
 The split is by **responsibility**, not by layer. There is no `services/` or
@@ -88,6 +88,7 @@ notices until a student sees another student's marks.
 | Every grade change is attributable | `audit/models.py` | `tests/test_audit.py` |
 | The public demo cannot be damaged | `accounts/demo.py` → `DemoReadOnlyMiddleware` | `tests/test_demo_mode.py` |
 | Publication cannot happen unrecorded | `schools/publishing.py`, and `is_published` readonly in the admin | `tests/test_publishing.py` |
+| One school cannot set up another's structure | `schools/setup.py` → `institution_of`, and every lookup re-filtered | `tests/test_setup.py` |
 
 Two habits make these hold in practice:
 
@@ -155,7 +156,7 @@ open and one less tap to reach anything.
 
 ## Testing
 
-`pytest` + `pytest-django`, 280 tests, run in CI against **real PostgreSQL**.
+`pytest` + `pytest-django`, 316 tests, run in CI against **real PostgreSQL**.
 SQLite and PostgreSQL differ in case sensitivity, constraint timing and null
 ordering, so passing on SQLite alone would not prove production is safe.
 
@@ -181,9 +182,13 @@ a REST API. Each is a reasonable later addition. Naming them is the point:
 knowing what you are not building is part of the design.
 
 The nearest gap worth closing is the rest of the **administrator interface**.
-Publishing has moved into the portal, because it is the action a school takes
-most often and the one with the widest blast radius. Everything else — years,
-terms, classes, subjects, grading scales, accounts, enrolment — is still set up
-in the Django admin. That is a competent back office and was the right call for
-getting the domain correct first, but it is not an interface a head teacher
-should be asked to operate.
+Publishing and academic setup have moved into the portal. What remains in the
+Django admin is **accounts and enrolment**: creating teachers and students,
+enrolling them into classes, and assigning who teaches what. That is the
+largest and most security-sensitive slice, because it creates the accounts
+every other permission rule is written about.
+
+Setup screens answer a question the admin cannot: `schools/setup.py`'s
+`readiness()` checks the pieces *against each other* rather than listing them
+separately. A year with no terms, a class nobody teaches, a grading scale with
+a gap — each looks fine on its own screen and each stops results working.
