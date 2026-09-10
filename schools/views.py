@@ -1,9 +1,8 @@
 """Pages for teachers and students."""
 
-from decimal import Decimal, InvalidOperation
-
+from django import forms
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext as _
@@ -87,11 +86,17 @@ def mark_sheet(request, classroom_id, subject_id, term_id):
         .order_by("roll_number", "student__user__last_name")
     )
 
+    errors = {}
     if request.method == "POST":
         saved, errors = _save_marks(request, enrollments, assessments)
         if errors:
-            for message in errors:
-                messages.error(request, message)
+            messages.error(
+                request,
+                _(
+                    "No marks were saved. "
+                    "Correct the highlighted entries and save again."
+                ),
+            )
         if saved:
             messages.success(request, _("Saved %(count)d mark(s).") % {"count": saved})
         if not errors:
@@ -129,6 +134,13 @@ def mark_sheet(request, classroom_id, subject_id, term_id):
         for enrollment in enrollments
     ]
 
+    if errors:
+        for row in rows:
+            for cell in row["cells"]:
+                field = cell["field"]
+                cell["value"] = request.POST.get(field, cell["value"])
+                cell["error"] = errors.get(field, "")
+
     return render(
         request,
         "schools/mark_sheet.html",
@@ -145,64 +157,51 @@ def mark_sheet(request, classroom_id, subject_id, term_id):
 
 
 def _save_marks(request, enrollments, assessments):
-    """Write submitted marks, reporting anything that could not be stored.
+    """Validate the whole sheet before saving marks and their audit entries.
 
-    A single bad value must not discard the rest of a teacher's typing,
-    so each cell is handled on its own and problems are collected rather
-    than raised.
+    An invalid sheet writes nothing. The caller keeps the submitted values
+    visible so the teacher can correct errors without retyping valid marks.
     """
     saved = 0
-    errors: list[str] = []
+    errors: dict[str, str] = {}
+    cleaned = []
 
-    valid_pairs = {(e.id, a.id): (e, a) for e in enrollments for a in assessments}
+    valid_fields = {
+        f"m-{e.id}-{a.id}": (e, a) for e in enrollments for a in assessments
+    }
+
+    marks_field = Score._meta.get_field("marks")
+    for key, raw in request.POST.items():
+        if key not in valid_fields:
+            # Forged fields outside this teacher's sheet are never trusted.
+            continue
+
+        enrollment, assessment = valid_fields[key]
+
+        range_error = _("This mark is outside 0 to %(max)s for %(assessment)s.") % {
+            "max": assessment.max_marks,
+            "assessment": assessment.name,
+        }
+        field = forms.DecimalField(
+            required=False,
+            min_value=0,
+            max_value=assessment.max_marks,
+            max_digits=marks_field.max_digits,
+            decimal_places=marks_field.decimal_places,
+            error_messages={"min_value": range_error, "max_value": range_error},
+        )
+        try:
+            marks = field.clean(raw.strip())
+        except ValidationError as error:
+            errors[key] = " ".join(error.messages)
+            continue
+        cleaned.append((enrollment, assessment, marks))
+
+    if errors:
+        return 0, errors
 
     with transaction.atomic():
-        for key, raw in request.POST.items():
-            if not key.startswith("m-"):
-                continue
-
-            try:
-                # Not `_, ...`: this module imports gettext as _, and
-                # unpacking into it would replace the translation
-                # function with a string.
-                prefix, enrollment_id, assessment_id = key.split("-")
-                del prefix
-                pair = valid_pairs[(int(enrollment_id), int(assessment_id))]
-            except (ValueError, KeyError):
-                # A field naming a student or assessment outside this
-                # sheet is ignored rather than trusted.
-                continue
-
-            enrollment, assessment = pair
-            raw = raw.strip()
-
-            if raw == "":
-                marks = None
-            else:
-                try:
-                    marks = Decimal(raw)
-                except InvalidOperation:
-                    errors.append(
-                        _("%(student)s: '%(value)s' is not a number.")
-                        % {"student": enrollment.student.full_name, "value": raw}
-                    )
-                    continue
-
-                if marks < 0 or marks > assessment.max_marks:
-                    errors.append(
-                        _(
-                            "%(student)s: %(value)s is outside 0 to %(max)s "
-                            "for %(assessment)s."
-                        )
-                        % {
-                            "student": enrollment.student.full_name,
-                            "value": marks,
-                            "max": assessment.max_marks,
-                            "assessment": assessment.name,
-                        }
-                    )
-                    continue
-
+        for enrollment, assessment, marks in cleaned:
             score, was_created = Score.objects.get_or_create(
                 enrollment=enrollment, assessment=assessment
             )
@@ -212,10 +211,6 @@ def _save_marks(request, enrollments, assessments):
                 score.recorded_by = request.user
                 score.save()
                 saved += 1
-
-        if errors:
-            transaction.set_rollback(True)
-            return 0, errors
 
     return saved, errors
 

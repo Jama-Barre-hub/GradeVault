@@ -408,3 +408,132 @@ def test_a_mark_above_the_maximum_is_refused_by_the_page(
 
     assert not Score.objects.filter(enrollment=enrollment, marks__isnull=False).exists()
     assert "outside 0 to 40" in response.content.decode()
+
+
+@pytest.mark.parametrize(
+    "invalid_mark",
+    ["NaN", "sNaN", "Infinity", "-Infinity", "abc", "32.125", "1e-1000", "-1", "45"],
+)
+def test_invalid_marks_preserve_the_sheet_without_writing_scores_or_audit_entries(
+    client, maths_teacher, school, form_2a, maths, term_one, assessment, invalid_mark
+):
+    from audit.models import AuditLog
+
+    first = make_student(school, form_2a, "Amina", "Hassan")
+    second = make_student(school, form_2a, "Yusuf", "Ali")
+    score = Score.objects.create(
+        enrollment=first, assessment=assessment, marks=Decimal("20")
+    )
+    audit_count = AuditLog.objects.count()
+    first_field = f"m-{first.id}-{assessment.id}"
+    second_field = f"m-{second.id}-{assessment.id}"
+    client.force_login(maths_teacher.user)
+
+    response = client.post(
+        reverse("mark_sheet", args=[form_2a.id, maths.id, term_one.id]),
+        {first_field: "31.25", second_field: invalid_mark},
+    )
+
+    assert response.status_code == 200
+    score.refresh_from_db()
+    assert score.marks == Decimal("20")
+    assert not Score.objects.filter(enrollment=second).exists()
+    assert AuditLog.objects.count() == audit_count
+    cells = {
+        cell["field"]: cell for row in response.context["rows"] for cell in row["cells"]
+    }
+    assert cells[first_field]["value"] == "31.25"
+    assert cells[first_field]["error"] == ""
+    assert cells[second_field]["value"] == invalid_mark
+    assert cells[second_field]["error"]
+    body = response.content.decode()
+    assert "No marks were saved" in body
+    assert 'aria-invalid="true"' in body
+    assert f'aria-describedby="error-{second_field}"' in body
+    assert f'value="{invalid_mark}"' in body
+
+
+def test_correcting_a_sheet_saves_once_and_keeps_blank_distinct_from_zero(
+    client, maths_teacher, school, form_2a, maths, term_one, assessment
+):
+    from audit.models import AuditLog
+
+    first = make_student(school, form_2a, "Amina", "Hassan")
+    second = make_student(school, form_2a, "Yusuf", "Ali")
+    score = Score.objects.create(
+        enrollment=first, assessment=assessment, marks=Decimal("20")
+    )
+    audit_count = AuditLog.objects.count()
+    first_field = f"m-{first.id}-{assessment.id}"
+    second_field = f"m-{second.id}-{assessment.id}"
+    url = reverse("mark_sheet", args=[form_2a.id, maths.id, term_one.id])
+    client.force_login(maths_teacher.user)
+
+    response = client.post(url, {first_field: "", second_field: "45"})
+    cells = {
+        cell["field"]: cell for row in response.context["rows"] for cell in row["cells"]
+    }
+    assert cells[first_field]["value"] == ""
+    score.refresh_from_db()
+    assert score.marks == Decimal("20")
+    assert AuditLog.objects.count() == audit_count
+
+    response = client.post(url, {first_field: "", second_field: "0"})
+    assert response.status_code == 302
+    assert response.url == url
+    score.refresh_from_db()
+    assert score.marks is None
+    assert Score.objects.get(enrollment=second, assessment=assessment).marks == 0
+    entries = AuditLog.objects.order_by("pk")[audit_count:]
+    assert {entry.action for entry in entries} == {
+        AuditLog.Action.SCORE_CLEARED,
+        AuditLog.Action.SCORE_RECORDED,
+    }
+    assert all(entry.actor == maths_teacher.user for entry in entries)
+    client.post(url, {first_field: "", second_field: "0"})
+    assert AuditLog.objects.count() == audit_count + 2
+
+
+def test_failed_sheet_keeps_omitted_values_and_escapes_invalid_input(
+    client, maths_teacher, school, form_2a, maths, term_one, assessment
+):
+    first = make_student(school, form_2a, "Amina", "Hassan")
+    second = make_student(school, form_2a, "Yusuf", "Ali")
+    Score.objects.create(enrollment=first, assessment=assessment, marks=Decimal("20"))
+    first_field = f"m-{first.id}-{assessment.id}"
+    second_field = f"m-{second.id}-{assessment.id}"
+    client.force_login(maths_teacher.user)
+
+    response = client.post(
+        reverse("mark_sheet", args=[form_2a.id, maths.id, term_one.id]),
+        {second_field: '"><script>alert(1)</script>'},
+    )
+
+    cells = {
+        cell["field"]: cell for row in response.context["rows"] for cell in row["cells"]
+    }
+    assert cells[first_field]["value"] == Decimal("20")
+    body = response.content.decode()
+    assert "<script>alert(1)</script>" not in body
+    assert "&lt;script&gt;" in body
+
+
+@pytest.mark.parametrize("mark", ["31.25", "40", " 12.50 "])
+def test_valid_marks_save_with_their_exact_value(
+    client, maths_teacher, school, form_2a, maths, term_one, assessment, mark
+):
+    from audit.models import AuditLog
+
+    enrollment = make_student(school, form_2a, "Amina", "Hassan")
+    client.force_login(maths_teacher.user)
+    response = client.post(
+        reverse("mark_sheet", args=[form_2a.id, maths.id, term_one.id]),
+        {f"m-{enrollment.id}-{assessment.id}": mark},
+    )
+
+    assert response.status_code == 302
+    score = Score.objects.get(enrollment=enrollment, assessment=assessment)
+    assert score.marks == Decimal(mark)
+    entry = AuditLog.objects.get()
+    assert Decimal(entry.new_value) == score.marks
+    assert entry.actor == maths_teacher.user
