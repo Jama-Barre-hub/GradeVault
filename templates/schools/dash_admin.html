@@ -77,7 +77,11 @@
       <section class="panel">
         <div class="panel-head">
           <h2>{% translate "Terms" %}</h2>
-          <span class="quiet">{% translate "Students see results only after a term is published" %}</span>
+          {% if not operator %}
+            <a href="{% url 'term_publication' %}">{% translate "Publish or withdraw results" %}</a>
+          {% else %}
+            <span class="quiet">{% translate "Students see results only after a term is published" %}</span>
+          {% endif %}
         </div>
         <div class="scroller">
           <table>

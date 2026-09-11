@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ year.name }} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <a href="{% url 'setup_years' %}">{% translate "Years" %}</a>
+  <span>{{ year.name }}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% blocktranslate with year=year.name %}Terms in {{ year }}{% endblocktranslate %}</h1>
+    <p class="quiet">{{ year.start_date }} – {{ year.end_date }}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Terms" %}</h2>
+      <span class="quiet">{% translate "Publishing a term's results is done from the Publishing page" %}</span>
+    </div>
+
+    {% if terms %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Term" %}</th>
+              <th>{% translate "Order" %}</th>
+              <th>{% translate "Runs" %}</th>
+              <th>{% translate "Results" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for term in terms %}
+              <tr>
+                <td><strong>{{ term.name }}</strong></td>
+                <td class="quiet">{{ term.sequence }}</td>
+                <td class="quiet">{{ term.start_date }} – {{ term.end_date }}</td>
+                <td>
+                  {% if term.is_published %}
+                    <span class="pill">{% translate "Published" %}</span>
+                  {% else %}
+                    <span class="pill none">{% translate "Hidden" %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No terms yet" %}</strong>
+        {% blocktranslate %}Marks are recorded against a term, so this year cannot be used until it has at least one.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a term" %}</h2>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add term" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

@@ -43,6 +43,27 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+# Render names the service's own hostname in the environment. Trusting it
+# means the very first deploy answers requests instead of returning 400
+# until someone remembers to copy the hostname into a dashboard field.
+# It is set by the platform, not by a request, so it cannot be spoofed by
+# a visitor the way a Host header can.
+_RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
+if _RENDER_HOST and _RENDER_HOST not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_RENDER_HOST)
+
+# A public demo is signed into by strangers. Reading everything is the
+# point; writing is not, because one visitor deleting the demo school
+# ends the demo for everyone who comes after. See accounts/demo.py.
+DEMO_MODE = env_bool("DEMO_MODE", False)
+
+# The password every demo account shares, printed on the public page and
+# used by `seed_demo`. One value read from one place, so the credentials
+# advertised are always the credentials that were created. It guards
+# nothing real: these accounts hold fictional data and are meant to be
+# signed into by strangers.
+DEMO_PASSWORD = os.getenv("DEMO_PASSWORD", "demo-password")
+
 
 # Application definition
 
@@ -78,6 +99,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Refuses writes when DEMO_MODE is on. Sits after MessageMiddleware
+    # because it explains the refusal through a message, and does nothing
+    # at all when DEMO_MODE is off.
+    "accounts.demo.DemoReadOnlyMiddleware",
     # Must be last: it wraps authentication to count failed attempts.
     "axes.middleware.AxesMiddleware",
 ]
@@ -95,6 +120,9 @@ TEMPLATES = [
                 "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Lets templates say so, rather than offering buttons
+                # that the middleware will only refuse.
+                "accounts.demo.demo_mode",
             ],
         },
     },

@@ -44,6 +44,14 @@ and one less tap to reach anything.
               {% translate "My classes" %}
             </a>
           {% elif user.is_admin %}
+            <a href="{% url 'setup_overview' %}"
+               class="{% if nav_active == 'setup' %}on{% endif %}">
+              {% translate "Setup" %}
+            </a>
+            <a href="{% url 'term_publication' %}"
+               class="{% if nav_active == 'publishing' %}on{% endif %}">
+              {% translate "Publishing" %}
+            </a>
             <a href="{% url 'admin:index' %}">{% translate "School administration" %}</a>
           {% endif %}
         {% endblock %}
@@ -55,6 +63,13 @@ and one less tap to reach anything.
     </aside>
 
     <div class="frame">
+
+      {% if demo_mode %}
+        <p class="demo-strip">
+          {% translate "Public demo" %} —
+          {% blocktranslate %}every name and mark here is fictional, and nothing you change is saved.{% endblocktranslate %}
+        </p>
+      {% endif %}
 
       <header class="topbar">
         <nav class="crumbs" aria-label="{% translate 'Breadcrumb' %}">

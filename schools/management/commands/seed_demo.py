@@ -15,10 +15,20 @@ import random
 from datetime import date
 from decimal import Decimal
 
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+# The three published sign-ins are defined next to the demo guard that
+# makes them safe to publish, not here, so the public page and this
+# command cannot disagree about what exists.
+from accounts.demo import (
+    DEMO_ADMIN_USERNAME,
+    DEMO_STUDENT_USERNAME,
+    DEMO_TEACHER_USERNAME,
+)
 from accounts.models import (
     StudentProfile,
     TeacherProfile,
@@ -40,6 +50,16 @@ from schools.models import (
 )
 
 DEMO_SCHOOL_NAME = "Daryeel Secondary School (Demo)"
+
+# Read-only access to the Django admin for the demo administrator.
+#
+# View permissions only. Letting a demo account add or change rows
+# through the admin would depend on DEMO_MODE being on to stay safe, and
+# a safety property that holds only because of a separate setting is one
+# deploy away from not holding. Giving a school administrator real
+# editing rights is M3's job, and belongs in the portal rather than here.
+DEMO_ADMIN_GROUP = "Demo administrators (read-only)"
+DEMO_ADMIN_APPS = ("schools", "accounts", "audit")
 
 # Common Somali given and family names, combined at random. The people
 # produced are fictional; any resemblance to a real person is accidental.
@@ -176,14 +196,28 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--password",
-            default="demo-password",
-            help="Password for every demo account. Local use only.",
+            default=settings.DEMO_PASSWORD,
+            help=(
+                "Password for every demo account. Defaults to DEMO_PASSWORD, "
+                "which is also what the public page tells visitors to type."
+            ),
         )
         parser.add_argument(
             "--seed",
             type=int,
             default=2026,
             help="Random seed, so the same data is produced each run.",
+        )
+        parser.add_argument(
+            "--publish",
+            action="store_true",
+            help=(
+                "Publish the first term, so students can see their results. "
+                "Off by default: a freshly seeded school should show the "
+                "same 'awaiting publication' state a real one does. The "
+                "public demo turns it on, because a student who signs in "
+                "and sees nothing has not been shown anything."
+            ),
         )
 
     @transaction.atomic
@@ -225,13 +259,16 @@ class Command(BaseCommand):
         self._create_grading_scale(school)
         subjects = self._create_subjects(school)
         classrooms = self._create_classes(year)
+        self._create_administrator(school)
         teachers = self._create_teachers(school, rng)
         self._assign_teaching(teachers, subjects, classrooms, rng)
         enrollments = self._enrol_students(school, classrooms, per_class, rng)
         assessments = self._create_assessments(terms, subjects, classrooms)
         marked = self._record_marks(enrollments, assessments, terms, rng)
 
-        self._report(school, teachers, enrollments, marked, password)
+        published = self._publish(terms) if options["publish"] else None
+
+        self._report(school, teachers, enrollments, marked, password, published)
 
     # ---------- steps ----------
 
@@ -239,8 +276,13 @@ class Command(BaseCommand):
         deleted, _ = Institution.objects.filter(name=DEMO_SCHOOL_NAME).delete()
         # Demo accounts are not reached by the cascade, since users own
         # their profiles rather than the other way round.
+        #
+        # The `demo-` prefix covers every account this command creates:
+        # the generated `demo-tch-07` teachers and the three fixed
+        # sign-ins. Missing one would make a second `--reset` run fail on
+        # a duplicate username rather than rebuilding cleanly.
         User.objects.filter(username__startswith="STU-").delete()
-        User.objects.filter(username__startswith="demo-tch-").delete()
+        User.objects.filter(username__startswith="demo-").delete()
         if deleted:
             self.stdout.write(f"Removed previous demo school ({deleted} rows).")
 
@@ -308,12 +350,50 @@ class Command(BaseCommand):
             for name in CLASS_NAMES
         ]
 
+    def _create_administrator(self, school):
+        """The school's administrator.
+
+        Deliberately *not* a superuser. A superuser has no institution
+        and is treated as the person who runs the deployment, so
+        `schools.dashboards._administrator` would show it a cross-school
+        operator view. A visitor signing in as an administrator should
+        see what a real Somali head teacher sees: one school, their own.
+        """
+        admin_user = User.objects.create(
+            username=DEMO_ADMIN_USERNAME,
+            role=User.Role.ADMIN,
+            institution=school,
+            first_name="Aisha",
+            last_name="Warsame",
+            password=self._shared_hash,
+            # Reaches the Django admin, which is still where school setup
+            # happens until M3 moves it into the portal.
+            is_staff=True,
+        )
+        admin_user.groups.add(self._read_only_admin_group())
+        return admin_user
+
+    def _read_only_admin_group(self):
+        """A group holding every `view_*` permission and nothing else."""
+        group, _ = Group.objects.get_or_create(name=DEMO_ADMIN_GROUP)
+        group.permissions.set(
+            Permission.objects.filter(
+                content_type__app_label__in=DEMO_ADMIN_APPS,
+                codename__startswith="view_",
+            )
+        )
+        return group
+
     def _create_teachers(self, school, rng):
         teachers = []
         for index in range(12):
             first, last = self._invent_name(rng)
             user = User.objects.create(
-                username=f"demo-tch-{index + 1:02d}",
+                # The first teacher carries the published sign-in; the
+                # rest keep generated names, as a real school would.
+                username=(
+                    DEMO_TEACHER_USERNAME if index == 0 else f"demo-tch-{index + 1:02d}"
+                ),
                 role=User.Role.TEACHER,
                 institution=school,
                 first_name=first,
@@ -350,8 +430,17 @@ class Command(BaseCommand):
         for classroom in classrooms:
             for roll in range(1, per_class + 1):
                 first, last = self._invent_name(rng)
+                # The very first student enrolled carries the published
+                # sign-in. Every class is fully marked in term 1, so this
+                # account always has results to show once a term is
+                # published — which is the whole point of the demo.
+                first_student = not enrollments
                 user = User.objects.create(
-                    username=generate_student_username(2026),
+                    username=(
+                        DEMO_STUDENT_USERNAME
+                        if first_student
+                        else generate_student_username(2026)
+                    ),
                     role=User.Role.STUDENT,
                     institution=school,
                     first_name=first,
@@ -432,13 +521,28 @@ class Command(BaseCommand):
         first_term.refresh_from_db()
         return marked
 
+    def _publish(self, terms):
+        """Release the first term only.
+
+        Term 1 is marked in full, so publishing it shows a complete set
+        of results. Term 2 is deliberately left part-marked, and
+        publishing that would show students blank subjects and a term
+        average computed from half the work — which is precisely the
+        situation the published flag exists to prevent. A demo that
+        published everything would be advertising the bug.
+        """
+        first_term = terms[0]
+        first_term.is_published = True
+        first_term.save(update_fields=["is_published"])
+        return first_term
+
     # ---------- helpers ----------
 
     def _invent_name(self, rng):
         pool = GIVEN_NAMES_F if rng.random() < 0.5 else GIVEN_NAMES_M
         return rng.choice(pool), rng.choice(FAMILY_NAMES)
 
-    def _report(self, school, teachers, enrollments, marked, password):
+    def _report(self, school, teachers, enrollments, marked, password, published):
         # Every count is scoped to the demo school. An unscoped count
         # reports another institution's records as if they were the
         # demo's, which is both wrong here and the exact shape of query
@@ -462,18 +566,28 @@ class Command(BaseCommand):
         write(f"  Awaiting marking  {unmarked}")
         write("")
 
-        sample_teacher = teachers[0].user.username
-        sample_student = (
-            enrollments[0].student.user.username if enrollments else "STU-2026-0001"
-        )
         write("  Sign in with:")
-        write(f"    teacher   {sample_teacher}")
-        write(f"    student   {sample_student}")
-        write(f"    password  {password}")
+        write(f"    administrator  {DEMO_ADMIN_USERNAME}")
+        write(f"    teacher        {DEMO_TEACHER_USERNAME}")
+        write(f"    student        {DEMO_STUDENT_USERNAME}")
+        write(f"    password       {password}")
         write("")
-        write(
-            self.style.WARNING(
-                "  All names and marks are fictional. Both terms are unpublished, "
-                "so students cannot see results until an administrator publishes."
+
+        if published:
+            write(
+                self.style.SUCCESS(
+                    f"  {published.name} is published, so the student sign-in "
+                    "shows real results. Term 2 is left unpublished and "
+                    "part-marked, as a term in progress would be."
+                )
             )
-        )
+        else:
+            write(
+                self.style.WARNING(
+                    "  Both terms are unpublished, so students cannot see "
+                    "results until an administrator publishes. Re-run with "
+                    "--publish to release Term 1."
+                )
+            )
+
+        write(self.style.WARNING("  Every name and mark above is fictional."))

@@ -6,6 +6,8 @@ the tests pay for.
 
 import pytest
 
+from factories import SchoolFixture
+
 
 @pytest.fixture(autouse=True)
 def _fast_password_hashing(settings):
@@ -40,3 +42,15 @@ def _sign_in_limits_off(settings):
     still exercised — just not by every unrelated test.
     """
     settings.AXES_ENABLED = False
+
+
+@pytest.fixture
+def hodan(db):
+    """One school."""
+    return SchoolFixture("Hodan Secondary School", "HSS")
+
+
+@pytest.fixture
+def banadir(db):
+    """A second school, which must never see the first one's data."""
+    return SchoolFixture("Banadir Secondary School", "BSS")

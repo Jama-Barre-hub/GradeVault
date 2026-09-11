@@ -208,14 +208,23 @@ breaches happen.
 
 This project succeeds if all of the following are true:
 
-- [ ] A stranger can open a live URL, log in as a demo teacher, enter a mark, then log in as a demo student and see the resulting grade
-- [ ] An automated test proves a student cannot retrieve another student's results
-- [ ] An automated test proves a teacher cannot edit a subject they do not teach
-- [ ] Every grade change is attributable to a named user with a timestamp
-- [ ] Report cards export as PDF and print correctly
-- [ ] The test suite passes in CI on every push
-- [ ] The README explains the architecture well enough for another developer to run it locally in under five minutes
-- [ ] No real student's personal data appears anywhere in the repository or demo
+- [x] A stranger can open a live URL, log in as a demo teacher, enter a mark, then log in as a demo student and see the resulting grade — *demo built and tested; awaiting the Render deploy*
+- [x] An automated test proves a student cannot retrieve another student's results
+- [x] An automated test proves a teacher cannot edit a subject they do not teach
+- [x] Every grade change is attributable to a named user with a timestamp
+- [ ] Report cards export as PDF and print correctly — *printing works; PDF download does not exist yet*
+- [x] The test suite passes in CI on every push
+- [x] The README explains the architecture well enough for another developer to run it locally in under five minutes — *see also [ARCHITECTURE.md](ARCHITECTURE.md)*
+- [x] No real student's personal data appears anywhere in the repository or demo
+
+> **Note on the first item, added with the demo.** The demo is read-only, so a
+> visitor presses Save and is told the change was not kept rather than having it
+> stored. That is a deliberate departure from the sentence as written: published
+> credentials mean anyone can use them, and a writable demo lasts until the
+> first person deletes the school. The journey a visitor actually takes — sign
+> in as a teacher, open a mark sheet, sign in as a student, see the grade the
+> system computed — is intact, and the marks on display are real computed
+> output rather than fixtures.
 
 The first three matter most. **A working demo link with credentials that a
 recruiter can actually use** is worth more than any amount of code.

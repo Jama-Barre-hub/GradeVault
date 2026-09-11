@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Subjects" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <span>{% translate "Subjects" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Subjects" %}</h1>
+    <p>{% blocktranslate %}What your school teaches. Subjects belong to the school rather than to a year, so they carry over.{% endblocktranslate %}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Subjects" %}</h2>
+    </div>
+
+    {% if subjects %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Subject" %}</th>
+              <th>{% translate "Code" %}</th>
+              <th>{% translate "Classes taught in" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for subject in subjects %}
+              <tr>
+                <td><strong>{{ subject.name }}</strong></td>
+                <td class="quiet">{{ subject.code|default:"—" }}</td>
+                <td>
+                  {% if subject.taught %}
+                    {{ subject.taught }}
+                  {% else %}
+                    <span class="quiet">{% translate "Not yet assigned" %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No subjects yet" %}</strong>
+        {% blocktranslate %}A mark is always a mark in a subject, so add what your school teaches.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a subject" %}</h2>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add subject" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

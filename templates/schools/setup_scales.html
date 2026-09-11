@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Grading scales" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <span>{% translate "Grading" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Grading scales" %}</h1>
+    <p>{% blocktranslate %}How a percentage becomes a letter grade. Every school sets its own boundaries, so this is yours to decide — and changing it recomputes past results correctly, because grades are worked out from the marks rather than stored.{% endblocktranslate %}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Scales" %}</h2>
+    </div>
+
+    {% if scales %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Scale" %}</th>
+              <th>{% translate "Bands" %}</th>
+              <th>{% translate "Covers 0–100%" %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in scales %}
+              <tr>
+                <td>
+                  <strong>{{ row.scale.name }}</strong>
+                  {% if row.scale.is_default %}<span class="pill">{% translate "Default" %}</span>{% endif %}
+                </td>
+                <td>{{ row.bands }}</td>
+                <td>
+                  {% if row.gaps %}
+                    <span class="warn-text">{% translate "Gap" %}</span>
+                  {% else %}
+                    {% translate "Yes" %}
+                  {% endif %}
+                </td>
+                <td class="num"><a href="{% url 'setup_scale' row.scale.id %}">{% translate "Edit bands" %}</a></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No grading scale yet" %}</strong>
+        {% blocktranslate %}Without one, a percentage cannot become a letter grade.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a scale" %}</h2>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add scale" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

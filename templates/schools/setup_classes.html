@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Classes" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'setup_overview' %}">{% translate "Setup" %}</a>
+  <span>{% translate "Classes" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Classes" %}</h1>
+    <p>{% blocktranslate %}Name a class whatever your school calls it — "Class 5", "Form 2A". Class position is worked out within a class, so this is what a student is ranked against.{% endblocktranslate %}</p>
+  </div>
+
+  {% if not year %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No academic year yet" %}</strong>
+        {% blocktranslate %}A class belongs to a year, so add a year first.{% endblocktranslate %}
+        <a href="{% url 'setup_years' %}">{% translate "Add a year" %}</a>
+      </div>
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{{ year.name }}</h2>
+      </div>
+
+      {% if classrooms %}
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr>
+                <th>{% translate "Class" %}</th>
+                <th>{% translate "Students" %}</th>
+                <th>{% translate "Subjects taught" %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for classroom in classrooms %}
+                <tr>
+                  <td><strong>{{ classroom.name }}</strong></td>
+                  <td>{{ classroom.students }}</td>
+                  <td>
+                    {% if classroom.staff %}
+                      {{ classroom.staff }}
+                    {% else %}
+                      <span class="warn-text">{% translate "No teacher assigned" %}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty">
+          <strong>{% translate "No classes yet" %}</strong>
+          {% blocktranslate %}Students are enrolled into a class, so add the classes this year runs.{% endblocktranslate %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Add a class" %}</h2>
+      </div>
+      <div class="panel-body">
+        <form method="post">
+          {% csrf_token %}
+          {% include "schools/_form_fields.html" %}
+          <button type="submit" class="btn">{% translate "Add class" %}</button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

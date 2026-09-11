@@ -110,6 +110,10 @@ class TermInline(admin.TabularInline):
     extra = 0
     fields = ("name", "sequence", "start_date", "end_date", "is_published")
 
+    # Shown, never edited here. Publication must go through Term.publish(),
+    # which is what writes the audit entry. See TermAdmin below.
+    readonly_fields = ("is_published",)
+
 
 @admin.register(Institution)
 class InstitutionAdmin(InstitutionScopedAdmin):
@@ -150,7 +154,17 @@ class TermAdmin(InstitutionScopedAdmin):
 
     # Publication is recorded automatically by Term.publish(); editing these
     # by hand would let the record disagree with what actually happened.
-    readonly_fields = ("published_at", "published_by")
+    #
+    # `is_published` is readonly for the same reason, and it is the one that
+    # mattered. It was an ordinary editable checkbox on this form, so an
+    # administrator could release a whole term's results to every student by
+    # ticking it — bypassing Term.publish() and therefore writing no audit
+    # entry, no published_at and no published_by. The one action the log
+    # exists to record was the one action that could be taken without it.
+    #
+    # Publication now has exactly two routes, and both are audited: the
+    # bulk actions below, and the portal screen in schools/publishing.py.
+    readonly_fields = ("is_published", "published_at", "published_by")
 
     actions = ["publish_results", "unpublish_results"]
 
@@ -165,7 +179,11 @@ class TermAdmin(InstitutionScopedAdmin):
     @admin.action(description=_("Withdraw results from students"))
     def unpublish_results(self, request, queryset):
         for term in queryset:
-            term.unpublish()
+            # withdrawn_by, not left to default: without it the entry
+            # records "system" and a withdrawal — which hides results
+            # from every student at once — becomes the one action in
+            # the log with nobody's name against it.
+            term.unpublish(withdrawn_by=request.user)
         self.message_user(
             request, _("Results withdrawn for %d term(s).") % len(queryset)
         )

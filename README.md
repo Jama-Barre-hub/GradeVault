@@ -11,9 +11,31 @@ Teachers record marks. Grades, averages and class positions are computed
 automatically. Students sign in with a unique username and see only their own
 results. Every change to a grade is permanently audited.
 
-> **Status:** In development. Data model, computation, web interface and
-> multi-school isolation are complete and tested; not yet publicly deployed.
+> **Status:** In development. Data model, computation, web interface,
+> multi-school isolation and the public demo are complete and tested.
 > See [PROPOSAL.md](PROPOSAL.md) for the full plan and roadmap.
+
+---
+
+## Try it
+
+<!-- Replace with the deployed URL once the Render blueprint is created. -->
+**Live demo:** _not yet deployed — see [Deployment](#deployment)_
+
+| Role | Username | Password |
+|---|---|---|
+| Teacher | `demo-teacher` | `demo-password` |
+| Student | `demo-student` | `demo-password` |
+| Administrator | `demo-admin` | `demo-password` |
+
+Sign in as the teacher, open a class mark sheet, then sign in as the student
+and look at the same term. That is the whole system in two minutes.
+
+The demo is **read-only**: every request that would change data is refused, for
+every account, so a visitor can press any button without ending the demo for
+whoever arrives next. Term 1 is published and fully marked; Term 2 is left
+part-marked and unpublished, which is what a term in progress actually looks
+like. Every name and mark is fictional.
 
 | Done | |
 |---|---|
@@ -25,12 +47,16 @@ results. Every change to a grade is permanently audited.
 | **Public page** | explains the software to a visitor who has no account |
 | **Sign-in limits** | ten failed attempts pause an account for twenty minutes |
 | **Isolation** | each school sees only its own data, enforced and tested |
-| **Tests** | 238, including permission and tenancy tests that pass only when access is refused |
+| **Public demo** | read-only deployment with a sign-in for each role |
+| **Publishing** | administrators release or withdraw a term's results from the portal, with marking progress shown and both directions audited |
+| **School setup** | years, terms, classes, subjects and grading scales in the portal, with a readiness check that catches a scale with a gap or a class nobody teaches |
+| **Tests** | 316, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
+| **Accounts and enrolment** | creating teacher and student accounts, and enrolling students, are still done in the Django admin |
+| **PDF report cards** | printable in the browser; no download yet |
 | **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
-| **Public deployment** | configuration ready, not yet hosted |
 | **Independent security review** | every test here was written by the author |
 
 ---
@@ -48,7 +74,7 @@ of who changed a mark. GradeVault addresses all four.
 
 | Role | Can do |
 |---|---|
-| **Administrator** | Set up academic years, terms, classes, subjects and grading scales; manage accounts; publish results |
+| **Administrator** | Set up academic years, terms, classes, subjects and grading scales; manage accounts; publish and withdraw results |
 | **Teacher** | Enter and amend marks for their assigned subjects and classes only |
 | **Student** | View their own results, history and report card — nothing else |
 
@@ -115,12 +141,19 @@ pre-commit run --all-files  # run every check manually
 ### Demo data
 
 ```bash
-python manage.py seed_demo --reset
+python manage.py seed_demo --reset            # a school awaiting its results
+python manage.py seed_demo --reset --publish  # Term 1 released, as the demo runs
 ```
 
 Builds a complete school — 12 teachers, 120 students, 6 classes, 8 subjects,
 mid-term and final assessments, and marks — in a couple of seconds. It prints
 sign-in details when it finishes.
+
+Without `--publish`, both terms stay unpublished, which is the state a real
+school is in before an administrator releases results — students see "awaiting
+release" rather than marks. `--publish` releases Term 1 only; Term 2 is
+deliberately left part-marked, and publishing a half-marked term is exactly
+what the published flag exists to prevent.
 
 **Every name, admission number and mark it produces is fictional.** No real
 student record is ever used, in development, in tests, or in the public demo.
@@ -135,14 +168,89 @@ is left alone.
 GradeVault/
 ├── config/            Django project configuration
 │   ├── settings.py    Reads all secrets from the environment
+│   ├── health.py      /healthz — is the process up and is the database reachable
 │   └── urls.py
+├── accounts/          Users, roles, profiles
+│   ├── models.py      Custom User (admin/teacher/student), Teacher and Student profiles
+│   ├── permissions.py Every access rule, in one place
+│   └── demo.py        Read-only guard and credentials for the public demo
+├── schools/           The domain
+│   ├── models.py      Institutions, years, terms, classes, subjects, scales, marks
+│   ├── results.py     Totals, percentages, letter grades, class positions
+│   ├── views.py       Mark entry, class rankings, student results
+│   ├── publishing.py  Releasing and withdrawing a term's results
+│   ├── setup.py       Years, terms, classes, subjects, grading scales
+│   ├── setup_forms.py Validation, in language a head teacher can act on
+│   ├── report_cards.py
+│   └── admin_scoping.py   Keeps one school out of another's records
+├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
-├── static/            CSS, JavaScript, images
-├── locale/            Translations (English, Somali)
+├── static/            CSS and images — no framework, no web fonts, no build step
+├── tests/             316 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py
 ```
+
+### How a request flows
+
+```mermaid
+flowchart TD
+    V["Visitor"] --> SEC["SecurityMiddleware<br/>HTTPS, HSTS"]
+    SEC --> WN["WhiteNoise<br/>static files"]
+    WN --> SESS["Session + Locale"]
+    SESS --> CSRF["CSRF"]
+    CSRF --> AUTH["Authentication"]
+    AUTH --> DEMO["DemoReadOnlyMiddleware<br/>refuses writes when DEMO_MODE"]
+    DEMO --> AXES["django-axes<br/>failed sign-in limits"]
+    AXES --> ROLE{"accounts/permissions.py<br/>role_required"}
+
+    ROLE -->|"admin"| DA["Admin dashboard"]
+    ROLE -->|"teacher"| DT["Mark sheet"]
+    ROLE -->|"student"| DS["My results"]
+
+    DT --> TEACHES{"require_teaches<br/>does this teacher teach<br/>this subject to this class?"}
+    TEACHES -->|"no"| DENY["403"]
+    TEACHES -->|"yes"| SAVE["Save Score"]
+    SAVE --> LOG["AuditLog<br/>append-only"]
+
+    DS --> PUB{"Term.is_published?"}
+    PUB -->|"no"| WAIT["Awaiting release"]
+    PUB -->|"yes"| CALC["schools/results.py<br/>totals, grade, position"]
+```
+
+### The data model
+
+```mermaid
+erDiagram
+    Institution ||--o{ AcademicYear : "owns"
+    Institution ||--o{ Subject : "owns"
+    Institution ||--o{ GradingScale : "owns"
+    AcademicYear ||--o{ Term : "two per year"
+    AcademicYear ||--o{ ClassRoom : "has"
+    GradingScale ||--o{ GradeBand : "letter, min %, max %"
+
+    User ||--o| TeacherProfile : ""
+    User ||--o| StudentProfile : ""
+
+    StudentProfile ||--o{ Enrollment : ""
+    ClassRoom ||--o{ Enrollment : ""
+    TeacherProfile ||--o{ TeachingAssignment : ""
+    Subject ||--o{ TeachingAssignment : ""
+    ClassRoom ||--o{ TeachingAssignment : ""
+
+    Term ||--o{ Assessment : ""
+    Subject ||--o{ Assessment : "max_marks 40, 60, ..."
+    ClassRoom ||--o{ Assessment : ""
+
+    Enrollment ||--o{ Score : "the central record"
+    Assessment ||--o{ Score : ""
+    Score ||--o{ AuditLog : "who changed it, from what, when"
+```
+
+`Score` holds raw marks a teacher typed; results are **derived** from them at
+read time rather than stored. That is what lets a school change its grading
+scale and have every historical result recompute correctly.
 
 ---
 
@@ -153,9 +261,24 @@ deployment is reviewable in the repository rather than a set of dashboard
 settings someone once clicked.
 
 ```
-build:  ./build.sh                → install, collectstatic, migrate
+build:  ./build.sh                → install, collectstatic, migrate, seed the demo
 start:  gunicorn config.wsgi:application
+health: /healthz                  → process up and database reachable
 ```
+
+### Deploying it yourself
+
+1. On Render, choose **New → Blueprint** and point it at this repository.
+   `render.yaml` describes the web service and its PostgreSQL database, so
+   there is nothing to configure by hand.
+2. Deploy. The secret key is generated by the platform, migrations run, and the
+   demo school is seeded on the first build only.
+3. Open the URL. No dashboard fields need filling in — Django trusts
+   `RENDER_EXTERNAL_HOSTNAME`, which Render sets itself.
+
+To run it for a **real school** instead, remove `DEMO_MODE` from `render.yaml`
+so writes are permitted, and create the institution and its administrator
+yourself rather than seeding one.
 
 ### Configuration
 
@@ -165,9 +288,30 @@ Everything is read from the environment. Nothing is hardcoded.
 |---|---|
 | `DJANGO_SECRET_KEY` | Required. The app refuses to start without it |
 | `DJANGO_DEBUG` | Must be `False` in production. Defaults to `False` |
-| `DJANGO_ALLOWED_HOSTS` | Comma-separated hostnames |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated hostnames. Optional on Render |
 | `DATABASE_URL` | PostgreSQL. Falls back to SQLite when unset |
+| `DEMO_MODE` | `True` makes the whole deployment read-only. Defaults to `False` |
+| `DEMO_PASSWORD` | The password the demo advertises. Only read when `DEMO_MODE` is on |
 | `EMAIL_HOST` etc. | Optional. Without it, mail goes to the console |
+
+### What `DEMO_MODE=True` switches on
+
+The demo publishes working credentials, so it has to survive whoever uses them.
+Every request that could change data is refused — **for every account, the
+administrator and a superuser included**. One rule with no exceptions cannot be
+got wrong the way a per-account allowance can.
+
+Signing in and out are the only exceptions, because both are `POST` and a demo
+nobody can sign in to is not a demo.
+
+A refused write is not a 403. The page is redisplayed with a message explaining
+that nothing was saved, because opening a mark sheet and pressing Save is the
+first thing a visitor tries and a wall of error text would read as a broken
+site.
+
+Six tests cover the refusals and, just as importantly, one covers the opposite:
+with `DEMO_MODE` off a teacher's marks still save. A guard that quietly blocked
+writes at a real school would break the only thing this software is for.
 
 ### What `DEBUG=False` switches on
 
@@ -192,6 +336,9 @@ Every push runs [the CI workflow](.github/workflows/ci.yml):
 lint and format · Django template lint · **check for missing migrations** ·
 the full test suite **against real PostgreSQL** · `collectstatic` with the
 production storage backend · `check --deploy` with warnings treated as failures.
+
+Every one of those gates is what a deploy runs, so a green tick means the
+deploy will work rather than only that the tests passed.
 
 Tests run on PostgreSQL rather than SQLite because the two differ in ways that
 matter — case sensitivity, constraint timing, ordering of nulls — so passing on

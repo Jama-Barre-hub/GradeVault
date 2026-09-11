@@ -1,0 +1,25 @@
+{% comment %}
+Renders one form's fields, its errors and its labels.
+
+Included by every setup screen rather than repeated in each. A field's
+error has to sit next to that field to be any use, and doing that by hand
+six times is how one of them ends up rendering errors invisibly.
+{% endcomment %}
+
+{% if form.non_field_errors %}
+  <ul class="messages">
+    {% for error in form.non_field_errors %}<li class="error">{{ error }}</li>{% endfor %}
+  </ul>
+{% endif %}
+
+{% for field in form %}
+  <div class="field {% if field.errors %}has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+
+    {{ field }}
+
+    {% if field.help_text %}<p class="hint">{{ field.help_text }}</p>{% endif %}
+
+    {% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+  </div>
+{% endfor %}
