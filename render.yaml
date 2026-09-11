@@ -53,3 +53,13 @@ databases:
     plan: free
     databaseName: gradevault
     user: gradevault
+
+    # Must match the web service's region above.
+    #
+    # DATABASE_URL is wired to this database's *internal* connection
+    # string, and Render's internal network does not cross regions. Left
+    # unset, this block defaulted to Oregon while the service sat in
+    # Frankfurt, so the service could not reach its own database: the
+    # first deploy failed at `migrate`, and the pair looked correctly
+    # configured in every file that described them separately.
+    region: frankfurt
