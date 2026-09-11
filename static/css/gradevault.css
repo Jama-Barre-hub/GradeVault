@@ -331,7 +331,9 @@ input:focus { border-color: var(--teal); }
 
 .actions { display: flex; flex-wrap: wrap; gap: .4rem; }
 
-table.marks input[type="number"] { width: 5.2rem; text-align: right; padding: .4rem .5rem; }
+table.marks input { width: 5.2rem; text-align: right; padding: .4rem .5rem; }
+table.marks input[aria-invalid="true"] { border-color: var(--danger); background: var(--danger-wash); }
+table.marks .field-error { color: var(--danger); font-size: .85rem; max-width: 16rem; margin: .4rem 0 0 auto; }
 
 .form-foot {
   display: flex;
