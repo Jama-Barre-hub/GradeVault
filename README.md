@@ -11,16 +11,19 @@ Teachers record marks. Grades, averages and class positions are computed
 automatically. Students sign in with a unique username and see only their own
 results. Every change to a grade is permanently audited.
 
-> **Status:** In development. Data model, computation, web interface,
-> multi-school isolation and the public demo are complete and tested.
+> **Status:** Deployed and in use as a public demo. Data model, computation,
+> web interface, multi-school isolation, publishing and school setup are
+> complete and tested.
 > See [PROPOSAL.md](PROPOSAL.md) for the full plan and roadmap.
 
 ---
 
 ## Try it
 
-<!-- Replace with the deployed URL once the Render blueprint is created. -->
-**Live demo:** _not yet deployed — see [Deployment](#deployment)_
+### **[gradevault-gnxf.onrender.com](https://gradevault-gnxf.onrender.com)**
+
+> Hosted on a free instance, which sleeps when idle. The **first request can
+> take up to a minute** while it wakes; everything after that is quick.
 
 | Role | Username | Password |
 |---|---|---|

@@ -208,7 +208,7 @@ breaches happen.
 
 This project succeeds if all of the following are true:
 
-- [x] A stranger can open a live URL, log in as a demo teacher, enter a mark, then log in as a demo student and see the resulting grade — *demo built and tested; awaiting the Render deploy*
+- [x] A stranger can open a live URL, log in as a demo teacher, enter a mark, then log in as a demo student and see the resulting grade — *live at [gradevault-gnxf.onrender.com](https://gradevault-gnxf.onrender.com)*
 - [x] An automated test proves a student cannot retrieve another student's results
 - [x] An automated test proves a teacher cannot edit a subject they do not teach
 - [x] Every grade change is attributable to a named user with a timestamp
