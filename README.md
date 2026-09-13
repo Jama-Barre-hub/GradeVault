@@ -47,6 +47,7 @@ like. Every name and mark is fictional.
 | **Computation** | subject totals, percentages, letter grades, term averages, class position |
 | **Web interface** | portal layout, role dashboards, teacher mark entry, class rankings, student results |
 | **Report cards** | printable, per student per term, with signature lines |
+| **PDF download** | one page per pupil per term, a file a school can email or file, marked PROVISIONAL until the term is released |
 | **Public page** | explains the software to a visitor who has no account |
 | **Sign-in limits** | ten failed attempts pause an account for twenty minutes |
 | **Isolation** | each school sees only its own data, enforced and tested |
@@ -56,11 +57,10 @@ like. Every name and mark is fictional.
 | **Student results slip** | one term at a time with a term picker, the year's running average beside it, PASS/FAIL and remarks, and a printable slip |
 | **People** | a head teacher creates teacher and pupil accounts, admits pupils into classes, moves them between classes, and assigns who teaches what |
 | **Passwords** | anyone changes their own; an administrator resets a teacher's or pupil's, and every reset is audited |
-| **Tests** | 379, including permission and tenancy tests that pass only when access is refused |
+| **Tests** | 397, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
-| **PDF report cards** | printable in the browser; no download yet |
 | **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
 | **Independent security review** | every test here was written by the author |
 
@@ -187,11 +187,12 @@ GradeVault/
 │   ├── setup.py       Years, terms, classes, subjects, grading scales
 │   ├── setup_forms.py Validation, in language a head teacher can act on
 │   ├── report_cards.py
+│   ├── report_pdf.py  The same card as a downloadable file
 │   └── admin_scoping.py   Keeps one school out of another's records
 ├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
 ├── static/            CSS and images — no framework, no web fonts, no build step
-├── tests/             379 tests
+├── tests/             397 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py

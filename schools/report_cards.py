@@ -25,6 +25,7 @@ from accounts.permissions import (
     teacher_required,
 )
 from schools.models import ClassRoom, Enrollment, Term
+from schools.report_pdf import render_pdf
 from schools.results import class_results, default_scale_for, term_result
 
 
@@ -86,10 +87,19 @@ def my_report_card(request, term_id):
             status=403,
         )
 
+    card = _build(enrollment, term, released=True)
+
+    # The PDF hangs off the same view, behind the same checks, rather
+    # than living at a URL of its own. A second entry point is a second
+    # place for the permission rules to be got right, and the one that
+    # gets forgotten is the one that leaks.
+    if request.GET.get("format") == "pdf":
+        return render_pdf(card)
+
     return render(
         request,
         "schools/report_card.html",
-        {**_build(enrollment, term, released=True), "nav_active": "results"},
+        {**card, "nav_active": "results"},
     )
 
 
@@ -109,12 +119,13 @@ def class_report_card(request, classroom_id, term_id, enrollment_id):
         Enrollment, pk=enrollment_id, classroom=classroom, is_active=True
     )
 
+    card = _build(enrollment, term, released=term.is_published)
+
+    if request.GET.get("format") == "pdf":
+        return render_pdf(card)
+
     return render(
         request,
         "schools/report_card.html",
-        {
-            **_build(enrollment, term, released=term.is_published),
-            "nav_active": "classes",
-            "staff_view": True,
-        },
+        {**card, "nav_active": "classes", "staff_view": True},
     )

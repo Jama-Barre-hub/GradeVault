@@ -312,7 +312,16 @@ def test_a_student_sees_only_their_own_marks(
 
     assert "Amina Hassan" in body
     assert "Yusuf Ali" not in body
-    assert "39" not in body
+    assert theirs.student.user.username not in body
+    assert theirs.student.admission_number not in body
+
+    # Their mark as this page would actually draw it, rather than the
+    # bare digits. "39" on its own also matches the reader's own
+    # sign-in number, STU-2026-0039, once a school's roll reaches that
+    # far — and a permissions test that fails for a reason which is not
+    # a leak is one people learn to re-run rather than read.
+    assert "39 /" not in body
+    assert "97.50%" not in body
 
 
 @pytest.mark.permissions

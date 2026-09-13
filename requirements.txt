@@ -31,3 +31,12 @@ psycopg[binary]==3.2.12
 # Limits repeated failed sign-ins. Security, so it belongs in production
 # rather than in the development extras.
 django-axes==8.3.1
+
+# ---------- Report cards ----------
+
+# Draws report cards as PDFs so a school can attach or file one, which
+# printing cannot do. Pure Python: no Pango, no Cairo, nothing for the
+# deployment to be missing. WeasyPrint would render the existing HTML
+# and never drift from it, but it needs system libraries and a failed
+# deploy costs more than a hand-drawn layout does.
+fpdf2==2.8.8

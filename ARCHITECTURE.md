@@ -92,6 +92,7 @@ notices until a student sees another student's marks.
 | A term picker cannot reveal an unpublished term | `schools/views.py` → the id is matched inside the published set, never fetched | `tests/test_student_portal.py` |
 | An account's role cannot be posted | `schools/people.py` → role is set by the view, never read from the request | `tests/test_people_screens.py` |
 | A password reset only ever points downwards | `accounts/passwords.py` → scoped by institution *and* restricted to teacher/student roles | `tests/test_passwords.py` |
+| A PDF cannot be downloaded where the page is refused | `schools/report_cards.py` → `?format=pdf` is served by the same view, after the same checks, rather than from a URL of its own | `tests/test_report_pdf.py` |
 
 Two habits make these hold in practice:
 

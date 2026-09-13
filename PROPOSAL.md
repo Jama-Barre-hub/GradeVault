@@ -212,7 +212,7 @@ This project succeeds if all of the following are true:
 - [x] An automated test proves a student cannot retrieve another student's results
 - [x] An automated test proves a teacher cannot edit a subject they do not teach
 - [x] Every grade change is attributable to a named user with a timestamp
-- [ ] Report cards export as PDF and print correctly — *printing works; PDF download does not exist yet*
+- [x] Report cards export as PDF and print correctly
 - [x] The test suite passes in CI on every push
 - [x] The README explains the architecture well enough for another developer to run it locally in under five minutes — *see also [ARCHITECTURE.md](ARCHITECTURE.md)*
 - [x] No real student's personal data appears anywhere in the repository or demo
