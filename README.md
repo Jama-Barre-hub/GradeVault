@@ -53,7 +53,8 @@ like. Every name and mark is fictional.
 | **Public demo** | read-only deployment with a sign-in for each role |
 | **Publishing** | administrators release or withdraw a term's results from the portal, with marking progress shown and both directions audited |
 | **School setup** | years, terms, classes, subjects and grading scales in the portal, with a readiness check that catches a scale with a gap or a class nobody teaches |
-| **Tests** | 316, including permission and tenancy tests that pass only when access is refused |
+| **Student results slip** | one term at a time with a term picker, the year's running average beside it, PASS/FAIL and remarks, and a printable slip |
+| **Tests** | 330, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
@@ -189,7 +190,7 @@ GradeVault/
 ├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
 ├── static/            CSS and images — no framework, no web fonts, no build step
-├── tests/             316 tests
+├── tests/             330 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py

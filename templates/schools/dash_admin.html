@@ -4,6 +4,7 @@
 {% block title %}{% translate "Overview" %} · {% translate "GradeVault" %}{% endblock %}
 
 {% block content %}
+
   <div class="page-head">
     <h1>
       {% if operator %}
@@ -22,6 +23,19 @@
       {% endif %}
     </p>
   </div>
+
+  {% if institution and not operator %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Quick links" %}</h2>
+      </div>
+      <div class="quick">
+        <a href="{% url 'term_publication' %}">◈ {% translate "Publish results" %}</a>
+        <a class="cool" href="{% url 'setup_overview' %}">⚙ {% translate "School setup" %}</a>
+        <a class="warm" href="{% url 'admin:index' %}">▦ {% translate "Records" %}</a>
+      </div>
+    </section>
+  {% endif %}
 
   {% if not institution and not operator %}
     <section class="panel">

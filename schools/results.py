@@ -18,6 +18,16 @@ from schools.models import Assessment, ClassRoom, Enrollment, GradingScale, Scor
 
 TWO_PLACES = Decimal("0.01")
 
+# The letter a school's scale uses for a fail.
+#
+# Held here rather than written out at each use, because it is the one
+# piece of a grading scale this module has to recognise by name. A scale
+# is otherwise entirely the school's own data (§10.3) — the boundaries,
+# the letters and the remarks are all theirs. Only "did this student
+# pass" needs an opinion, and a school that grades differently changes
+# this one line rather than hunting for the literal.
+FAIL_LETTER = "F"
+
 
 def round_percentage(value: Decimal) -> Decimal:
     """Round half up, the way a person expects.
@@ -124,8 +134,27 @@ class TermResult:
         return sum(
             1
             for subject in self.subjects
-            if (band := subject.grade(scale)) is not None and band.letter != "F"
+            if (band := subject.grade(scale)) is not None and band.letter != FAIL_LETTER
         )
+
+    def is_pass(self, scale: GradingScale | None) -> bool | None:
+        """Did this student pass the term overall?
+
+        Judged on the term average rather than on every subject, because
+        that is what a school means by passing a term: a student may
+        fail one subject and still pass the year. Reporting a whole term
+        as failed because of one subject would be a harsher rule than
+        any school asked for, and the per-subject picture is on the same
+        page anyway.
+
+        None when there is nothing to judge — no marks yet, or no
+        grading scale configured — so a caller can tell "failed" apart
+        from "not known", which a bare False would hide.
+        """
+        band = self.grade(scale)
+        if band is None:
+            return None
+        return band.letter != FAIL_LETTER
 
 
 def default_scale_for(classroom: ClassRoom) -> GradingScale | None:

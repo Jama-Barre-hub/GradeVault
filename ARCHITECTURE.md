@@ -89,6 +89,7 @@ notices until a student sees another student's marks.
 | The public demo cannot be damaged | `accounts/demo.py` → `DemoReadOnlyMiddleware` | `tests/test_demo_mode.py` |
 | Publication cannot happen unrecorded | `schools/publishing.py`, and `is_published` readonly in the admin | `tests/test_publishing.py` |
 | One school cannot set up another's structure | `schools/setup.py` → `institution_of`, and every lookup re-filtered | `tests/test_setup.py` |
+| A term picker cannot reveal an unpublished term | `schools/views.py` → the id is matched inside the published set, never fetched | `tests/test_student_portal.py` |
 
 Two habits make these hold in practice:
 
@@ -156,7 +157,7 @@ open and one less tap to reach anything.
 
 ## Testing
 
-`pytest` + `pytest-django`, 316 tests, run in CI against **real PostgreSQL**.
+`pytest` + `pytest-django`, 330 tests, run in CI against **real PostgreSQL**.
 SQLite and PostgreSQL differ in case sensitivity, constraint timing and null
 ordering, so passing on SQLite alone would not prove production is safe.
 

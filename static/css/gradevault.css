@@ -28,6 +28,13 @@
   --line: #e2ecea;
   --line-firm: #c9dbd7;
 
+  --violet: #6d4aa8;
+  --violet-wash: #f0ebfa;
+  --sky: #1f7fa8;
+  --sky-wash: #e6f3f9;
+  --rose: #b03a6b;
+  --rose-wash: #fbeaf1;
+
   --danger: #a32d2d;
   --danger-wash: #fbeaea;
   --good: #0b7f60;
@@ -284,6 +291,15 @@ tfoot th, tfoot td {
 
 .pill.fail { background: var(--danger-wash); color: var(--danger); }
 .pill.none { background: #eef1f4; color: var(--faint); }
+
+/* Stat cards, each with its own accent so four numbers side by side read
+ * as four different things rather than one striped block. */
+.stat.good { border-top: 3px solid var(--good); }
+.stat.warm { border-top: 3px solid var(--amber); }
+.stat.cool { border-top: 3px solid var(--sky); }
+.stat.good .value { color: var(--good); }
+.stat.warm .value { color: var(--warn); }
+.stat.cool .value { color: var(--sky); }
 
 /* ============================ forms ============================ */
 
@@ -986,3 +1002,176 @@ body.marketing { background: #fff; }
 .setup-links li { margin-bottom: .9rem; }
 .setup-links li:last-child { margin-bottom: 0; }
 .setup-links a { font-weight: 500; }
+
+/* ====================== portal shell refinements ====================== */
+
+/* ---- sidebar groups ---- */
+
+/* Headings break the menu into sections. A school portal grows, and a
+ * flat list of fifteen links is a list nobody reads. */
+.menu-group {
+  margin: 1.1rem 0 .3rem;
+  padding: 0 .7rem;
+  color: #7f93a6;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.menu-group:first-child { margin-top: .4rem; }
+
+.menu a { display: flex; align-items: center; gap: .55rem; }
+
+.menu-icon {
+  flex: none;
+  width: 1.1rem;
+  text-align: center;
+  opacity: .75;
+  font-size: .95rem;
+}
+
+.menu a.on .menu-icon { opacity: 1; }
+
+/* ---- the person, top right ---- */
+
+/* Initials rather than a photograph. Showing real pictures would mean a
+ * school collecting, storing and moderating images of children, which is
+ * a great deal of risk to carry for decoration. */
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-weight: 700;
+  font-size: .95rem;
+  flex: none;
+}
+
+/* ---- footer ---- */
+
+.foot p { margin: 0; }
+.foot .quiet { margin-top: .15rem; font-size: .8rem; }
+
+/* ====================== the results slip ====================== */
+
+/* ---- choosing a term ---- */
+
+.term-picker { display: flex; align-items: center; gap: .5rem; margin: 0; }
+
+.term-picker select {
+  padding: .35rem .6rem;
+  border: 1px solid var(--line-firm);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: .88rem;
+}
+
+.term-picker select:focus { border-color: var(--teal); }
+
+button.tiny, .btn.tiny { padding: .3rem .7rem; font-size: .83rem; }
+
+/* ---- this term beside the year so far ---- */
+
+.summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 2rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--teal-faint);
+}
+
+.summary-col { margin: 0; }
+
+.summary-col > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .3rem 0;
+}
+
+.summary-col dt { color: var(--muted); font-size: .88rem; }
+.summary-col dd { margin: 0; font-size: .88rem; text-align: right; }
+.summary-col dd strong { font-size: 1rem; color: var(--teal-dark); }
+
+/* ---- pass or fail ---- */
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 2rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line-firm);
+}
+
+.verdict-row { display: flex; align-items: center; gap: .6rem; }
+
+.verdict-label {
+  color: var(--muted);
+  font-size: .88rem;
+  font-weight: 500;
+}
+
+.verdict .btn { margin-left: auto; }
+
+.badge {
+  display: inline-block;
+  padding: .2rem .7rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.badge.pass { background: var(--good-wash); color: var(--good); }
+.badge.fail { background: var(--danger-wash); color: var(--danger); }
+.badge.none { background: #eef1f4; color: var(--faint); }
+.badge.top { background: var(--warn-wash); color: var(--warn); margin-left: .4rem; }
+
+/* ---- quick links on a dashboard ---- */
+
+/* The action a role came to perform, offered before they go looking for
+ * it in the menu. */
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  padding: 1rem 1.5rem;
+}
+
+.quick a {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .55rem 1rem;
+  border-radius: 8px;
+  background: var(--teal-wash);
+  border: 1px solid transparent;
+  color: var(--teal-dark);
+  font-size: .9rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.quick a:hover { background: #fff; border-color: var(--teal); }
+.quick a.warm { background: var(--warn-wash); color: var(--warn); }
+.quick a.warm:hover { background: #fff; border-color: var(--amber); }
+.quick a.cool { background: var(--sky-wash); color: var(--sky); }
+.quick a.cool:hover { background: #fff; border-color: var(--sky); }
+
+@media (max-width: 700px) {
+  .summary { grid-template-columns: 1fr; gap: 0; }
+  .verdict .btn { margin-left: 0; width: 100%; text-align: center; }
+}
+
+@media print {
+  .term-picker, .quick { display: none !important; }
+  .summary, .verdict { background: #fff; border-top: 1px solid #999; }
+}

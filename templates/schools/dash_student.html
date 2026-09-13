@@ -4,12 +4,25 @@
 {% block title %}{% translate "Overview" %} · {% translate "GradeVault" %}{% endblock %}
 
 {% block content %}
+
   <div class="page-head">
     <h1>{% blocktranslate with name=user.first_name|default:user.username %}Welcome, {{ name }}{% endblocktranslate %}</h1>
     {% if classroom %}
       <p>{{ student.user.username }} · {{ classroom.name }} · {{ classroom.academic_year }}</p>
     {% endif %}
   </div>
+
+  {% if latest %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Quick links" %}</h2>
+      </div>
+      <div class="quick">
+        <a href="{% url 'student_results' %}">▤ {% translate "My results" %}</a>
+        <a class="warm" href="{% url 'my_report_card' latest.term.id %}">⎙ {% translate "Result slip" %}</a>
+      </div>
+    </section>
+  {% endif %}
 
   {% if not classroom %}
     <section class="panel">

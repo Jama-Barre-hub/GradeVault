@@ -25,7 +25,12 @@ from schools.models import (
     Subject,
     Term,
 )
-from schools.results import class_results, default_scale_for, term_result
+from schools.results import (
+    class_results,
+    default_scale_for,
+    round_percentage,
+    term_result,
+)
 
 # ---------------------------------------------------------------- teacher
 
@@ -273,26 +278,41 @@ def student_results(request):
     classroom = enrollment.classroom
     scale = default_scale_for(classroom)
 
-    published_terms = Term.objects.filter(
-        academic_year=classroom.academic_year, is_published=True
-    ).order_by("sequence")
+    published_terms = list(
+        Term.objects.filter(
+            academic_year=classroom.academic_year, is_published=True
+        ).order_by("sequence")
+    )
 
-    reports = []
-    for term in published_terms:
-        result = term_result(enrollment, term)
-        reports.append(
-            {
-                "term": term,
-                "result": result,
-                "grade": result.grade(scale),
-                "passed": result.subjects_passed(scale),
-                "subjects": [
-                    {"subject": subject, "grade": subject.grade(scale)}
-                    for subject in result.subjects
-                ],
-                "position": _position_of(classroom, term, enrollment),
-            }
-        )
+    # One term at a time, chosen from a list, rather than every term
+    # stacked down one page. A student opening this wants the term they
+    # just sat, and by Form 4 that page would be eight terms long.
+    #
+    # The requested id is looked up inside the published set rather than
+    # fetched on its own, so an unpublished term cannot be read by
+    # putting its id in the address bar.
+    selected = None
+    requested = request.GET.get("term")
+    if requested:
+        selected = next((t for t in published_terms if str(t.id) == requested), None)
+    if selected is None and published_terms:
+        selected = published_terms[-1]
+
+    report = None
+    if selected is not None:
+        result = term_result(enrollment, selected)
+        report = {
+            "term": selected,
+            "result": result,
+            "grade": result.grade(scale),
+            "passed": result.subjects_passed(scale),
+            "is_pass": result.is_pass(scale),
+            "subjects": [
+                {"subject": subject, "grade": subject.grade(scale)}
+                for subject in result.subjects
+            ],
+            "position": _position_of(classroom, selected, enrollment),
+        }
 
     unpublished = Term.objects.filter(
         academic_year=classroom.academic_year, is_published=False
@@ -305,11 +325,49 @@ def student_results(request):
             "student": student,
             "enrollment": enrollment,
             "classroom": classroom,
-            "reports": reports,
+            "terms": published_terms,
+            "selected": selected,
+            "report": report,
+            "cumulative": _cumulative(enrollment, published_terms, scale),
             "unpublished": unpublished,
             "nav_active": "results",
         },
     )
+
+
+def _cumulative(enrollment, terms, scale):
+    """The student's standing across every term published so far.
+
+    A school's equivalent of a cumulative average: one figure that says
+    how the year is going rather than how one term went. Built from the
+    raw marks of every published term rather than by averaging the term
+    averages, because terms differ in how many marks they carry and
+    averaging averages would quietly weight a short term equally with a
+    long one.
+    """
+    obtained = Decimal("0")
+    available = Decimal("0")
+    counted = 0
+
+    for term in terms:
+        result = term_result(enrollment, term)
+        if not result.has_any_mark:
+            continue
+        obtained += result.marks_obtained
+        available += result.marks_available
+        counted += 1
+
+    if available == 0:
+        return {"terms": counted, "average": None, "grade": None}
+
+    average = round_percentage(obtained / available * 100)
+    return {
+        "terms": counted,
+        "average": average,
+        "obtained": obtained,
+        "available": available,
+        "grade": scale.grade_for(average) if scale else None,
+    }
 
 
 def _position_of(classroom, term, enrollment):

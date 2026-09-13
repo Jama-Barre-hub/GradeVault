@@ -5,6 +5,12 @@
 The signed-in shell: navigation down the side, breadcrumbs and account
 across the top, page content in the middle.
 
+The sidebar groups its links under headings rather than listing them
+flat. A school portal grows — results, timetables, attendance, fees —
+and a flat list of fifteen links is a list nobody reads. Grouping costs
+nothing now and is the difference between a menu that scales and one
+that has to be redesigned later.
+
 On a phone the sidebar becomes a scrolling strip under the header rather
 than a drawer behind a button. No JavaScript, nothing to fail to open,
 and one less tap to reach anything.
@@ -19,7 +25,7 @@ and one less tap to reach anything.
 
     <aside class="sidebar" aria-label="{% translate 'Main navigation' %}">
       <a class="mark" href="{% url 'dashboard' %}">
-        <img src="{% static 'img/logo.svg' %}" alt="" width="30" height="30">
+        <img src="{% static 'img/logo.svg' %}" alt="" width="32" height="32">
         <span class="mark-text">
           <strong>{% translate "GradeVault" %}</strong>
           <small>{% translate "School results" %}</small>
@@ -30,29 +36,62 @@ and one less tap to reach anything.
         {% block nav %}
           <a href="{% url 'dashboard' %}"
              class="{% if nav_active == 'home' %}on{% endif %}">
-            {% translate "Overview" %}
+            <span class="menu-icon" aria-hidden="true">⌂</span>
+            {% translate "Dashboard" %}
           </a>
 
           {% if user.is_student %}
+            <p class="menu-group">{% translate "My academic" %}</p>
             <a href="{% url 'student_results' %}"
                class="{% if nav_active == 'results' %}on{% endif %}">
+              <span class="menu-icon" aria-hidden="true">▤</span>
               {% translate "My results" %}
             </a>
+
           {% elif user.is_teacher %}
+            <p class="menu-group">{% translate "Teaching" %}</p>
             <a href="{% url 'teacher_home' %}"
                class="{% if nav_active == 'classes' %}on{% endif %}">
+              <span class="menu-icon" aria-hidden="true">▤</span>
               {% translate "My classes" %}
             </a>
+
           {% elif user.is_admin %}
-            <a href="{% url 'setup_overview' %}"
-               class="{% if nav_active == 'setup' %}on{% endif %}">
-              {% translate "Setup" %}
-            </a>
+            <p class="menu-group">{% translate "Results" %}</p>
             <a href="{% url 'term_publication' %}"
                class="{% if nav_active == 'publishing' %}on{% endif %}">
+              <span class="menu-icon" aria-hidden="true">◈</span>
               {% translate "Publishing" %}
             </a>
-            <a href="{% url 'admin:index' %}">{% translate "School administration" %}</a>
+
+            <p class="menu-group">{% translate "School setup" %}</p>
+            <a href="{% url 'setup_overview' %}"
+               class="{% if nav_active == 'setup' %}on{% endif %}">
+              <span class="menu-icon" aria-hidden="true">⚙</span>
+              {% translate "Overview" %}
+            </a>
+            <a href="{% url 'setup_years' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Years and terms" %}
+            </a>
+            <a href="{% url 'setup_classes' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Classes" %}
+            </a>
+            <a href="{% url 'setup_subjects' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Subjects" %}
+            </a>
+            <a href="{% url 'setup_scales' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Grading scales" %}
+            </a>
+
+            <p class="menu-group">{% translate "Records" %}</p>
+            <a href="{% url 'admin:index' %}">
+              <span class="menu-icon" aria-hidden="true">▦</span>
+              {% translate "School administration" %}
+            </a>
           {% endif %}
         {% endblock %}
       </nav>
@@ -78,10 +117,18 @@ and one less tap to reach anything.
         </nav>
 
         <div class="account">
+          {% comment %}
+          Initials rather than a photo. A school would have to collect,
+          store and moderate pictures of children to show real ones,
+          which is a great deal of risk for decoration.
+          {% endcomment %}
+          <span class="avatar" aria-hidden="true">{{ user.get_full_name|default:user.username|slice:":1"|upper }}</span>
+
           <span class="person">
             <span class="person-name">{{ user.get_full_name|default:user.username }}</span>
             <span class="person-role">{{ user.get_role_display }}</span>
           </span>
+
           <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="ghost">{% translate "Sign out" %}</button>
@@ -103,9 +150,12 @@ and one less tap to reach anything.
 
       <footer class="foot">
         <p>
-          {% translate "GradeVault" %} —
+          <strong>{% translate "GradeVault" %}</strong> —
           {% blocktranslate %}results are shown only to the student they belong to.{% endblocktranslate %}
         </p>
+        {% if user.institution %}
+          <p class="quiet">{{ user.institution.name }}</p>
+        {% endif %}
       </footer>
     </div>
   </div>

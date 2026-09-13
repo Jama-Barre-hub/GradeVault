@@ -14,13 +14,38 @@
     </p>
   </div>
 
-  {% for report in reports %}
+  {% if not report %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No results yet" %}</strong>
+        {% blocktranslate %}Your school has not published any results. They will appear here once released.{% endblocktranslate %}
+      </div>
+    </section>
+  {% else %}
+
     <section class="panel">
       <div class="panel-head">
         <h2>{{ report.term.name }} · {{ report.term.academic_year }}</h2>
-        <a class="btn light tiny no-print" href="{% url 'my_report_card' report.term.id %}">
-          {% translate "Report card" %}
-        </a>
+
+        {% if terms|length > 1 %}
+          {% comment %}
+          A plain GET form, so switching term is a link the browser can
+          bookmark and the back button understands. A select that needs
+          JavaScript to submit is a select that does nothing on a phone
+          with a slow connection and a half-loaded page.
+          {% endcomment %}
+          <form method="get" class="term-picker">
+            <label for="term-select" class="visually-hidden">{% translate "Choose a term" %}</label>
+            <select name="term" id="term-select">
+              {% for t in terms %}
+                <option value="{{ t.id }}" {% if t.id == selected.id %}selected{% endif %}>
+                  {{ t.name }} · {{ t.academic_year }}
+                </option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="ghost tiny">{% translate "Show" %}</button>
+          </form>
+        {% endif %}
       </div>
 
       <div class="panel-body">
@@ -38,13 +63,13 @@
             </span>
           </div>
 
-          <div class="stat">
+          <div class="stat good">
             <span class="label">{% translate "Grade" %}</span>
             <span class="value">{% if report.grade %}{{ report.grade.letter }}{% else %}—{% endif %}</span>
             <span class="note">{% if report.grade %}{{ report.grade.remark }}{% endif %}</span>
           </div>
 
-          <div class="stat">
+          <div class="stat warm">
             <span class="label">{% translate "Position" %}</span>
             <span class="value">{{ report.position.place|default:"—" }}</span>
             <span class="note">
@@ -54,7 +79,7 @@
             </span>
           </div>
 
-          <div class="stat">
+          <div class="stat cool">
             <span class="label">{% translate "Subjects passed" %}</span>
             <span class="value">{{ report.passed }}</span>
             <span class="note">
@@ -128,6 +153,81 @@
         </table>
       </div>
 
+      {% comment %}
+      This term on the left, the year so far on the right — the shape a
+      results slip has always had, so a parent reading it recognises
+      what they are looking at without being taught.
+      {% endcomment %}
+      <div class="summary">
+        <dl class="summary-col">
+          <div>
+            <dt>{% translate "Marks this term" %}</dt>
+            <dd>
+              {{ report.result.marks_obtained|floatformat:"-2" }} /
+              {{ report.result.marks_available|floatformat:"-2" }}
+            </dd>
+          </div>
+          <div>
+            <dt>{% translate "Term average" %}</dt>
+            <dd>
+              {% if report.result.average_percentage is not None %}
+                <strong>{{ report.result.average_percentage }}%</strong>
+              {% else %}—{% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt>{% translate "Subjects passed" %}</dt>
+            <dd>{{ report.passed }} {% translate "of" %} {{ report.subjects|length }}</dd>
+          </div>
+        </dl>
+
+        <dl class="summary-col">
+          <div>
+            <dt>{% translate "Terms published" %}</dt>
+            <dd>{{ cumulative.terms }}</dd>
+          </div>
+          <div>
+            <dt>{% translate "Average so far" %}</dt>
+            <dd>
+              {% if cumulative.average is not None %}
+                <strong>{{ cumulative.average }}%</strong>
+              {% else %}—{% endif %}
+            </dd>
+          </div>
+          <div>
+            <dt>{% translate "Grade so far" %}</dt>
+            <dd>{% if cumulative.grade %}{{ cumulative.grade.letter }}{% else %}—{% endif %}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="verdict">
+        <div class="verdict-row">
+          <span class="verdict-label">{% translate "Status" %}</span>
+          {% if report.is_pass is None %}
+            <span class="badge none">{% translate "Not yet graded" %}</span>
+          {% elif report.is_pass %}
+            <span class="badge pass">{% translate "PASS" %}</span>
+          {% else %}
+            <span class="badge fail">{% translate "FAIL" %}</span>
+          {% endif %}
+        </div>
+
+        <div class="verdict-row">
+          <span class="verdict-label">{% translate "Remarks" %}</span>
+          <span>
+            {% if report.grade %}{{ report.grade.remark }}{% else %}—{% endif %}
+            {% if report.position.place == 1 %}
+              <span class="badge top">{% translate "Top of class" %}</span>
+            {% endif %}
+          </span>
+        </div>
+
+        <a class="btn no-print" href="{% url 'my_report_card' report.term.id %}">
+          {% translate "Print result slip" %}
+        </a>
+      </div>
+
       {% if not report.result.is_complete %}
         <div class="panel-body">
           <p class="notice">
@@ -136,14 +236,7 @@
         </div>
       {% endif %}
     </section>
-  {% empty %}
-    <section class="panel">
-      <div class="empty">
-        <strong>{% translate "No results yet" %}</strong>
-        {% blocktranslate %}Your school has not published any results. They will appear here once released.{% endblocktranslate %}
-      </div>
-    </section>
-  {% endfor %}
+  {% endif %}
 
   {% if unpublished %}
     <p class="hint">
