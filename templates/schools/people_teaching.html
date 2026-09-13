@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Who teaches what" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'people_overview' %}">{% translate "People" %}</a>
+  <span>{% translate "Teaching" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Who teaches what" %}</h1>
+    <p>{% blocktranslate %}This is what lets a teacher enter marks. Without an assignment here, a teacher cannot record a single mark for that subject or class — which is the rule the whole system is built around.{% endblocktranslate %}</p>
+  </div>
+
+  {% if not year %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No academic year yet" %}</strong>
+        <a href="{% url 'setup_years' %}">{% translate "Add a year" %}</a>
+      </div>
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Assignments" %}</h2>
+        <span class="quiet">{{ year.name }}</span>
+      </div>
+
+      {% if assignments %}
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr>
+                <th>{% translate "Class" %}</th>
+                <th>{% translate "Subject" %}</th>
+                <th>{% translate "Teacher" %}</th>
+                <th class="num"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for assignment in assignments %}
+                <tr>
+                  <td><strong>{{ assignment.classroom.name }}</strong></td>
+                  <td>{{ assignment.subject.name }}</td>
+                  <td>{{ assignment.teacher.full_name }}</td>
+                  <td class="num">
+                    <form method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="remove">
+                      <input type="hidden" name="assignment" value="{{ assignment.id }}">
+                      <button type="submit" class="ghost">{% translate "Remove" %}</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty">
+          <strong>{% translate "Nothing assigned yet" %}</strong>
+          {% blocktranslate %}No teacher can enter marks until at least one assignment exists.{% endblocktranslate %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Assign a teacher" %}</h2>
+      </div>
+      <div class="panel-body">
+        <form method="post">
+          {% csrf_token %}
+          {% include "schools/_form_fields.html" %}
+          <button type="submit" class="btn">{% translate "Assign" %}</button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

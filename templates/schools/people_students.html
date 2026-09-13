@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Pupils" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'people_overview' %}">{% translate "People" %}</a>
+  <span>{% translate "Pupils" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Pupils" %}</h1>
+    <p>{% blocktranslate %}A pupil signs in with a number the system generates, and sees only their own results.{% endblocktranslate %}</p>
+  </div>
+
+  {% if not year %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "No academic year yet" %}</strong>
+        {% blocktranslate %}A pupil is enrolled into a class, and a class belongs to a year.{% endblocktranslate %}
+        <a href="{% url 'setup_years' %}">{% translate "Add a year" %}</a>
+      </div>
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "On roll" %}</h2>
+        <span class="quiet">{{ year.name }}</span>
+      </div>
+
+      {% if students %}
+        <div class="scroller">
+          <table>
+            <thead>
+              <tr>
+                <th>{% translate "Name" %}</th>
+                <th>{% translate "Signs in as" %}</th>
+                <th>{% translate "Admission no." %}</th>
+                <th>{% translate "Class" %}</th>
+                <th class="num"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in students %}
+                <tr>
+                  <td><strong>{{ student.full_name }}</strong></td>
+                  <td class="quiet">{{ student.user.username }}</td>
+                  <td class="quiet">{{ student.admission_number }}</td>
+                  <td>
+                    {% with enrolment=student.current_enrollment %}
+                      {% if enrolment %}
+                        {{ enrolment.classroom.name }}
+                      {% else %}
+                        <span class="warn-text">{% translate "No class" %}</span>
+                      {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td class="num">
+                    <a href="{% url 'move_student' student.id %}">{% translate "Move" %}</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty">
+          <strong>{% translate "No pupils yet" %}</strong>
+          {% blocktranslate %}Admit your first pupil below.{% endblocktranslate %}
+        </div>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Admit a pupil" %}</h2>
+        <span class="quiet">{% translate "Their sign-in number and password are shown once" %}</span>
+      </div>
+      <div class="panel-body">
+        <form method="post">
+          {% csrf_token %}
+          {% include "schools/_form_fields.html" %}
+          <button type="submit" class="btn">{% translate "Admit pupil" %}</button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

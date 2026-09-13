@@ -5,6 +5,13 @@ from django.utils.translation import gettext_lazy as _
 
 from config.health import healthz
 from schools.dashboards import dashboard, home
+from schools.people import (
+    move_student,
+    people_overview,
+    people_students,
+    people_teachers,
+    people_teaching,
+)
 from schools.publishing import term_publication
 from schools.report_cards import class_report_card, my_report_card
 from schools.setup import (
@@ -56,6 +63,15 @@ urlpatterns = [
     # Administrators
     # Under manage/ rather than admin/, which belongs to the Django admin.
     path("manage/results/", term_publication, name="term_publication"),
+    path("manage/people/", people_overview, name="people_overview"),
+    path("manage/people/teachers/", people_teachers, name="people_teachers"),
+    path("manage/people/students/", people_students, name="people_students"),
+    path(
+        "manage/people/students/<int:student_id>/move/",
+        move_student,
+        name="move_student",
+    ),
+    path("manage/people/teaching/", people_teaching, name="people_teaching"),
     path("manage/setup/", setup_overview, name="setup_overview"),
     path("manage/setup/years/", setup_years, name="setup_years"),
     path("manage/setup/years/<int:year_id>/", setup_terms, name="setup_terms"),

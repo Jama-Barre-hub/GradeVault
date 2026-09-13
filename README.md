@@ -54,11 +54,12 @@ like. Every name and mark is fictional.
 | **Publishing** | administrators release or withdraw a term's results from the portal, with marking progress shown and both directions audited |
 | **School setup** | years, terms, classes, subjects and grading scales in the portal, with a readiness check that catches a scale with a gap or a class nobody teaches |
 | **Student results slip** | one term at a time with a term picker, the year's running average beside it, PASS/FAIL and remarks, and a printable slip |
-| **Tests** | 330, including permission and tenancy tests that pass only when access is refused |
+| **People** | a head teacher creates teacher and pupil accounts, admits pupils into classes, moves them between classes, and assigns who teaches what |
+| **Tests** | 362, including permission and tenancy tests that pass only when access is refused |
 
 | Not done | |
 |---|---|
-| **Accounts and enrolment** | creating teacher and student accounts, and enrolling students, are still done in the Django admin |
+| **Password reset** | a forgotten password still needs an administrator |
 | **PDF report cards** | printable in the browser; no download yet |
 | **Somali translation** | withdrawn until it can ship complete — see [Language](#language) |
 | **Independent security review** | every test here was written by the author |
@@ -190,7 +191,7 @@ GradeVault/
 ├── audit/             Append-only log of every grade change
 ├── templates/         Shared HTML templates
 ├── static/            CSS and images — no framework, no web fonts, no build step
-├── tests/             330 tests
+├── tests/             362 tests
 ├── .env.example       Environment template — safe to commit
 ├── .env               Real secrets — git-ignored, never committed
 └── manage.py

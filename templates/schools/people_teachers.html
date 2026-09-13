@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Teachers" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'people_overview' %}">{% translate "People" %}</a>
+  <span>{% translate "Teachers" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Teachers" %}</h1>
+    <p>{% blocktranslate %}A teacher sees only the classes and subjects you assign to them, and can enter marks for nothing else.{% endblocktranslate %}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Staff" %}</h2>
+      <a href="{% url 'people_teaching' %}">{% translate "Who teaches what" %}</a>
+    </div>
+
+    {% if teachers %}
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>{% translate "Name" %}</th>
+              <th>{% translate "Signs in as" %}</th>
+              <th>{% translate "Staff number" %}</th>
+              <th>{% translate "Subjects taught" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for teacher in teachers %}
+              <tr>
+                <td><strong>{{ teacher.full_name }}</strong></td>
+                <td class="quiet">{{ teacher.user.username }}</td>
+                <td class="quiet">{{ teacher.staff_number|default:"—" }}</td>
+                <td>
+                  {% if teacher.teaches %}
+                    {{ teacher.teaches }}
+                  {% else %}
+                    <span class="warn-text">{% translate "Nothing assigned" %}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <strong>{% translate "No teachers yet" %}</strong>
+        {% blocktranslate %}Add your teaching staff so they can record marks.{% endblocktranslate %}
+      </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Add a teacher" %}</h2>
+      <span class="quiet">{% translate "A temporary password is generated and shown once" %}</span>
+    </div>
+    <div class="panel-body">
+      <form method="post">
+        {% csrf_token %}
+        {% include "schools/_form_fields.html" %}
+        <button type="submit" class="btn">{% translate "Add teacher" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

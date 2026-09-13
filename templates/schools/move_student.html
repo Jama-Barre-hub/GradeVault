@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Move pupil" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'people_overview' %}">{% translate "People" %}</a>
+  <a href="{% url 'people_students' %}">{% translate "Pupils" %}</a>
+  <span>{{ student.full_name }}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{{ student.full_name }}</h1>
+    <p>
+      {{ student.user.username }} · {% translate "Admission no." %} {{ student.admission_number }}
+      {% if enrollment %} · {% translate "Currently in" %} {{ enrollment.classroom.name }}{% endif %}
+    </p>
+  </div>
+
+  {% if not enrollment %}
+    <section class="panel">
+      <div class="empty">
+        <strong>{% translate "Not in a class" %}</strong>
+        {% blocktranslate %}This pupil is not enrolled anywhere, so there is nothing to move them from.{% endblocktranslate %}
+      </div>
+    </section>
+  {% else %}
+    <section class="panel">
+      <div class="panel-head">
+        <h2>{% translate "Move to another class" %}</h2>
+      </div>
+      <div class="panel-body">
+        <p class="notice">
+          {% blocktranslate %}Results already recorded stay with the class they were earned in. Moving a pupil changes where they sit from now on, and rewrites nothing.{% endblocktranslate %}
+        </p>
+        <form method="post">
+          {% csrf_token %}
+          {% include "schools/_form_fields.html" %}
+          <button type="submit" class="btn">{% translate "Move pupil" %}</button>
+        </form>
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "People" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}<span>{% translate "People" %}</span>{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "People" %}</h1>
+    <p>{% blocktranslate %}Teachers, pupils, and who teaches what. Every account created here belongs to your school and can see nothing outside it.{% endblocktranslate %}</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat accent">
+      <span class="label">{% translate "Teachers" %}</span>
+      <span class="value">{{ counts.teachers }}</span>
+    </div>
+    <div class="stat good">
+      <span class="label">{% translate "Pupils" %}</span>
+      <span class="value">{{ counts.students }}</span>
+    </div>
+    <div class="stat cool">
+      <span class="label">{% translate "Enrolled this year" %}</span>
+      <span class="value">{{ counts.enrolled }}</span>
+    </div>
+    <div class="stat warm">
+      <span class="label">{% translate "Teaching assignments" %}</span>
+      <span class="value">{{ counts.assignments }}</span>
+    </div>
+  </div>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2>{% translate "Manage" %}</h2>
+    </div>
+    <div class="panel-body">
+      <ul class="setup-links">
+        <li>
+          <a href="{% url 'people_teachers' %}">{% translate "Teachers" %}</a>
+          <span class="quiet block">{% translate "Add staff and see how much each one teaches" %}</span>
+        </li>
+        <li>
+          <a href="{% url 'people_students' %}">{% translate "Pupils" %}</a>
+          <span class="quiet block">{% translate "Admit a pupil into a class, or move one between classes" %}</span>
+        </li>
+        <li>
+          <a href="{% url 'people_teaching' %}">{% translate "Who teaches what" %}</a>
+          <span class="quiet block">{% translate "A teacher can only enter marks for subjects assigned here" %}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+{% endblock %}

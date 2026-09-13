@@ -64,6 +64,25 @@ and one less tap to reach anything.
               {% translate "Publishing" %}
             </a>
 
+            <p class="menu-group">{% translate "People" %}</p>
+            <a href="{% url 'people_overview' %}"
+               class="{% if nav_active == 'people' %}on{% endif %}">
+              <span class="menu-icon" aria-hidden="true">☺</span>
+              {% translate "Overview" %}
+            </a>
+            <a href="{% url 'people_teachers' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Teachers" %}
+            </a>
+            <a href="{% url 'people_students' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Pupils" %}
+            </a>
+            <a href="{% url 'people_teaching' %}">
+              <span class="menu-icon" aria-hidden="true">▸</span>
+              {% translate "Who teaches what" %}
+            </a>
+
             <p class="menu-group">{% translate "School setup" %}</p>
             <a href="{% url 'setup_overview' %}"
                class="{% if nav_active == 'setup' %}on{% endif %}">
