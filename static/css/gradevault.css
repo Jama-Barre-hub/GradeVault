@@ -1175,3 +1175,13 @@ button.tiny, .btn.tiny { padding: .3rem .7rem; font-size: .83rem; }
   .term-picker, .quick { display: none !important; }
   .summary, .verdict { background: #fff; border-top: 1px solid #999; }
 }
+
+/* A quiet link beside the sign-out button. */
+.ghost-link {
+  color: var(--muted);
+  font-size: .86rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ghost-link:hover { color: var(--teal-dark); text-decoration: underline; }

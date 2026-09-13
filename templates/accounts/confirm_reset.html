@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "Reset password" %} · {% translate "GradeVault" %}{% endblock %}
+
+{% block crumbs %}
+  <a href="{% url 'people_overview' %}">{% translate "People" %}</a>
+  <span>{% translate "Reset password" %}</span>
+{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{% translate "Reset password" %}</h1>
+    <p>{{ person.get_full_name|default:person.username }} · {{ person.username }} · {{ person.get_role_display }}</p>
+  </div>
+
+  <section class="panel">
+    <div class="panel-body">
+      <p class="notice">
+        {% blocktranslate %}This replaces their password with a new temporary one, which is shown to you once so you can pass it on. Their old password cannot be recovered — only a hash of it is stored, which is how it should be. This reset is written to the audit trail against your name.{% endblocktranslate %}
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn">{% translate "Reset their password" %}</button>
+      </form>
+    </div>
+  </section>
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from accounts.passwords import change_my_password, reset_password
 from config.health import healthz
 from schools.dashboards import dashboard, home
 from schools.people import (
@@ -43,6 +44,12 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("password/", change_my_password, name="change_my_password"),
+    path(
+        "manage/people/<int:user_id>/reset-password/",
+        reset_password,
+        name="reset_password",
+    ),
     # Teachers
     path("teacher/", teacher_home, name="teacher_home"),
     path(

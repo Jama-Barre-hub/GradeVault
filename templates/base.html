@@ -148,6 +148,8 @@ and one less tap to reach anything.
             <span class="person-role">{{ user.get_role_display }}</span>
           </span>
 
+          <a class="ghost-link" href="{% url 'change_my_password' %}">{% translate "Password" %}</a>
+
           <form action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="ghost">{% translate "Sign out" %}</button>

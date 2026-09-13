@@ -46,6 +46,7 @@ class AuditLog(models.Model):
         SCORE_CLEARED = "score_cleared", _("Mark removed")
         TERM_PUBLISHED = "term_published", _("Results published")
         TERM_UNPUBLISHED = "term_unpublished", _("Results withdrawn")
+        PASSWORD_RESET = "password_reset", _("Password reset")
 
     action = models.CharField(_("action"), max_length=32, choices=Action.choices)
 
@@ -106,6 +107,8 @@ class AuditLog(models.Model):
                 f"{who}: {self.student_label} {self.assessment_label} "
                 f"{self.old_value or '—'} to {self.new_value or '—'}"
             )
+        if self.action == self.Action.PASSWORD_RESET:
+            return f"{who}: {self.get_action_display()} for {self.student_label}"
         return f"{who}: {self.get_action_display()} ({self.term_label})"
 
     def save(self, *args, **kwargs):
@@ -157,6 +160,28 @@ class AuditLog(models.Model):
         if value is None:
             return ""
         return f"{Decimal(value):.2f}"
+
+    @classmethod
+    def record_password_reset(cls, person, actor, institution):
+        """Write an entry for one account's password being replaced.
+
+        Resetting a password is taking control of an account, so it is
+        recorded as deliberately as a grade change. The question a school
+        may later need to answer — "who could have signed in as this
+        teacher in March?" — has no answer at all unless this row exists.
+
+        The new password is not stored here, or anywhere else readable.
+        Only that the reset happened, to whom, and by whom.
+        """
+        return cls.objects.create(
+            action=cls.Action.PASSWORD_RESET,
+            institution=institution,
+            actor=actor,
+            actor_label=cls._describe(actor),
+            student_label=(
+                f"{person.get_full_name() or person.username} ({person.username})"
+            ),
+        )
 
     @classmethod
     def record_publication(cls, term, action, actor):

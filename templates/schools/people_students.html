@@ -58,6 +58,8 @@
                   </td>
                   <td class="num">
                     <a href="{% url 'move_student' student.id %}">{% translate "Move" %}</a>
+                    ·
+                    <a href="{% url 'reset_password' student.user.id %}">{% translate "Reset password" %}</a>
                   </td>
                 </tr>
               {% endfor %}

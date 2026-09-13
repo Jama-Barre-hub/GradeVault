@@ -29,6 +29,7 @@
               <th>{% translate "Signs in as" %}</th>
               <th>{% translate "Staff number" %}</th>
               <th>{% translate "Subjects taught" %}</th>
+              <th class="num"></th>
             </tr>
           </thead>
           <tbody>
@@ -43,6 +44,9 @@
                   {% else %}
                     <span class="warn-text">{% translate "Nothing assigned" %}</span>
                   {% endif %}
+                </td>
+                <td class="num">
+                  <a href="{% url 'reset_password' teacher.user.id %}">{% translate "Reset password" %}</a>
                 </td>
               </tr>
             {% endfor %}
